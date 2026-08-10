@@ -7,22 +7,6 @@ on:
         description: Type deploy ikimono-scan.app to continue
         required: true
         type: string
-      model_release_tag:
-        description: GitHub Release tag containing the licensed model bundle
-        required: true
-        type: string
-      model_filename:
-        description: ONNX filename in the model release
-        required: true
-        type: string
-      model_sha256:
-        description: Expected SHA-256 of the ONNX file
-        required: true
-        type: string
-      manifest_sha256:
-        description: Expected SHA-256 of manifest.json
-        required: true
-        type: string
 
 permissions:
   contents: read
@@ -43,7 +27,6 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
       CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      GH_TOKEN: ${{ github.token }}
       TF_IN_AUTOMATION: "true"
       TF_VAR_cloudflare_account_id: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
     steps:
@@ -77,26 +60,6 @@ jobs:
           npm --prefix web ci
       - name: Run deployment gates
         run: task deploy:check
-      - name: Download and verify model release
-        env:
-          MANIFEST_SHA256: ${{ inputs.manifest_sha256 }}
-          MODEL_FILE: ${{ inputs.model_filename }}
-          MODEL_RELEASE_TAG: ${{ inputs.model_release_tag }}
-          MODEL_SHA256: ${{ inputs.model_sha256 }}
-        run: |
-          [[ "${MODEL_FILE}" =~ ^[A-Za-z0-9._-]+\.onnx$ ]]
-          [[ "${MODEL_SHA256}" =~ ^[0-9a-f]{64}$ ]]
-          [[ "${MANIFEST_SHA256}" =~ ^[0-9a-f]{64}$ ]]
-          model_dir="${RUNNER_TEMP}/model-release"
-          mkdir -p "${model_dir}"
-          gh release download "${MODEL_RELEASE_TAG}" \
-            --pattern manifest.json \
-            --pattern "${MODEL_FILE}" \
-            --dir "${model_dir}"
-          echo "${MODEL_SHA256}  ${model_dir}/${MODEL_FILE}" | sha256sum --check
-          echo "${MANIFEST_SHA256}  ${model_dir}/manifest.json" | sha256sum --check
-          python scripts/verify_model_release.py \
-            "${model_dir}/manifest.json" "${model_dir}/${MODEL_FILE}"
       - name: Bootstrap remote state
         run: task infra:bootstrap
       - name: Verify R2 lock semantics
@@ -113,24 +76,6 @@ jobs:
         run: terraform -chdir=infra/storage apply -input=false storage.tfplan
       - name: Back up storage state after apply
         run: python scripts/terraform_backend.py backup storage post-apply
-      - name: Publish verified model artifacts
-        env:
-          MODEL_FILE: ${{ inputs.model_filename }}
-        run: |
-          model_dir="${RUNNER_TEMP}/model-release"
-          object_api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/r2/buckets/ikimono-scan-models/objects"
-          curl --fail --silent --show-error --request PUT \
-            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            --header "Content-Type: application/octet-stream" \
-            --header "Cache-Control: public, max-age=31536000, immutable" \
-            --data-binary "@${model_dir}/${MODEL_FILE}" \
-            "${object_api}/${MODEL_FILE}"
-          curl --fail --silent --show-error --request PUT \
-            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            --header "Content-Type: application/json" \
-            --header "Cache-Control: public, max-age=300" \
-            --data-binary "@${model_dir}/manifest.json" \
-            "${object_api}/manifest.json"
       - name: Create production plan
         run: |
           terraform -chdir=infra/production init -input=false

@@ -1,10 +1,10 @@
 # 判定モデルの配置
 
-Webアプリは`/models/manifest.json`を読み込み、manifestが参照するONNXモデルを端末内で実行します。
+WebアプリはGit管理された`/models/manifest.json`を読み込み、manifestが参照するR2上のONNXモデルを端末内で実行します。
 
-モデル本体と生成済みmanifestはリリース成果物として配信し、Gitリポジトリには追加しません。公開前に、モデルのライセンス、学習データの出典、再配布条件を確認してください。
+ONNXモデルはGitリポジトリへ追加しません。公開前に、モデルのライセンス、学習データの出典、再配布条件を確認してください。
 
-ローカル検証用の成果物は、次のコマンドでこのディレクトリへ生成します。`--license`と`--source`は確認済みの内容を指定してください。未確認の成果物はローカル検証に限り、公開しないでください。
+ローカル成果物は`artifacts/models/`へ生成します。`LICENSE`と`SOURCE`には確認済みの内容を指定してください。未確認の成果物はR2へアップロードしないでください。
 
 和名はiNaturalistの分類群IDをキーにした`ml/taxonomy/ja.json`からmanifestへ結合されます。モデルのクラスを更新したときは、先に分類群カタログを更新してください。
 
@@ -14,11 +14,4 @@ ikimono-scan-ml refresh-taxonomy-ja \
   --output ml/taxonomy/ja.json
 ```
 
-```console
-ikimono-scan-ml-export-web \
-  --checkpoint /path/to/best.pt \
-  --output-dir web/public/models \
-  --version 0.1.0 \
-  --license UNPUBLISHED \
-  --source "internal checkpoint"
-```
+具体的な変換・アップロード手順は[`docs/model-release.md`](../../../docs/model-release.md)に記載しています。

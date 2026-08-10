@@ -14,4 +14,4 @@ task infra:bootstrap:plan
 task infra:plan
 ```
 
-`task deploy`は用意しません。本番applyは、main上のcommitに対して手動起動するGitHub Actionsだけが保存済みplanを使って実行します。
+`task deploy`はmain上の手動GitHub Actionsを起動します。ローカルから本番applyは実行せず、workflowだけが保存済みplanを使います。

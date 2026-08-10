@@ -24,7 +24,7 @@ def verify(manifest_path: Path, model_path: Path) -> None:
     if missing:
         raise ValueError(f"Manifest is missing: {', '.join(missing)}")
     if manifest["license"].strip().upper() == "UNPUBLISHED":
-        raise ValueError("Model license must be resolved before deployment")
+        raise ValueError("Model license must be resolved before publication")
     if Path(urlparse(manifest["modelUrl"]).path).name != model_path.name:
         raise ValueError("Manifest modelUrl does not match the model filename")
     if manifest["sha256"].lower() != sha256(model_path):

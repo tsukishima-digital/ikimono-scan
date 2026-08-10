@@ -121,11 +121,58 @@ tasks:
     desc: Run every local gate required before production deployment
     deps: [release:check, infra:validate:config]
 
+  deploy:
+    desc: Dispatch the production deployment workflow on main
+    cmds:
+      - gh workflow run deploy.yml --ref main --field confirmation="deploy ikimono-scan.app"
+
   deploy:smoke:
-    desc: Check the deployed application and model manifest endpoints
+    desc: Check the deployed application endpoint
     cmds:
       - curl --fail --silent --show-error --retry 12 --retry-delay 10 --retry-max-time 180 --retry-all-errors https://ikimono-scan.app/ >/dev/null
-      - curl --fail --silent --show-error --retry 12 --retry-delay 10 --retry-max-time 180 --retry-all-errors https://ikimono-scan.app/models/manifest.json >/dev/null
+
+  model:export:
+    desc: Export a checkpoint into a locally staged ONNX bundle
+    requires:
+      vars: [CHECKPOINT, VERSION, LICENSE, SOURCE]
+    vars:
+      OUTPUT_DIR: '{{.OUTPUT_DIR | default (printf "artifacts/models/v%s" .VERSION)}}'
+    env:
+      MODEL_CHECKPOINT: "{{.CHECKPOINT}}"
+      MODEL_LICENSE: "{{.LICENSE}}"
+      MODEL_OUTPUT_DIR: "{{.OUTPUT_DIR}}"
+      MODEL_SOURCE: "{{.SOURCE}}"
+      MODEL_VERSION: "{{.VERSION}}"
+    cmds:
+      - uv run ikimono-scan-ml-export-web --checkpoint "$MODEL_CHECKPOINT" --output-dir "$MODEL_OUTPUT_DIR" --version "$MODEL_VERSION" --license "$MODEL_LICENSE" --source "$MODEL_SOURCE"
+      - python scripts/verify_model_release.py "$MODEL_OUTPUT_DIR/manifest.json" "$MODEL_OUTPUT_DIR/beetles-v$MODEL_VERSION.onnx"
+
+  model:upload:
+    desc: Upload a verified ONNX model to R2 and stage its manifest for deployment
+    requires:
+      vars: [BUNDLE_DIR]
+    env:
+      MODEL_BUNDLE_DIR: "{{.BUNDLE_DIR}}"
+    cmds:
+      - python scripts/publish_model.py --bundle-dir "$MODEL_BUNDLE_DIR"
+
+  model:prepare-and-upload:
+    desc: Export, verify, and upload a checkpoint without deploying the app
+    requires:
+      vars: [CHECKPOINT, VERSION, LICENSE, SOURCE]
+    vars:
+      OUTPUT_DIR: '{{.OUTPUT_DIR | default (printf "artifacts/models/v%s" .VERSION)}}'
+    cmds:
+      - task: model:export
+        vars:
+          CHECKPOINT: "{{.CHECKPOINT}}"
+          VERSION: "{{.VERSION}}"
+          LICENSE: "{{.LICENSE}}"
+          SOURCE: "{{.SOURCE}}"
+          OUTPUT_DIR: "{{.OUTPUT_DIR}}"
+      - task: model:upload
+        vars:
+          BUNDLE_DIR: "{{.OUTPUT_DIR}}"
 
   secrets:
     desc: Scan tracked files for secrets
