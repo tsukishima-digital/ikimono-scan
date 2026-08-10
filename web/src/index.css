@@ -4,6 +4,7 @@
   color: #17251c;
   background: #f2f4e9;
   font-synthesis: none;
+  font-optical-sizing: auto;
   text-rendering: optimizeLegibility;
 }
 
@@ -25,6 +26,10 @@ body {
 button,
 input {
   font: inherit;
+}
+
+button {
+  touch-action: manipulation;
 }
 
 a {

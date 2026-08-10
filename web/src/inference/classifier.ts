@@ -9,6 +9,7 @@ import type {
 } from "./types";
 
 const DEFAULT_MANIFEST_URL = "/models/manifest.json";
+const MODEL_CACHE_NAME = "ikimono-scan-models-v1";
 
 export async function createClassifier(
   manifestUrl = DEFAULT_MANIFEST_URL,
@@ -80,17 +81,47 @@ export async function fetchModelManifest(url: string): Promise<ModelManifest> {
   return manifest;
 }
 
-async function fetchVerifiedModel(
+export async function fetchVerifiedModel(
   modelUrl: string,
   expectedSha256: string,
 ): Promise<Uint8Array> {
+  const cache = await openModelCache();
+  if (cache) {
+    const cachedResponse = await cache.match(modelUrl).catch(() => undefined);
+    if (cachedResponse) {
+      const cachedBytes = new Uint8Array(await cachedResponse.arrayBuffer());
+      try {
+        await verifySha256(cachedBytes, expectedSha256);
+        return cachedBytes;
+      } catch {
+        await cache.delete(modelUrl).catch(() => false);
+      }
+    }
+  }
+
   const response = await fetch(modelUrl);
   if (!response.ok) {
     throw new Error("判定モデルをダウンロードできませんでした。");
   }
   const bytes = new Uint8Array(await response.arrayBuffer());
   await verifySha256(bytes, expectedSha256);
+  if (cache) {
+    const cacheBody = bytes.slice().buffer;
+    await cache
+      .put(
+        modelUrl,
+        new Response(cacheBody, {
+          headers: { "content-type": "application/octet-stream" },
+        }),
+      )
+      .catch(() => undefined);
+  }
   return bytes;
+}
+
+async function openModelCache(): Promise<Cache | undefined> {
+  if (!("caches" in globalThis)) return undefined;
+  return caches.open(MODEL_CACHE_NAME).catch(() => undefined);
 }
 
 export async function verifySha256(

@@ -1,6 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { fetchModelManifest, topK, verifySha256 } from "./classifier";
+import {
+  fetchModelManifest,
+  fetchVerifiedModel,
+  topK,
+  verifySha256,
+} from "./classifier";
 
 const classes = [
   { id: "a", scientificName: "Species alpha" },
@@ -55,5 +60,51 @@ describe("verifySha256", () => {
     await expect(
       verifySha256(new TextEncoder().encode("tampered"), "0".repeat(64)),
     ).rejects.toThrow("整合性を確認できませんでした");
+  });
+});
+
+describe("fetchVerifiedModel", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
+
+  it("uses a previously verified model from the device cache", async () => {
+    const cache = {
+      match: vi.fn().mockResolvedValue(new Response("model")),
+      delete: vi.fn(),
+      put: vi.fn(),
+    };
+    vi.stubGlobal("caches", { open: vi.fn().mockResolvedValue(cache) });
+    const fetchSpy = vi.spyOn(globalThis, "fetch");
+
+    const result = await fetchVerifiedModel(
+      "/models/beetles.onnx",
+      "9372c470eeadd5ecd9c3c74c2b3cb633f8e2f2fad799250a0f70d652b6b825e4",
+    );
+
+    expect(new TextDecoder().decode(result)).toBe("model");
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it("replaces a corrupt cached model with a verified download", async () => {
+    const cache = {
+      match: vi.fn().mockResolvedValue(new Response("tampered")),
+      delete: vi.fn().mockResolvedValue(true),
+      put: vi.fn().mockResolvedValue(undefined),
+    };
+    vi.stubGlobal("caches", { open: vi.fn().mockResolvedValue(cache) });
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response("model", { status: 200 }),
+    );
+
+    const result = await fetchVerifiedModel(
+      "/models/beetles.onnx",
+      "9372c470eeadd5ecd9c3c74c2b3cb633f8e2f2fad799250a0f70d652b6b825e4",
+    );
+
+    expect(new TextDecoder().decode(result)).toBe("model");
+    expect(cache.delete).toHaveBeenCalledWith("/models/beetles.onnx");
+    expect(cache.put).toHaveBeenCalledOnce();
   });
 });

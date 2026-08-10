@@ -5,9 +5,3 @@
   Permissions-Policy: camera=(self), geolocation=(), microphone=()
   Referrer-Policy: no-referrer
   X-Content-Type-Options: nosniff
-*** Add File: ../ikimono-scan/web/public/models/README.md
-# Model files
-
-The application expects a model manifest at `/models/manifest.json` and an ONNX model referenced by that manifest.
-
-Model binaries and generated manifests are release artifacts. They are intentionally excluded from the source repository and must include their own license and training-data provenance before publication.
