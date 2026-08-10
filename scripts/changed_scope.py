@@ -12,6 +12,8 @@ def scopes_for_paths(paths: Iterable[str]) -> set[str]:
     for path in paths:
         if path.startswith("web/"):
             scopes.add("web")
+        if path.startswith("infra/") or path in {"Taskfile.yml"}:
+            scopes.add("infra")
         if path.startswith(("ml/", "scripts/")) or path in {
             ".pre-commit-config.yaml",
             "pyproject.toml",
@@ -19,7 +21,12 @@ def scopes_for_paths(paths: Iterable[str]) -> set[str]:
         }:
             scopes.add("python")
         if path == ".github/workflows/ci.yml":
-            scopes.update(("python", "web"))
+            scopes.update(("infra", "python", "web"))
+        if path in {
+            ".github/workflows/deploy.yml",
+            ".github/workflows/terraform-plan.yml",
+        }:
+            scopes.update(("infra", "web"))
     return scopes
 
 
@@ -45,7 +52,7 @@ def main() -> int:
     source.add_argument("--working-tree", action="store_true")
     source.add_argument("--base")
     parser.add_argument("--head")
-    parser.add_argument("--scope", choices=("python", "web"))
+    parser.add_argument("--scope", choices=("infra", "python", "web"))
     args = parser.parse_args()
 
     if args.base:

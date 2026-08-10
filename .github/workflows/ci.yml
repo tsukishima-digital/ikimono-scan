@@ -13,6 +13,60 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  infra:
+    name: Infrastructure
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+      - name: Detect infrastructure changes
+        id: scope
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          EVENT_NAME: ${{ github.event_name }}
+          HEAD_SHA: ${{ github.sha }}
+        run: |
+          if [[ "${EVENT_NAME}" != "pull_request" ]] || \
+            python scripts/changed_scope.py --base "${BASE_SHA}" --head "${HEAD_SHA}" --scope infra; then
+            echo "run=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "run=false" >> "${GITHUB_OUTPUT}"
+          fi
+      - name: Set up Terraform
+        if: steps.scope.outputs.run == 'true'
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
+        with:
+          terraform_version: 1.14.4
+      - name: Set up Node.js
+        if: steps.scope.outputs.run == 'true'
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Build deployable assets
+        if: steps.scope.outputs.run == 'true'
+        working-directory: web
+        run: npm ci && npm run build
+      - name: Check Terraform formatting
+        if: steps.scope.outputs.run == 'true'
+        run: terraform fmt -check -recursive infra
+      - name: Validate bootstrap root
+        if: steps.scope.outputs.run == 'true'
+        run: terraform -chdir=infra/bootstrap init -backend=false -input=false && terraform -chdir=infra/bootstrap validate
+      - name: Validate storage root
+        if: steps.scope.outputs.run == 'true'
+        run: terraform -chdir=infra/storage init -backend=false -input=false && terraform -chdir=infra/storage validate
+      - name: Validate production root
+        if: steps.scope.outputs.run == 'true'
+        run: terraform -chdir=infra/production init -backend=false -input=false && terraform -chdir=infra/production validate
+      - name: No infrastructure changes
+        if: steps.scope.outputs.run == 'false'
+        run: echo "Infrastructure checks are not needed for this change."
+
   python:
     name: Python
     runs-on: ubuntu-latest

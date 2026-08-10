@@ -1,0 +1,149 @@
+name: Deploy production
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: Type deploy ikimono-scan.app to continue
+        required: true
+        type: string
+      model_release_tag:
+        description: GitHub Release tag containing the licensed model bundle
+        required: true
+        type: string
+      model_filename:
+        description: ONNX filename in the model release
+        required: true
+        type: string
+      model_sha256:
+        description: Expected SHA-256 of the ONNX file
+        required: true
+        type: string
+      manifest_sha256:
+        description: Expected SHA-256 of manifest.json
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-deployment
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Terraform apply
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      AWS_ENDPOINT_URL_S3: https://${{ vars.CLOUDFLARE_ACCOUNT_ID }}.r2.cloudflarestorage.com
+      AWS_REGION: auto
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      GH_TOKEN: ${{ github.token }}
+      TF_IN_AUTOMATION: "true"
+      TF_VAR_cloudflare_account_id: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Check confirmation
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+        run: test "${CONFIRMATION}" = "deploy ikimono-scan.app"
+      - name: Check out main
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+      - name: Require a commit on main
+        run: git merge-base --is-ancestor "${GITHUB_SHA}" origin/main
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        run: python -m pip install uv==0.8.13
+      - name: Set up Node.js
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
+        with:
+          terraform_version: 1.14.4
+      - name: Set up Task
+        uses: arduino/setup-task@c0bc642852239c2689f73f4ea6459c29405f3c52 # v3.0.0
+      - name: Install dependencies
+        run: |
+          uv sync --frozen --extra dev
+          npm --prefix web ci
+      - name: Run deployment gates
+        run: task deploy:check
+      - name: Bootstrap remote state
+        run: task infra:bootstrap
+      - name: Verify R2 lock semantics
+        run: task infra:lock-test
+      - name: Back up bootstrap state
+        run: python scripts/terraform_backend.py backup bootstrap post-apply
+      - name: Download and verify model release
+        env:
+          MANIFEST_SHA256: ${{ inputs.manifest_sha256 }}
+          MODEL_FILE: ${{ inputs.model_filename }}
+          MODEL_RELEASE_TAG: ${{ inputs.model_release_tag }}
+          MODEL_SHA256: ${{ inputs.model_sha256 }}
+        run: |
+          [[ "${MODEL_FILE}" =~ ^[A-Za-z0-9._-]+\.onnx$ ]]
+          [[ "${MODEL_SHA256}" =~ ^[0-9a-f]{64}$ ]]
+          [[ "${MANIFEST_SHA256}" =~ ^[0-9a-f]{64}$ ]]
+          model_dir="${RUNNER_TEMP}/model-release"
+          mkdir -p "${model_dir}"
+          gh release download "${MODEL_RELEASE_TAG}" \
+            --pattern manifest.json \
+            --pattern "${MODEL_FILE}" \
+            --dir "${model_dir}"
+          echo "${MODEL_SHA256}  ${model_dir}/${MODEL_FILE}" | sha256sum --check
+          echo "${MANIFEST_SHA256}  ${model_dir}/manifest.json" | sha256sum --check
+          python scripts/verify_model_release.py \
+            "${model_dir}/manifest.json" "${model_dir}/${MODEL_FILE}"
+      - name: Create storage plan
+        run: |
+          terraform -chdir=infra/storage init -input=false
+          terraform -chdir=infra/storage plan -input=false -lock-timeout=5m -out=storage.tfplan
+      - name: Back up storage state before apply
+        run: python scripts/terraform_backend.py backup storage pre-apply
+      - name: Apply saved storage plan
+        run: terraform -chdir=infra/storage apply -input=false storage.tfplan
+      - name: Back up storage state after apply
+        run: python scripts/terraform_backend.py backup storage post-apply
+      - name: Publish verified model artifacts
+        env:
+          MODEL_FILE: ${{ inputs.model_filename }}
+        run: |
+          model_dir="${RUNNER_TEMP}/model-release"
+          object_api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/r2/buckets/ikimono-scan-models/objects"
+          curl --fail --silent --show-error --request PUT \
+            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            --header "Content-Type: application/octet-stream" \
+            --header "Cache-Control: public, max-age=31536000, immutable" \
+            --data-binary "@${model_dir}/${MODEL_FILE}" \
+            "${object_api}/${MODEL_FILE}"
+          curl --fail --silent --show-error --request PUT \
+            --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            --header "Content-Type: application/json" \
+            --header "Cache-Control: public, max-age=300" \
+            --data-binary "@${model_dir}/manifest.json" \
+            "${object_api}/manifest.json"
+      - name: Create production plan
+        run: |
+          terraform -chdir=infra/production init -input=false
+          terraform -chdir=infra/production plan -input=false -lock-timeout=5m -out=production.tfplan
+      - name: Back up state before apply
+        run: python scripts/terraform_backend.py backup production pre-apply
+      - name: Apply saved production plan
+        run: terraform -chdir=infra/production apply -input=false production.tfplan
+      - name: Back up state after apply
+        run: python scripts/terraform_backend.py backup production post-apply
+      - name: Smoke test
+        run: task deploy:smoke

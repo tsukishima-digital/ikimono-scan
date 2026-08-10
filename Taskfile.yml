@@ -57,6 +57,76 @@ tasks:
     cmds:
       - uv run ruff format --check .
 
+  infra:format:
+    desc: Format Terraform configuration
+    cmds:
+      - terraform fmt -recursive infra
+
+  infra:validate:
+    desc: Validate all Terraform roots without contacting remote state
+    deps: [ui:build, infra:validate:config]
+
+  infra:validate:config:
+    internal: true
+    cmds:
+      - terraform fmt -check -recursive infra
+      - terraform -chdir=infra/bootstrap init -backend=false -input=false
+      - terraform -chdir=infra/bootstrap validate
+      - terraform -chdir=infra/storage init -backend=false -input=false
+      - terraform -chdir=infra/storage validate
+      - terraform -chdir=infra/production init -backend=false -input=false
+      - terraform -chdir=infra/production validate
+
+  infra:bootstrap:plan:
+    desc: Preview creation of the Terraform state bucket with a temporary local backend
+    cmds:
+      - python scripts/terraform_backend.py bootstrap-plan
+
+  infra:bootstrap:
+    desc: Create the state bucket and immediately migrate its state to R2
+    cmds:
+      - python scripts/terraform_backend.py bootstrap
+
+  infra:init:
+    desc: Initialize an R2-backed Terraform root
+    vars:
+      ROOT: '{{.ROOT | default "production"}}'
+    cmds:
+      - terraform -chdir=infra/{{.ROOT}} init -input=false
+
+  infra:plan:
+    desc: Create a Terraform plan; pass ROOT and PLAN_FILE to select its destination
+    deps: [ui:build]
+    vars:
+      ROOT: '{{.ROOT | default "production"}}'
+      PLAN_FILE: '{{.PLAN_FILE | default "deployment.tfplan"}}'
+    cmds:
+      - terraform -chdir=infra/{{.ROOT}} init -input=false
+      - terraform -chdir=infra/{{.ROOT}} plan -input=false -lock-timeout=5m -out={{.PLAN_FILE}}
+
+  infra:lock-test:
+    desc: Verify that R2 rejects a duplicate conditional lock write
+    cmds:
+      - python scripts/terraform_backend.py lock-test
+
+  infra:backup:
+    desc: Save a content-addressed state snapshot; LABEL must be pre-apply or post-apply
+    vars:
+      ROOT: '{{.ROOT | default "production"}}'
+      LABEL: '{{.LABEL | default "pre-apply"}}'
+    cmds:
+      - python scripts/terraform_backend.py backup {{.ROOT}} {{.LABEL}}
+
+  deploy:check:
+    desc: Run every local gate required before production deployment
+    deps: [release:check, infra:validate:config]
+
+  deploy:smoke:
+    desc: Check the deployed application and model manifest endpoints
+    cmds:
+      - curl --fail --silent --show-error --retry 5 --retry-all-errors https://ikimono-scan.app/ >/dev/null
+      - curl --fail --silent --show-error --retry 5 --retry-all-errors https://ikimono-scan.app/models/manifest.json >/dev/null
+
   secrets:
     desc: Scan tracked files for secrets
     cmds:
@@ -67,15 +137,11 @@ tasks:
     cmds:
       - |
         scopes="$(python scripts/changed_scope.py --working-tree)"
-        if echo "$scopes" | grep -qx web && echo "$scopes" | grep -qx python; then
-          task --parallel ui python
-        elif echo "$scopes" | grep -qx web; then
-          task ui
-        elif echo "$scopes" | grep -qx python; then
-          task python
-        else
-          echo "No Web or Python checks are needed for the current changes."
-        fi
+        tasks=""
+        echo "$scopes" | grep -qx web && tasks="$tasks ui"
+        echo "$scopes" | grep -qx python && tasks="$tasks python"
+        echo "$scopes" | grep -qx infra && tasks="$tasks infra:validate"
+        if [ -n "$tasks" ]; then task --parallel $tasks; else echo "No executable checks are needed."; fi
 
   release:check:
     desc: Run build, Python, and secret checks for release-sensitive changes

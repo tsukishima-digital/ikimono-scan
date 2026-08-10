@@ -3,4 +3,8 @@ resource "cloudflare_r2_bucket" "models" {
   name          = var.model_bucket_name
   location      = "apac"
   storage_class = "Standard"
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
