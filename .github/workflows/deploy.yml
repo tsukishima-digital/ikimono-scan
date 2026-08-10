@@ -53,7 +53,7 @@ jobs:
           cache: npm
           cache-dependency-path: web/package-lock.json
       - name: Install deployment tools
-        run: scripts/install_ci_tools.sh terraform task
+        run: scripts/install_ci_tools.sh terraform task gitleaks
       - name: Install dependencies
         run: |
           uv sync --frozen --extra dev
