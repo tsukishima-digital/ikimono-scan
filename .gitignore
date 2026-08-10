@@ -25,6 +25,7 @@ ml/experiments/*/reports/
 node_modules/
 dist/
 .wrangler/
+*.tsbuildinfo
 
 # Local configuration and secrets
 .env
@@ -32,3 +33,13 @@ dist/
 !.env.example
 .dev.vars
 .dev.vars.*
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json

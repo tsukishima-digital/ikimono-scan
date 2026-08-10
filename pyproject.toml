@@ -28,6 +28,7 @@ ikimono-scan-ml-evaluate = "ikimono_scan_ml.training:evaluate_cli"
 
 [project.optional-dependencies]
 dev = [
+  "pre-commit>=4.5,<5",
   "pytest>=8.2",
   "ruff>=0.5",
 ]

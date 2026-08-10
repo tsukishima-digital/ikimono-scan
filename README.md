@@ -4,7 +4,7 @@
 
 最初のリリース対象は日本で観察される甲虫です。クビアカツヤカミキリ（*Aromia bungii*）を重点対象にし、対象外の生き物や不鮮明な画像については確実な判定を保証しません。対応範囲はリリース後に段階的に広げます。
 
-現在は、既存の甲虫分類実験から再利用できる学習・評価コードを公開しています。Webアプリとブラウザ内推論は準備中です。
+現在は、既存の甲虫分類実験から再利用できる学習・評価コードと、ブラウザ内推論を行うWebアプリの土台を公開しています。判定モデルはライセンスと由来を確認したリリース成果物として別途配信します。
 
 ## ライセンス
 
@@ -22,3 +22,21 @@ source .venv/bin/activate
 pip install -e '.[dev]'
 pytest
 ```
+
+WebアプリはReact、ONNX Runtime Web、Cloudflare Workers Static Assetsで構成します。WASMを互換性の基準とし、利用可能なブラウザではWebGPUを優先します。
+
+```console
+cd web
+npm ci
+npm test
+npm run dev
+```
+
+コミット前チェックにはgitleaks、uv、pre-commitが必要です。
+
+```console
+pre-commit install
+pre-commit run --all-files
+```
+
+Cloudflareのリソース定義は `infra/` に置きます。デプロイはまだ行いません。
