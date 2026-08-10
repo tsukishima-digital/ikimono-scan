@@ -22,6 +22,8 @@ ml/experiments/*/reports/
 *.safetensors
 web/public/models/*
 !web/public/models/README.md
+!web/public/models/manifest.json
+artifacts/
 
 # JavaScript
 node_modules/

@@ -57,6 +57,123 @@ tasks:
     cmds:
       - uv run ruff format --check .
 
+  infra:format:
+    desc: Format Terraform configuration
+    cmds:
+      - terraform fmt -recursive infra
+
+  infra:validate:
+    desc: Validate all Terraform roots without contacting remote state
+    deps: [ui:build, infra:validate:config]
+
+  infra:validate:config:
+    internal: true
+    cmds:
+      - terraform fmt -check -recursive infra
+      - terraform -chdir=infra/bootstrap init -backend=false -input=false
+      - terraform -chdir=infra/bootstrap validate
+      - terraform -chdir=infra/storage init -backend=false -input=false
+      - terraform -chdir=infra/storage validate
+      - terraform -chdir=infra/production init -backend=false -input=false
+      - terraform -chdir=infra/production validate
+
+  infra:bootstrap:plan:
+    desc: Preview creation of the Terraform state bucket with a temporary local backend
+    cmds:
+      - python scripts/terraform_backend.py bootstrap-plan
+
+  infra:bootstrap:
+    desc: Create the state bucket and immediately migrate its state to R2
+    cmds:
+      - python scripts/terraform_backend.py bootstrap
+
+  infra:init:
+    desc: Initialize an R2-backed Terraform root
+    vars:
+      ROOT: '{{.ROOT | default "production"}}'
+    cmds:
+      - terraform -chdir=infra/{{.ROOT}} init -input=false
+
+  infra:plan:
+    desc: Create a Terraform plan; pass ROOT and PLAN_FILE to select its destination
+    deps: [ui:build]
+    vars:
+      ROOT: '{{.ROOT | default "production"}}'
+      PLAN_FILE: '{{.PLAN_FILE | default "deployment.tfplan"}}'
+    cmds:
+      - terraform -chdir=infra/{{.ROOT}} init -input=false
+      - terraform -chdir=infra/{{.ROOT}} plan -input=false -lock-timeout=5m -out={{.PLAN_FILE}}
+
+  infra:lock-test:
+    desc: Verify that R2 rejects a duplicate conditional lock write
+    cmds:
+      - python scripts/terraform_backend.py lock-test
+
+  infra:backup:
+    desc: Save a content-addressed state snapshot; LABEL must be pre-apply or post-apply
+    vars:
+      ROOT: '{{.ROOT | default "production"}}'
+      LABEL: '{{.LABEL | default "pre-apply"}}'
+    cmds:
+      - python scripts/terraform_backend.py backup {{.ROOT}} {{.LABEL}}
+
+  deploy:check:
+    desc: Run every local gate required before production deployment
+    deps: [release:check, infra:validate:config]
+
+  deploy:
+    desc: Dispatch the production deployment workflow on main
+    cmds:
+      - gh workflow run deploy.yml --ref main --field confirmation="deploy ikimono-scan.app"
+
+  deploy:smoke:
+    desc: Check the deployed application endpoint
+    cmds:
+      - curl --fail --silent --show-error --retry 12 --retry-delay 10 --retry-max-time 180 --retry-all-errors https://ikimono-scan.app/ >/dev/null
+
+  model:export:
+    desc: Export a checkpoint into a locally staged ONNX bundle
+    requires:
+      vars: [CHECKPOINT, VERSION, LICENSE, SOURCE]
+    vars:
+      OUTPUT_DIR: '{{.OUTPUT_DIR | default (printf "artifacts/models/v%s" .VERSION)}}'
+    env:
+      MODEL_CHECKPOINT: "{{.CHECKPOINT}}"
+      MODEL_LICENSE: "{{.LICENSE}}"
+      MODEL_OUTPUT_DIR: "{{.OUTPUT_DIR}}"
+      MODEL_SOURCE: "{{.SOURCE}}"
+      MODEL_VERSION: "{{.VERSION}}"
+    cmds:
+      - uv run ikimono-scan-ml-export-web --checkpoint "$MODEL_CHECKPOINT" --output-dir "$MODEL_OUTPUT_DIR" --version "$MODEL_VERSION" --license "$MODEL_LICENSE" --source "$MODEL_SOURCE"
+      - python scripts/verify_model_release.py "$MODEL_OUTPUT_DIR/manifest.json" "$MODEL_OUTPUT_DIR/beetles-v$MODEL_VERSION.onnx"
+
+  model:upload:
+    desc: Upload a verified ONNX model to R2 and stage its manifest for deployment
+    requires:
+      vars: [BUNDLE_DIR]
+    env:
+      MODEL_BUNDLE_DIR: "{{.BUNDLE_DIR}}"
+    cmds:
+      - python scripts/publish_model.py --bundle-dir "$MODEL_BUNDLE_DIR"
+
+  model:prepare-and-upload:
+    desc: Export, verify, and upload a checkpoint without deploying the app
+    requires:
+      vars: [CHECKPOINT, VERSION, LICENSE, SOURCE]
+    vars:
+      OUTPUT_DIR: '{{.OUTPUT_DIR | default (printf "artifacts/models/v%s" .VERSION)}}'
+    cmds:
+      - task: model:export
+        vars:
+          CHECKPOINT: "{{.CHECKPOINT}}"
+          VERSION: "{{.VERSION}}"
+          LICENSE: "{{.LICENSE}}"
+          SOURCE: "{{.SOURCE}}"
+          OUTPUT_DIR: "{{.OUTPUT_DIR}}"
+      - task: model:upload
+        vars:
+          BUNDLE_DIR: "{{.OUTPUT_DIR}}"
+
   secrets:
     desc: Scan tracked files for secrets
     cmds:
@@ -67,15 +184,11 @@ tasks:
     cmds:
       - |
         scopes="$(python scripts/changed_scope.py --working-tree)"
-        if echo "$scopes" | grep -qx web && echo "$scopes" | grep -qx python; then
-          task --parallel ui python
-        elif echo "$scopes" | grep -qx web; then
-          task ui
-        elif echo "$scopes" | grep -qx python; then
-          task python
-        else
-          echo "No Web or Python checks are needed for the current changes."
-        fi
+        tasks=""
+        echo "$scopes" | grep -qx web && tasks="$tasks ui"
+        echo "$scopes" | grep -qx python && tasks="$tasks python"
+        echo "$scopes" | grep -qx infra && tasks="$tasks infra:validate"
+        if [ -n "$tasks" ]; then task --parallel $tasks; else echo "No executable checks are needed."; fi
 
   release:check:
     desc: Run build, Python, and secret checks for release-sensitive changes

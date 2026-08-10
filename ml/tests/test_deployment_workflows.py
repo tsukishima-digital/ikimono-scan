@@ -1,0 +1,95 @@
+import re
+from pathlib import Path
+
+import yaml
+
+REPOSITORY_ROOT = Path(__file__).parents[2]
+WORKFLOWS = REPOSITORY_ROOT / ".github" / "workflows"
+TASKFILE = REPOSITORY_ROOT / "Taskfile.yml"
+PINNED_ACTION = re.compile(r"^[^\s@]+@[0-9a-f]{40}$")
+
+
+def _workflow(name: str) -> tuple[dict, str]:
+    source = (WORKFLOWS / name).read_text()
+    return yaml.safe_load(source), source
+
+
+def _uses_values(value: object) -> list[str]:
+    if isinstance(value, dict):
+        actions: list[str] = []
+        for key, child in value.items():
+            if key == "uses" and isinstance(child, str):
+                actions.append(child)
+            else:
+                actions.extend(_uses_values(child))
+        return actions
+    if isinstance(value, list):
+        return [item for child in value for item in _uses_values(child)]
+    return []
+
+
+def test_deployment_workflows_pin_every_third_party_action():
+    for workflow_name in ("ci.yml", "terraform-plan.yml", "deploy.yml"):
+        workflow, _ = _workflow(workflow_name)
+        for action in _uses_values(workflow):
+            assert PINNED_ACTION.fullmatch(action), f"{workflow_name}: {action}"
+
+
+def test_deployment_workflows_only_use_actions_allowed_by_repository_policy():
+    for workflow_name in ("ci.yml", "terraform-plan.yml", "deploy.yml"):
+        workflow, _ = _workflow(workflow_name)
+        for action in _uses_values(workflow):
+            assert action.startswith("actions/"), f"{workflow_name}: {action}"
+
+
+def test_plan_is_manual_read_only_and_never_applies():
+    workflow, source = _workflow("terraform-plan.yml")
+
+    assert set(workflow[True]) == {"workflow_dispatch"}
+    assert workflow["permissions"] == {"contents": "read"}
+    assert "terraform apply" not in source
+    assert "pull_request_target" not in source
+
+
+def test_deploy_is_manual_serialized_and_applies_a_saved_plan():
+    workflow, source = _workflow("deploy.yml")
+
+    assert set(workflow[True]) == {"workflow_dispatch"}
+    assert workflow["permissions"] == {"contents": "read"}
+    assert workflow["concurrency"]["cancel-in-progress"] is False
+    assert "task deploy:check" in source
+    assert re.search(r"terraform .* plan .* -out=\S+\.tfplan", source)
+    assert re.search(r"terraform .* apply .* \S+\.tfplan", source)
+    assert "merge-base --is-ancestor" in source
+    assert "terraform_backend.py backup production pre-apply" in source
+    assert "terraform_backend.py backup production post-apply" in source
+    assert "model_release_tag" not in source
+    assert "Publish verified model artifacts" not in source
+    assert "pull_request_target" not in source
+
+
+def test_task_deploy_dispatches_the_main_workflow_instead_of_applying_locally():
+    taskfile = yaml.safe_load(TASKFILE.read_text())
+    source = "\n".join(taskfile["tasks"]["deploy"]["cmds"])
+
+    assert "gh workflow run deploy.yml" in source
+    assert "--ref main" in source
+    assert "terraform apply" not in source
+
+
+def test_model_tasks_export_locally_and_upload_without_dispatching_actions():
+    taskfile = yaml.safe_load(TASKFILE.read_text())
+    export_source = "\n".join(taskfile["tasks"]["model:export"]["cmds"])
+    upload_source = "\n".join(taskfile["tasks"]["model:upload"]["cmds"])
+
+    assert "ikimono-scan-ml-export-web" in export_source
+    assert "publish_model.py" in upload_source
+    assert "gh workflow run" not in upload_source
+
+
+def test_worker_serves_tracked_manifest_and_r2_model_objects():
+    source = (REPOSITORY_ROOT / "infra/production/worker/index.js").read_text()
+
+    manifest_branch = source.index("url.pathname === MODEL_MANIFEST")
+    r2_lookup = source.index("env.MODELS.get(key)")
+    assert "env.ASSETS.fetch(request)" in source[manifest_branch:r2_lookup]

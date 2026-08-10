@@ -1,10 +1,17 @@
 # Infrastructure
 
-Cloudflare resources are managed with Terraform. Authentication is supplied through `CLOUDFLARE_API_TOKEN`; credentials and local state must not be committed.
+Cloudflare上の本番リソースはTerraformで管理します。`bootstrap`はstate専用R2 bucket、`storage`はモデル用R2 bucket、`production`はWorkerとCustom Domainを所有します。state bucketとモデルbucketは資格情報も用途も分離してください。
 
-The current scaffold creates the private R2 bucket for versioned model artifacts. The Worker, custom domain, and the read-only R2 binding will be added when the first licensed model release is ready, so a placeholder deployment cannot accidentally publish a model.
+backendはR2のS3互換APIを使います。R2にBucket Versioningがないため、applyの前後にstateを別keyへ保存します。backend credentialsは環境変数だけから読み込み、Terraform設定やplanへ含めません。
+
+初回だけstate bucketがまだ存在しないため、`task infra:bootstrap`が同一のTerraform設定を一時的なlocal backendでapplyし、そのstateを直ちにR2へ移します。それ以降はR2 backendだけを使用します。このコマンドもCloudflareを変更するため、通常の検証では実行しません。
+
+必要な環境変数は`.env.example`に記載しています。通常の確認には以下を使います。
 
 ```console
-terraform init
-terraform plan -var='cloudflare_account_id=...'
+task infra:validate
+task infra:bootstrap:plan
+task infra:plan
 ```
+
+`task deploy`はmain上の手動GitHub Actionsを起動します。ローカルから本番applyは実行せず、workflowだけが保存済みplanを使います。
