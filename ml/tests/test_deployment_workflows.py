@@ -66,6 +66,17 @@ def test_deploy_is_manual_serialized_and_applies_a_saved_plan():
     assert "model_release_tag" not in source
     assert "Publish verified model artifacts" not in source
     assert "pull_request_target" not in source
+    assert "scripts/install_ci_tools.sh terraform task gitleaks" in source
+
+
+def test_ci_and_deploy_share_the_pinned_gitleaks_installer():
+    _, ci_source = _workflow("ci.yml")
+    installer = (REPOSITORY_ROOT / "scripts" / "install_ci_tools.sh").read_text()
+
+    assert "scripts/install_ci_tools.sh gitleaks" in ci_source
+    assert "gitleaks_version=" in installer
+    assert "gitleaks_sha256=" in installer
+    assert "gitleaks) install_gitleaks" in installer
 
 
 def test_task_deploy_dispatches_the_main_workflow_instead_of_applying_locally():
