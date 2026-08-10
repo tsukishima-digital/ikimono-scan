@@ -257,9 +257,6 @@ export function ScannerPage() {
               >
                 <span className="size-[60px] rounded-full bg-white max-[720px]:size-[54px]" />
               </button>
-              <span className="justify-self-end rounded-full border border-white/12 bg-[rgb(4_11_7/44%)] px-[13px] py-[9px] text-[11px] font-bold text-white/84 backdrop-blur-[14px] max-[720px]:col-start-3 max-[720px]:max-w-[86px] max-[720px]:px-[9px] max-[720px]:py-[7px] max-[720px]:text-center [@media(prefers-contrast:more)]:border-2 [@media(prefers-contrast:more)]:border-current [@media(prefers-reduced-transparency:reduce)]:backdrop-blur-none">
-                写真は端末内で処理
-              </span>
             </div>
           )}
         </div>
