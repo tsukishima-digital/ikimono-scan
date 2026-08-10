@@ -10,6 +10,8 @@ import torch
 
 from ikimono_scan_ml.training import _build_model
 
+# Business: Suppress low-confidence closed-set labels until negative-image evaluation
+# provides a calibrated rejection policy.
 DEFAULT_MINIMUM_CONFIDENCE = 0.6
 DEFAULT_TAXONOMY_CATALOG_PATH = Path(__file__).resolve().parents[1] / "taxonomy" / "ja.json"
 

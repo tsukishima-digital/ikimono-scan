@@ -1,4 +1,5 @@
 import { SiteHeader } from "../components/SiteHeader";
+import externalLinks from "../content/external-links.json";
 
 export function AboutPage() {
   return (
@@ -10,7 +11,9 @@ export function AboutPage() {
             ABOUT
           </p>
           <h1 className="m-0 whitespace-nowrap font-mincho text-[clamp(44px,6vw,70px)] leading-[1.07] font-[550] tracking-[-0.06em] max-[720px]:text-[clamp(32px,10vw,40px)]">
-            身近な生き物を、<br />その場で調べる。
+            身近な生き物を、
+            <br />
+            その場で調べる。
           </h1>
           <p className="mb-1.5 text-[15px] leading-[1.9] text-muted">
             生き物スキャンは、撮影した写真を端末内で分類する
@@ -68,7 +71,10 @@ export function AboutPage() {
             02
           </p>
           <div>
-            <h2 className="m-0 font-mincho text-[clamp(30px,4vw,48px)] font-semibold tracking-[-0.04em]" id="privacy-title">
+            <h2
+              className="m-0 font-mincho text-[clamp(30px,4vw,48px)] font-semibold tracking-[-0.04em]"
+              id="privacy-title"
+            >
               写真は端末の外へ送りません
             </h2>
             <p className="mt-5 max-w-[680px] text-base leading-[1.9] text-muted">
@@ -86,7 +92,10 @@ export function AboutPage() {
             03
           </p>
           <div>
-            <h2 className="m-0 font-mincho text-[clamp(30px,4vw,48px)] font-semibold tracking-[-0.04em]" id="open-title">
+            <h2
+              className="m-0 font-mincho text-[clamp(30px,4vw,48px)] font-semibold tracking-[-0.04em]"
+              id="open-title"
+            >
               非営利・オープンソース
             </h2>
             <p className="mt-5 max-w-[680px] text-base leading-[1.9] text-muted">
@@ -94,7 +103,7 @@ export function AboutPage() {
             </p>
             <a
               className="mt-6 inline-block text-[13px] font-extrabold text-brand underline-offset-[5px] hover:underline focus-visible:underline"
-              href="https://github.com/tsukishima-digital/ikimono-scan"
+              href={externalLinks.githubRepository}
             >
               GitHubでソースを見る <span aria-hidden="true">↗</span>
             </a>

@@ -110,6 +110,9 @@ describe("App", () => {
     await waitFor(() => expect(mockedCreateClassifier).toHaveBeenCalledOnce());
     expect(await screen.findByText("判定結果")).toBeInTheDocument();
     expect(screen.getByText("クビアカツヤカミキリ")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "選び直す" }),
+    ).toBeInTheDocument();
   });
 
   it("rejects a non-image file", async () => {

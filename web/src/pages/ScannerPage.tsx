@@ -1,13 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 
 import { SiteHeader } from "../components/SiteHeader";
+import externalLinks from "../content/external-links.json";
 import { createClassifier } from "../inference/classifier";
 import type { ClassificationResult, Classifier } from "../inference/types";
+import {
+  formatConfidencePercentage,
+  visibleAlternativePredictions,
+} from "../results/presentation";
 import { captureVideoFrame } from "../camera/captureVideoFrame";
 
 const TARGET_SCIENTIFIC_NAME = "Aromia bungii";
-const ENVIRONMENT_MINISTRY_URL =
-  "https://www.env.go.jp/nature/intro/4document/species/kubiaka.html";
 
 type SourceMode = "camera" | "library";
 type CameraStatus = "requesting" | "active" | "denied" | "unavailable";
@@ -265,6 +268,7 @@ export function ScannerPage() {
             phase={phase}
             result={result}
             error={error}
+            resetLabel={sourceMode === "camera" ? "撮り直す" : "選び直す"}
             onReset={resetScanner}
           />
         )}
@@ -277,14 +281,22 @@ function ResultSheet({
   phase,
   result,
   error,
+  resetLabel,
   onReset,
 }: {
   phase: Phase;
   result?: ClassificationResult;
   error?: string;
+  resetLabel: "撮り直す" | "選び直す";
   onReset: () => void;
 }) {
   const topPrediction = result?.predictions[0];
+  const topPercentage = topPrediction
+    ? formatConfidencePercentage(topPrediction.confidence)
+    : undefined;
+  const alternativePredictions = result
+    ? visibleAlternativePredictions(result.predictions)
+    : [];
   const isTarget =
     topPrediction?.classInfo.scientificName === TARGET_SCIENTIFIC_NAME;
 
@@ -293,10 +305,6 @@ function ResultSheet({
       className="animate-materialize absolute right-[max(24px,env(safe-area-inset-right))] bottom-[max(24px,env(safe-area-inset-bottom))] z-14 max-h-[calc(100dvh-130px)] w-[min(480px,calc(100%_-_48px))] overflow-auto rounded-[28px] border border-white/64 bg-card/94 text-ink shadow-[0_28px_90px_rgb(0_0_0/34%)] backdrop-blur-[30px] backdrop-saturate-150 max-[720px]:right-0 max-[720px]:bottom-0 max-[720px]:left-0 max-[720px]:max-h-[68dvh] max-[720px]:w-full max-[720px]:rounded-t-[28px] max-[720px]:rounded-b-none max-[720px]:border-x-0 max-[720px]:border-b-0 max-[720px]:pb-[env(safe-area-inset-bottom)] [@media(prefers-contrast:more)]:border-2 [@media(prefers-contrast:more)]:border-current [@media(prefers-reduced-transparency:reduce)]:bg-card [@media(prefers-reduced-transparency:reduce)]:backdrop-blur-none"
       aria-live="polite"
     >
-      <div
-        className="mx-auto mt-[9px] hidden h-[5px] w-[38px] rounded-full bg-[#c5cbc2] max-[720px]:block"
-        aria-hidden="true"
-      />
       {(phase === "loading-model" || phase === "classifying") && (
         <div className="flex min-h-[210px] items-center gap-[18px] p-[34px] max-[720px]:p-6">
           <span
@@ -331,7 +339,7 @@ function ResultSheet({
             type="button"
             onClick={onReset}
           >
-            撮り直す
+            {resetLabel}
           </button>
         </div>
       )}
@@ -355,7 +363,7 @@ function ResultSheet({
                   type="button"
                   onClick={onReset}
                 >
-                  撮り直す
+                  {resetLabel}
                 </button>
               </div>
             </>
@@ -376,10 +384,12 @@ function ResultSheet({
                     {topPrediction.classInfo.scientificName}
                   </p>
                 </div>
-                <strong className="font-serif text-[44px] leading-none font-medium text-brand-dark max-[720px]:text-[38px]">
-                  {Math.round(topPrediction.confidence * 100)}
-                  <small className="text-lg">%</small>
-                </strong>
+                {topPercentage && (
+                  <strong className="font-serif text-[44px] leading-none font-medium text-brand-dark max-[720px]:text-[38px]">
+                    {topPercentage}
+                    <small className="text-lg">%</small>
+                  </strong>
+                )}
               </div>
 
               {isTarget && (
@@ -393,7 +403,7 @@ function ResultSheet({
                   </p>
                   <a
                     className="text-[13px] font-extrabold text-danger"
-                    href={ENVIRONMENT_MINISTRY_URL}
+                    href={externalLinks.environmentMinistryAromia}
                     target="_blank"
                     rel="noreferrer"
                   >
@@ -402,13 +412,13 @@ function ResultSheet({
                 </div>
               )}
 
-              {result.predictions.length > 1 && (
+              {alternativePredictions.length > 0 && (
                 <details className="mt-5 border-t border-line">
                   <summary className="cursor-pointer px-0 pt-[17px] pb-1 text-[13px] font-extrabold">
                     ほかの候補
                   </summary>
                   <ol className="mt-[9px] list-none p-0">
-                    {result.predictions.slice(1).map((prediction) => (
+                    {alternativePredictions.map((prediction) => (
                       <li
                         className="flex justify-between gap-[18px] py-[7px] text-[13px] text-muted"
                         key={prediction.classInfo.id}
@@ -417,25 +427,23 @@ function ResultSheet({
                           {prediction.classInfo.commonName ??
                             prediction.classInfo.scientificName}
                         </span>
-                        <span>{Math.round(prediction.confidence * 100)}%</span>
+                        <span>
+                          {formatConfidencePercentage(prediction.confidence)}%
+                        </span>
                       </li>
                     ))}
                   </ol>
                 </details>
               )}
 
-              <div className="mt-6 flex items-center justify-between gap-4">
+              <div className="mt-6">
                 <button
                   className="cursor-pointer rounded-full border-0 bg-brand-dark px-[18px] py-[11px] font-extrabold text-white active:scale-[0.97] focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-lime"
                   type="button"
                   onClick={onReset}
                 >
-                  撮り直す
+                  {resetLabel}
                 </button>
-                <span className="text-[10px] text-muted">
-                  {result.executionProvider === "webgpu" ? "WebGPU" : "WASM"}
-                  で端末内判定
-                </span>
               </div>
             </>
           )}

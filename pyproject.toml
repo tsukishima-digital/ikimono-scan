@@ -41,7 +41,7 @@ include = ["ikimono_scan_ml*"]
 
 [tool.pytest.ini_options]
 testpaths = ["ml/tests"]
-pythonpath = ["ml"]
+pythonpath = [".", "ml"]
 
 [tool.ruff]
 line-length = 100
