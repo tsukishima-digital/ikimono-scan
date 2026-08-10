@@ -124,8 +124,8 @@ tasks:
   deploy:smoke:
     desc: Check the deployed application and model manifest endpoints
     cmds:
-      - curl --fail --silent --show-error --retry 5 --retry-all-errors https://ikimono-scan.app/ >/dev/null
-      - curl --fail --silent --show-error --retry 5 --retry-all-errors https://ikimono-scan.app/models/manifest.json >/dev/null
+      - curl --fail --silent --show-error --retry 12 --retry-delay 10 --retry-max-time 180 --retry-all-errors https://ikimono-scan.app/ >/dev/null
+      - curl --fail --silent --show-error --retry 12 --retry-delay 10 --retry-max-time 180 --retry-all-errors https://ikimono-scan.app/models/manifest.json >/dev/null
 
   secrets:
     desc: Scan tracked files for secrets

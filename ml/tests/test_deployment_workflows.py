@@ -55,4 +55,7 @@ def test_deploy_is_manual_serialized_and_applies_a_saved_plan():
     assert "merge-base --is-ancestor" in source
     assert "terraform_backend.py backup production pre-apply" in source
     assert "terraform_backend.py backup production post-apply" in source
+    assert source.index("Download and verify model release") < source.index(
+        "Bootstrap remote state"
+    )
     assert "pull_request_target" not in source

@@ -81,12 +81,6 @@ jobs:
           npm --prefix web ci
       - name: Run deployment gates
         run: task deploy:check
-      - name: Bootstrap remote state
-        run: task infra:bootstrap
-      - name: Verify R2 lock semantics
-        run: task infra:lock-test
-      - name: Back up bootstrap state
-        run: python scripts/terraform_backend.py backup bootstrap post-apply
       - name: Download and verify model release
         env:
           MANIFEST_SHA256: ${{ inputs.manifest_sha256 }}
@@ -107,6 +101,12 @@ jobs:
           echo "${MANIFEST_SHA256}  ${model_dir}/manifest.json" | sha256sum --check
           python scripts/verify_model_release.py \
             "${model_dir}/manifest.json" "${model_dir}/${MODEL_FILE}"
+      - name: Bootstrap remote state
+        run: task infra:bootstrap
+      - name: Verify R2 lock semantics
+        run: task infra:lock-test
+      - name: Back up bootstrap state
+        run: python scripts/terraform_backend.py backup bootstrap post-apply
       - name: Create storage plan
         run: |
           terraform -chdir=infra/storage init -input=false
