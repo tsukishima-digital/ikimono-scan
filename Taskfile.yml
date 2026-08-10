@@ -177,7 +177,7 @@ tasks:
   secrets:
     desc: Scan tracked files for secrets
     cmds:
-      - pre-commit run gitleaks --all-files
+      - uv run pre-commit run gitleaks --all-files
 
   check:
     desc: Run only checks relevant to current working-tree changes

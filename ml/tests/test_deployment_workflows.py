@@ -77,6 +77,13 @@ def test_task_deploy_dispatches_the_main_workflow_instead_of_applying_locally():
     assert "terraform apply" not in source
 
 
+def test_secret_scan_runs_the_synced_pre_commit_environment():
+    taskfile = yaml.safe_load(TASKFILE.read_text())
+    source = "\n".join(taskfile["tasks"]["secrets"]["cmds"])
+
+    assert "uv run pre-commit run gitleaks --all-files" in source
+
+
 def test_model_tasks_export_locally_and_upload_without_dispatching_actions():
     taskfile = yaml.safe_load(TASKFILE.read_text())
     export_source = "\n".join(taskfile["tasks"]["model:export"]["cmds"])
