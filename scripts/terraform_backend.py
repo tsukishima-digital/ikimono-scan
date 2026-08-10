@@ -173,43 +173,48 @@ def lock_test() -> None:
     environment = _environment()
     nonce = datetime.now(UTC).strftime("%Y%m%dT%H%M%S%fZ")
     key = f"lock-tests/{nonce}.tflock"
-    command = [
-        "aws",
-        "s3api",
-        "put-object",
-        "--bucket",
-        STATE_BUCKET,
-        "--key",
-        key,
-        "--body",
-        "/dev/null",
-        "--if-none-match",
-        "*",
-    ]
-    _run(command, environment=environment)
-    try:
-        collision = subprocess.run(
-            command,
-            check=False,
-            env=environment,
-            text=True,
-            capture_output=True,
-        )
-        if collision.returncode == 0:
-            raise SystemExit("R2 accepted a duplicate conditional write; state locking is unsafe")
-    finally:
-        _run(
-            [
-                "aws",
-                "s3api",
-                "delete-object",
-                "--bucket",
-                STATE_BUCKET,
-                "--key",
-                key,
-            ],
-            environment=environment,
-        )
+    with tempfile.TemporaryDirectory(prefix="ikimono-scan-lock-test-") as temporary:
+        body_path = Path(temporary) / "empty-lock"
+        body_path.touch()
+        command = [
+            "aws",
+            "s3api",
+            "put-object",
+            "--bucket",
+            STATE_BUCKET,
+            "--key",
+            key,
+            "--body",
+            str(body_path),
+            "--if-none-match",
+            "*",
+        ]
+        _run(command, environment=environment)
+        try:
+            collision = subprocess.run(
+                command,
+                check=False,
+                env=environment,
+                text=True,
+                capture_output=True,
+            )
+            if collision.returncode == 0:
+                raise SystemExit(
+                    "R2 accepted a duplicate conditional write; state locking is unsafe"
+                )
+        finally:
+            _run(
+                [
+                    "aws",
+                    "s3api",
+                    "delete-object",
+                    "--bucket",
+                    STATE_BUCKET,
+                    "--key",
+                    key,
+                ],
+                environment=environment,
+            )
 
 
 def main() -> int:
