@@ -18,6 +18,13 @@ def main() -> None:
     eval_parser.add_argument("--checkpoint", required=True)
     eval_parser.add_argument("--data-dir", required=True)
 
+    export_parser = subparsers.add_parser("export-web")
+    export_parser.add_argument("--checkpoint", required=True)
+    export_parser.add_argument("--output-dir", required=True)
+    export_parser.add_argument("--version", required=True)
+    export_parser.add_argument("--license", required=True, dest="license_name")
+    export_parser.add_argument("--source", required=True)
+
     args = parser.parse_args()
     if args.command == "fetch-inat":
         from ikimono_scan_ml.inat import fetch_dataset
@@ -33,6 +40,17 @@ def main() -> None:
 
         metrics = evaluate_checkpoint(args.checkpoint, args.data_dir)
         print(json.dumps(metrics, ensure_ascii=False, indent=2))
+    elif args.command == "export-web":
+        from ikimono_scan_ml.web_export import export_checkpoint
+
+        artifacts = export_checkpoint(
+            checkpoint_path=args.checkpoint,
+            output_dir=args.output_dir,
+            version=args.version,
+            license_name=args.license_name,
+            source=args.source,
+        )
+        print(json.dumps({key: str(value) for key, value in artifacts.__dict__.items()}, indent=2))
 
 
 if __name__ == "__main__":

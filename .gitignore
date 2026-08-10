@@ -20,6 +20,8 @@ ml/experiments/*/reports/
 *.pt
 *.pth
 *.safetensors
+web/public/models/*
+!web/public/models/README.md
 
 # JavaScript
 node_modules/

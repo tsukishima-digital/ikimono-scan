@@ -81,7 +81,7 @@ describe("App", () => {
     expect(
       await screen.findByText("カメラを利用できないため、写真から選んでください。"),
     ).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "写真から" })).toHaveAttribute(
+    expect(screen.getByRole("tab", { name: "写真" })).toHaveAttribute(
       "aria-selected",
       "true",
     );

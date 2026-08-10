@@ -180,7 +180,7 @@ export function ScannerPage() {
             aria-selected={sourceMode === "library"}
             onClick={() => switchSource("library")}
           >
-            写真から
+            写真
           </button>
         </div>
 
