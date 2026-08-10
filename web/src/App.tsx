@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { AboutPage } from "./pages/AboutPage";
 import { ScannerPage } from "./pages/ScannerPage";
 import { UpdatesPage } from "./pages/UpdatesPage";
-import "./App.css";
 
 function usePathname() {
   const [pathname, setPathname] = useState(window.location.pathname);
