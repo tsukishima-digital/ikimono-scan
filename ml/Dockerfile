@@ -1,0 +1,15 @@
+FROM pytorch/pytorch:2.5.1-cuda12.4-cudnn9-runtime
+COPY --from=ghcr.io/astral-sh/uv:0.5.31 /uv /uvx /usr/local/bin/
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    UV_NO_CACHE=1
+
+WORKDIR /workspace
+
+COPY pyproject.toml ./
+COPY ml ./ml
+
+RUN uv pip install --system -e ".[dev]"
+
+CMD ["python", "-m", "ikimono_scan_ml.cli", "--help"]

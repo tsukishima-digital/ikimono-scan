@@ -1,0 +1,41 @@
+source:
+  name: inaturalist
+  phase: legacy_local_noncommercial
+  api_base_url: https://api.inaturalist.org/v1
+
+place:
+  name: Japan
+  id: 6737
+
+taxa:
+  target:
+    - scientific_name: Aromia bungii
+  hard_negatives:
+    root_scientific_name: Cerambycidae
+    strategy: all_observed_species
+  common_negatives:
+    root_scientific_name: Coleoptera
+    strategy: top_observed_species
+    max_taxa: 300
+
+filters:
+  quality_grade: research
+  photos: true
+  rank: species
+  species_order: desc
+  species_order_by: observations_count
+  observation_order: desc
+  observation_order_by: observed_on
+
+limits:
+  target_images_per_taxon: 120
+  hard_negative_images_per_taxon: 80
+  common_negative_images_per_taxon: 40
+  min_images_per_taxon: 20
+  per_page: 100
+  download_workers: 24
+  request_sleep_seconds: 0.2
+
+paths:
+  output_dir: ml/data/beetles/raw/inaturalist
+  cache_dir: ml/experiments/beetle_classifier/.cache

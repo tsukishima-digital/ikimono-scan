@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ikimono-scan-ml"
+version = "0.1.0"
+description = "ML tooling for the Ikimono Scan beetle classifier."
+requires-python = ">=3.11,<3.13"
+dependencies = [
+  "mlflow>=3.1,<4",
+  "numpy>=1.26",
+  "pandas>=2.2",
+  "Pillow>=10.3",
+  "PyYAML>=6.0",
+  "requests>=2.32",
+  "scikit-learn>=1.5,<1.6",
+  "torch>=2.5,<2.6",
+  "torchvision>=0.20,<0.21",
+  "tqdm>=4.66",
+]
+
+[project.scripts]
+ikimono-scan-ml = "ikimono_scan_ml.cli:main"
+ikimono-scan-ml-fetch-inat = "ikimono_scan_ml.inat:fetch_dataset_cli"
+ikimono-scan-ml-train = "ikimono_scan_ml.training:train_cli"
+ikimono-scan-ml-evaluate = "ikimono_scan_ml.training:evaluate_cli"
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.2",
+  "ruff>=0.5",
+]
+
+[tool.setuptools.packages.find]
+where = ["ml"]
+include = ["ikimono_scan_ml*"]
+
+[tool.pytest.ini_options]
+testpaths = ["ml/tests"]
+pythonpath = ["ml"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
