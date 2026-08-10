@@ -14,7 +14,12 @@ const TARGET_SCIENTIFIC_NAME = "Aromia bungii";
 
 type SourceMode = "camera" | "library";
 type CameraStatus = "requesting" | "active" | "denied" | "unavailable";
-type Phase = "idle" | "loading-model" | "classifying" | "complete" | "error";
+export type ResultPhase =
+  | "idle"
+  | "loading-model"
+  | "classifying"
+  | "complete"
+  | "error";
 
 const CAMERA_FALLBACK_MESSAGE =
   "カメラを利用できないため、写真から選んでください。";
@@ -35,7 +40,7 @@ export function ScannerPage() {
     cameraSupported ? undefined : CAMERA_FALLBACK_MESSAGE,
   );
   const [previewUrl, setPreviewUrl] = useState<string>();
-  const [phase, setPhase] = useState<Phase>("idle");
+  const [phase, setPhase] = useState<ResultPhase>("idle");
   const [result, setResult] = useState<ClassificationResult>();
   const [error, setError] = useState<string>();
 
@@ -277,14 +282,14 @@ export function ScannerPage() {
   );
 }
 
-function ResultSheet({
+export function ResultSheet({
   phase,
   result,
   error,
   resetLabel,
   onReset,
 }: {
-  phase: Phase;
+  phase: ResultPhase;
   result?: ClassificationResult;
   error?: string;
   resetLabel: "撮り直す" | "選び直す";

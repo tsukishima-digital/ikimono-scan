@@ -220,4 +220,30 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("v0.1.0")).toBeInTheDocument();
   });
+
+  it("renders a development result fixture without camera or model access", () => {
+    const getUserMedia = vi.fn();
+    installCamera(getUserMedia);
+    window.history.replaceState({}, "", "/__dev/result?case=target");
+
+    render(<App />);
+
+    expect(
+      screen.getByRole("heading", { name: "クビアカツヤカミキリ" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("95.4")).toBeInTheDocument();
+    expect(getUserMedia).not.toHaveBeenCalled();
+    expect(mockedCreateClassifier).not.toHaveBeenCalled();
+  });
+
+  it("renders the uncertain result fixture", () => {
+    installCamera(vi.fn());
+    window.history.replaceState({}, "", "/__dev/result?case=uncertain");
+
+    render(<App />);
+
+    expect(
+      screen.getByRole("heading", { name: "甲虫を判定できませんでした" }),
+    ).toBeInTheDocument();
+  });
 });

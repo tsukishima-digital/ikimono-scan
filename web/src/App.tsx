@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { AboutPage } from "./pages/AboutPage";
+import { ResultFixturePage } from "./pages/ResultFixturePage";
 import { ScannerPage } from "./pages/ScannerPage";
 import { UpdatesPage } from "./pages/UpdatesPage";
 
@@ -22,6 +23,9 @@ export default function App() {
   if (pathname === "/about") return <AboutPage />;
   if (pathname === "/changelog" || pathname === "/updates") {
     return <UpdatesPage />;
+  }
+  if (import.meta.env.DEV && pathname === "/__dev/result") {
+    return <ResultFixturePage />;
   }
   return <ScannerPage />;
 }
