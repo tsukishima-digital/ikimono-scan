@@ -44,10 +44,8 @@ jobs:
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           ref: ${{ inputs.ref }}
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
-        with:
-          terraform_version: 1.14.4
+      - name: Install Terraform
+        run: scripts/install_ci_tools.sh terraform
       - name: Set up Node.js
         if: inputs.root == 'production'
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5

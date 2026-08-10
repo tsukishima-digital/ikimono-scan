@@ -69,12 +69,8 @@ jobs:
           node-version: "22"
           cache: npm
           cache-dependency-path: web/package-lock.json
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
-        with:
-          terraform_version: 1.14.4
-      - name: Set up Task
-        uses: arduino/setup-task@c0bc642852239c2689f73f4ea6459c29405f3c52 # v3.0.0
+      - name: Install deployment tools
+        run: scripts/install_ci_tools.sh terraform task
       - name: Install dependencies
         run: |
           uv sync --frozen --extra dev

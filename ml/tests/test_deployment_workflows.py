@@ -34,6 +34,13 @@ def test_deployment_workflows_pin_every_third_party_action():
             assert PINNED_ACTION.fullmatch(action), f"{workflow_name}: {action}"
 
 
+def test_deployment_workflows_only_use_actions_allowed_by_repository_policy():
+    for workflow_name in ("ci.yml", "terraform-plan.yml", "deploy.yml"):
+        workflow, _ = _workflow(workflow_name)
+        for action in _uses_values(workflow):
+            assert action.startswith("actions/"), f"{workflow_name}: {action}"
+
+
 def test_plan_is_manual_read_only_and_never_applies():
     workflow, source = _workflow("terraform-plan.yml")
 
