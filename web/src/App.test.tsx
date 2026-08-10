@@ -31,6 +31,7 @@ function cameraStream() {
 describe("App", () => {
   beforeEach(() => {
     window.history.replaceState({}, "", "/");
+    vi.stubGlobal("scrollTo", vi.fn());
     mockedCreateClassifier.mockReset();
     mockedCreateClassifier.mockResolvedValue({
       classify: vi.fn().mockResolvedValue({
@@ -51,6 +52,7 @@ describe("App", () => {
   });
 
   afterEach(() => {
+    vi.unstubAllGlobals();
     Reflect.deleteProperty(navigator, "mediaDevices");
   });
 
@@ -71,6 +73,25 @@ describe("App", () => {
       "true",
     );
     expect(screen.getByLabelText("カメラ映像")).toBeInTheDocument();
+  });
+
+  it("opens the header menu and routes to the English-labeled pages", async () => {
+    installCamera(vi.fn().mockResolvedValue(cameraStream()));
+    render(<App />);
+
+    const menuButton = screen.getByRole("button", { name: "メニューを開く" });
+    expect(menuButton).toHaveAttribute("aria-expanded", "false");
+
+    fireEvent.click(menuButton);
+
+    expect(menuButton).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("link", { name: "About" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("link", { name: "Changelog" }));
+
+    expect(window.location.pathname).toBe("/changelog");
+    expect(
+      screen.getByRole("heading", { name: "Changelog" }),
+    ).toBeInTheDocument();
   });
 
   it("switches to image selection when camera permission is denied", async () => {
@@ -188,14 +209,14 @@ describe("App", () => {
     expect(getUserMedia).not.toHaveBeenCalled();
   });
 
-  it("provides a dedicated update history page", () => {
+  it("provides a dedicated changelog page", () => {
     installCamera(vi.fn());
-    window.history.replaceState({}, "", "/updates");
+    window.history.replaceState({}, "", "/changelog");
 
     render(<App />);
 
     expect(
-      screen.getByRole("heading", { name: "更新履歴" }),
+      screen.getByRole("heading", { name: "Changelog" }),
     ).toBeInTheDocument();
     expect(screen.getByText("v0.1.0")).toBeInTheDocument();
   });

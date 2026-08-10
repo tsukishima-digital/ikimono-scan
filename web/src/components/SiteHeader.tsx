@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from "react";
+
 import { AppLink } from "./AppLink";
 
 interface SiteHeaderProps {
@@ -5,6 +7,36 @@ interface SiteHeaderProps {
 }
 
 export function SiteHeader({ overlay = false }: SiteHeaderProps) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuContainerRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    function closeFromOutside(event: PointerEvent) {
+      if (
+        event.target instanceof Node &&
+        !menuContainerRef.current?.contains(event.target)
+      ) {
+        setMenuOpen(false);
+      }
+    }
+
+    function closeFromKeyboard(event: KeyboardEvent) {
+      if (event.key !== "Escape") return;
+      setMenuOpen(false);
+      menuButtonRef.current?.focus();
+    }
+
+    document.addEventListener("pointerdown", closeFromOutside);
+    document.addEventListener("keydown", closeFromKeyboard);
+    return () => {
+      document.removeEventListener("pointerdown", closeFromOutside);
+      document.removeEventListener("keydown", closeFromKeyboard);
+    };
+  }, [menuOpen]);
+
   const headerClassName = [
     "z-20 flex min-h-[78px] items-center justify-between gap-7",
     "px-[max(24px,env(safe-area-inset-left))]",
@@ -14,6 +46,7 @@ export function SiteHeader({ overlay = false }: SiteHeaderProps) {
       ? "absolute inset-x-0 top-0 bg-[linear-gradient(to_bottom,rgb(4_10_7/70%)_0%,rgb(4_10_7/30%)_62%,transparent_100%)] pt-[env(safe-area-inset-top)] text-white"
       : "relative border-b border-ink/10 bg-paper/82 text-ink backdrop-blur-[24px] backdrop-saturate-150",
   ].join(" ");
+  const menuLinkClassName = `block rounded-[14px] px-4 py-3 text-[15px] font-bold tracking-[0.01em] transition-colors focus-visible:outline-3 focus-visible:outline-offset-1 focus-visible:outline-lime ${overlay ? "hover:bg-white/10" : "hover:bg-ink/5"}`;
 
   return (
     <header className={headerClassName}>
@@ -24,23 +57,56 @@ export function SiteHeader({ overlay = false }: SiteHeaderProps) {
       >
         <span>生き物スキャン</span>
       </AppLink>
-      <nav
-        className={`flex items-center gap-6 max-[720px]:gap-3 ${overlay ? "drop-shadow-[0_1px_5px_rgb(0_0_0/42%)]" : ""}`}
-        aria-label="メインナビゲーション"
-      >
-        <AppLink
-          className="text-[13px] font-bold underline-offset-[5px] hover:underline focus-visible:underline max-[720px]:text-[11px]"
-          href="/about"
+      <div className="relative" ref={menuContainerRef}>
+        <button
+          className={`relative grid size-11 cursor-pointer place-items-center rounded-full border transition-[background,transform] duration-150 ease-out active:scale-[0.96] focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-lime ${
+            overlay
+              ? "border-white/18 bg-black/24 text-white backdrop-blur-[14px] hover:bg-black/36"
+              : "border-ink/12 bg-white/48 text-ink hover:bg-white/80"
+          }`}
+          type="button"
+          aria-label={menuOpen ? "メニューを閉じる" : "メニューを開く"}
+          aria-expanded={menuOpen}
+          aria-controls="site-menu"
+          ref={menuButtonRef}
+          onClick={() => setMenuOpen((open) => !open)}
         >
-          このアプリについて
-        </AppLink>
-        <AppLink
-          className="text-[13px] font-bold underline-offset-[5px] hover:underline focus-visible:underline max-[720px]:text-[11px]"
-          href="/updates"
-        >
-          更新履歴
-        </AppLink>
-      </nav>
+          <span
+            className={`absolute h-[1.5px] w-[18px] bg-current transition-transform duration-150 ease-out ${menuOpen ? "rotate-45" : "-translate-y-[4px]"}`}
+            aria-hidden="true"
+          />
+          <span
+            className={`absolute h-[1.5px] w-[18px] bg-current transition-transform duration-150 ease-out ${menuOpen ? "-rotate-45" : "translate-y-[4px]"}`}
+            aria-hidden="true"
+          />
+        </button>
+        {menuOpen && (
+          <nav
+            className={`animate-materialize absolute top-[calc(100%+8px)] right-0 w-[190px] origin-top-right rounded-[20px] border p-2 shadow-[0_20px_60px_rgb(0_0_0/28%)] backdrop-blur-[24px] backdrop-saturate-150 ${
+              overlay
+                ? "border-white/14 bg-[rgb(8_15_11/88%)] text-white"
+                : "border-ink/10 bg-card/94 text-ink"
+            }`}
+            id="site-menu"
+            aria-label="メインナビゲーション"
+          >
+            <AppLink
+              className={menuLinkClassName}
+              href="/about"
+              onClick={() => setMenuOpen(false)}
+            >
+              About
+            </AppLink>
+            <AppLink
+              className={menuLinkClassName}
+              href="/changelog"
+              onClick={() => setMenuOpen(false)}
+            >
+              Changelog
+            </AppLink>
+          </nav>
+        )}
+      </div>
     </header>
   );
 }

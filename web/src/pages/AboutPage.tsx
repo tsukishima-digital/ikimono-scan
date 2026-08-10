@@ -111,7 +111,7 @@ export function AboutPage() {
         </section>
       </main>
       <footer className="mx-auto flex min-h-[100px] w-[min(1040px,calc(100%_-_48px))] items-center border-t border-line text-xs text-muted max-[720px]:w-[min(1040px,calc(100%_-_36px))]">
-        生き物スキャン — 月島デジタル
+        生き物スキャン
       </footer>
     </div>
   );

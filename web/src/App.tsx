@@ -20,6 +20,8 @@ export default function App() {
   const pathname = usePathname();
 
   if (pathname === "/about") return <AboutPage />;
-  if (pathname === "/updates") return <UpdatesPage />;
+  if (pathname === "/changelog" || pathname === "/updates") {
+    return <UpdatesPage />;
+  }
   return <ScannerPage />;
 }
