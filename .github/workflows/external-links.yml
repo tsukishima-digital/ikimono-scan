@@ -1,0 +1,20 @@
+name: External links
+
+on:
+  schedule:
+    - cron: "15 17 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Check product links
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out source
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - name: Check external links
+        run: python scripts/check_external_links.py web/src/content/external-links.json

@@ -1,0 +1,12 @@
+{
+  "environmentMinistryAromia": "https://www.env.go.jp/nature/intro/4document/species/kubiaka.html",
+  "githubRepository": "https://github.com/tsukishima-digital/ikimono-scan",
+  "licenseCc0": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "licenseCcBy": "https://creativecommons.org/licenses/by/4.0/",
+  "specimenAromiaObservationApi": "https://api.inaturalist.org/v1/observations/389254258",
+  "specimenAromiaPhoto": "https://inaturalist-open-data.s3.amazonaws.com/photos/712990656/large.jpg",
+  "specimenHarmoniaObservationApi": "https://api.inaturalist.org/v1/observations/388316828",
+  "specimenHarmoniaPhoto": "https://inaturalist-open-data.s3.amazonaws.com/photos/711179139/large.jpg",
+  "specimenRosaliaObservationApi": "https://api.inaturalist.org/v1/observations/378294423",
+  "specimenRosaliaPhoto": "https://inaturalist-open-data.s3.amazonaws.com/photos/691864486/large.jpg"
+}

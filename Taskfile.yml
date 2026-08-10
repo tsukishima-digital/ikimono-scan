@@ -1,0 +1,82 @@
+version: "3"
+
+tasks:
+  default:
+    desc: List available development commands
+    cmds:
+      - task --list
+
+  dev:
+    desc: Start the web app and print model-free result fixture URLs
+    dir: web
+    cmds:
+      - echo "Result fixtures /__dev/result?case=target|uncertain|no-alternatives|long-name"
+      - npm run dev -- --host 127.0.0.1 --port {{.PORT | default "5175"}}
+
+  ui:
+    desc: Run the fast UI feedback checks in parallel
+    deps: [ui:test, ui:lint, ui:typecheck]
+
+  ui:test:
+    desc: Run web tests; pass a path after -- to target one file
+    dir: web
+    cmds:
+      - npm test -- {{.CLI_ARGS}}
+
+  ui:lint:
+    desc: Lint the web app
+    dir: web
+    cmds:
+      - npm run lint
+
+  ui:typecheck:
+    desc: Type-check the web app without a production build
+    dir: web
+    cmds:
+      - npm run typecheck
+
+  ui:build:
+    desc: Build the production web bundle
+    dir: web
+    cmds:
+      - npm run build
+
+  python:
+    desc: Run Python tests, lint, and formatting checks in parallel
+    deps: [python:test, python:lint, python:format]
+
+  python:test:
+    cmds:
+      - uv run pytest -q
+
+  python:lint:
+    cmds:
+      - uv run ruff check .
+
+  python:format:
+    cmds:
+      - uv run ruff format --check .
+
+  secrets:
+    desc: Scan tracked files for secrets
+    cmds:
+      - pre-commit run gitleaks --all-files
+
+  check:
+    desc: Run only checks relevant to current working-tree changes
+    cmds:
+      - |
+        scopes="$(python scripts/changed_scope.py --working-tree)"
+        if echo "$scopes" | grep -qx web && echo "$scopes" | grep -qx python; then
+          task --parallel ui python
+        elif echo "$scopes" | grep -qx web; then
+          task ui
+        elif echo "$scopes" | grep -qx python; then
+          task python
+        else
+          echo "No Web or Python checks are needed for the current changes."
+        fi
+
+  release:check:
+    desc: Run build, Python, and secret checks for release-sensitive changes
+    deps: [ui:build, python, secrets]

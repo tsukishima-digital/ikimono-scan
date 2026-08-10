@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #15231a;
+  --color-muted: #687169;
+  --color-paper: #f2f4e9;
+  --color-card: #fcfdf7;
+  --color-line: #d2d8ce;
+  --color-brand: #22623d;
+  --color-brand-dark: #103b25;
+  --color-lime: #d8ef70;
+  --color-danger: #ad3c2a;
+  --font-mincho: "Yu Mincho", "Hiragino Mincho ProN", serif;
+  --animate-materialize: materialize 260ms cubic-bezier(0.2, 0.85, 0.25, 1);
+
+  @keyframes materialize {
+    from {
+      opacity: 0;
+      transform: translateY(18px) scale(0.98);
+    }
+  }
+}
+
+@layer base {
+  :root {
+    min-width: 320px;
+    color: var(--color-ink);
+    background: var(--color-paper);
+    font-family: "Hiragino Sans", "Yu Gothic", "YuGothic", system-ui, sans-serif;
+    font-synthesis: none;
+    font-optical-sizing: auto;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    min-width: 320px;
+    min-height: 100vh;
+  }
+
+  button,
+  a,
+  label {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button,
+  input {
+    font: inherit;
+  }
+
+  button {
+    touch-action: manipulation;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
