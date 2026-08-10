@@ -32,26 +32,30 @@ export function AboutPage() {
             対象は今後、甲虫以外の生き物にも広げていきます。
           </p>
 
-          <div className="mt-10 grid grid-cols-3 border-y border-line max-[720px]:grid-cols-1 [&>article+article]:border-l [&>article+article]:border-line max-[720px]:[&>article+article]:border-t max-[720px]:[&>article+article]:border-l-0">
-            <article className="flex min-h-[140px] flex-col justify-between p-6 max-[720px]:min-h-[106px]">
+          <ul
+            className="mt-10 grid list-none grid-cols-2 gap-4 p-0"
+            aria-label="判定対象の概要"
+          >
+            <li className="flex min-h-[140px] flex-col justify-between rounded-[22px] bg-card p-6 shadow-[0_12px_36px_rgb(20_38_26/8%)] max-[720px]:min-h-[116px] max-[720px]:p-5">
               <strong className="font-mincho text-[27px]">422種</strong>
               <span className="text-xs text-muted">現在の分類対象</span>
-            </article>
-            <article className="flex min-h-[140px] flex-col justify-between p-6 max-[720px]:min-h-[106px]">
+            </li>
+            <li className="flex min-h-[140px] flex-col justify-between rounded-[22px] bg-card p-6 shadow-[0_12px_36px_rgb(20_38_26/8%)] max-[720px]:min-h-[116px] max-[720px]:p-5">
               <strong className="font-mincho text-[27px]">甲虫</strong>
               <span className="text-xs text-muted">現在の対象グループ</span>
-            </article>
-            <article className="flex min-h-[140px] flex-col justify-between p-6 max-[720px]:min-h-[106px]">
-              <strong className="font-mincho text-[27px]">重点対象</strong>
-              <span className="text-xs text-muted">クビアカツヤカミキリ</span>
-            </article>
-          </div>
+            </li>
+          </ul>
 
-          <div className="mt-12 grid grid-cols-3 gap-4 max-[720px]:grid-cols-1 max-[720px]:gap-6">
+          <div
+            className="mt-8 grid grid-cols-3 gap-4 max-[720px]:-mx-[18px] max-[720px]:grid-flow-col max-[720px]:grid-cols-none max-[720px]:auto-cols-[82%] max-[720px]:snap-x max-[720px]:snap-mandatory max-[720px]:overflow-x-auto max-[720px]:px-[18px] max-[720px]:pb-5 max-[720px]:[scrollbar-width:none] max-[720px]:[&::-webkit-scrollbar]:hidden"
+            role="list"
+            aria-label="判定対象の例"
+          >
             {specimenPhotos.map((specimen) => (
               <figure
-                className="m-0 overflow-hidden rounded-[22px] bg-card shadow-[0_12px_36px_rgb(20_38_26/8%)]"
+                className="m-0 overflow-hidden rounded-[22px] bg-card shadow-[0_12px_36px_rgb(20_38_26/8%)] max-[720px]:snap-start"
                 key={specimen.scientificName}
+                role="listitem"
               >
                 <img
                   className="aspect-[4/3] w-full bg-[#dfe5d8] object-cover"

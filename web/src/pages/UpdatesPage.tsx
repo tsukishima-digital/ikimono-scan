@@ -23,13 +23,15 @@ export function UpdatesPage() {
               </time>
             </div>
             <div>
-              <h2 className="m-0 font-mincho text-3xl">最初の公開版</h2>
+              <h2 className="m-0 font-mincho text-3xl">
+                甲虫分類機能の実装
+              </h2>
               <ul className="mt-5 list-disc pl-[1.4em] leading-8 text-muted">
-                <li>カメラで撮影した写真や、端末内の写真から甲虫を判定</li>
-                <li>日本で観察された甲虫422種に対応</li>
-                <li>クビアカツヤカミキリを重点対象として案内</li>
+                <li>カメラ撮影と端末内写真からの甲虫判定</li>
+                <li>日本で観察された甲虫422種への対応</li>
+                <li>クビアカツヤカミキリの重点対象表示</li>
                 <li>
-                  判定モデルを一度読み込めば、ページを開いた状態では通信なしで判定できます
+                  判定モデル読込後のオフライン判定（ページを開いている間）
                 </li>
               </ul>
             </div>

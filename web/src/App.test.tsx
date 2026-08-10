@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createClassifier } from "./inference/classifier";
@@ -210,6 +216,16 @@ describe("App", () => {
     expect(
       screen.getByText("422種", { selector: "strong" }),
     ).toBeInTheDocument();
+    expect(
+      within(screen.getByRole("list", { name: "判定対象の概要" })).getAllByRole(
+        "listitem",
+      ),
+    ).toHaveLength(2);
+    expect(
+      within(screen.getByRole("list", { name: "判定対象の例" })).getAllByRole(
+        "listitem",
+      ),
+    ).toHaveLength(3);
     expect(screen.getAllByRole("img", { name: /の観察写真/ })).toHaveLength(3);
     expect(
       screen.getAllByRole("link", { name: "iNaturalistで見る" }),
@@ -230,8 +246,12 @@ describe("App", () => {
       screen.getByRole("heading", { name: "Changelog" }),
     ).toBeInTheDocument();
     expect(screen.getByText("v0.1.0")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "最初の公開版" })).toBeInTheDocument();
-    expect(screen.getByText(/通信なしで判定できます/)).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "甲虫分類機能の実装" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/判定モデル読込後のオフライン判定/),
+    ).toBeInTheDocument();
     expect(
       screen.getByRole("banner", { name: "サイトヘッダー" }),
     ).toHaveClass("fixed");
