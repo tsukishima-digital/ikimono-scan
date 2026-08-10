@@ -9,6 +9,16 @@ from ikimono_scan_ml import web_export
 def test_build_manifest_preserves_checkpoint_class_order() -> None:
     manifest = web_export.build_manifest(
         classes=["1008176_agelasta_yonaguni", "494519_aromia_bungii"],
+        taxonomy_catalog={
+            "1008176": {
+                "scientificName": "Agelasta yonaguni",
+                "commonName": "ヨナグニゴマフカミキリ",
+            },
+            "494519": {
+                "scientificName": "Aromia bungii",
+                "commonName": "クビアカツヤカミキリ",
+            },
+        },
         image_size=320,
         model_url="/models/beetles-v0.1.0.onnx",
         sha256="a" * 64,
@@ -21,6 +31,7 @@ def test_build_manifest_preserves_checkpoint_class_order() -> None:
         {
             "id": "1008176",
             "scientificName": "Agelasta yonaguni",
+            "commonName": "ヨナグニゴマフカミキリ",
         },
         {
             "id": "494519",
@@ -31,6 +42,7 @@ def test_build_manifest_preserves_checkpoint_class_order() -> None:
     assert manifest["imageSize"] == 320
     assert manifest["inputName"] == "input"
     assert manifest["outputName"] == "logits"
+    assert manifest["minimumConfidence"] == 0.6
 
 
 def test_export_checkpoint_writes_model_and_manifest(tmp_path: Path, monkeypatch) -> None:
@@ -59,6 +71,7 @@ def test_export_checkpoint_writes_model_and_manifest(tmp_path: Path, monkeypatch
         version="0.1.0",
         license_name="UNPUBLISHED",
         source="internal checkpoint",
+        taxonomy_catalog_path=None,
     )
 
     model_bytes = artifacts.model_path.read_bytes()

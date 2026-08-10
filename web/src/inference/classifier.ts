@@ -39,12 +39,10 @@ export async function createClassifier(
         throw new Error("モデルの出力と分類ラベルが一致しません。");
       }
 
+      const predictions = topK(Array.from(logits, Number), manifest.classes, 3);
       return {
-        predictions: topK(
-          Array.from(logits, Number),
-          manifest.classes,
-          3,
-        ),
+        predictions,
+        accepted: acceptsPrediction(predictions, manifest.minimumConfidence),
         executionProvider,
       };
     },
@@ -73,12 +71,22 @@ export async function fetchModelManifest(url: string): Promise<ModelManifest> {
     !manifest.source ||
     !Number.isInteger(manifest.imageSize) ||
     manifest.imageSize <= 0 ||
+    typeof manifest.minimumConfidence !== "number" ||
+    manifest.minimumConfidence < 0 ||
+    manifest.minimumConfidence > 1 ||
     !Array.isArray(manifest.classes) ||
     manifest.classes.length === 0
   ) {
     throw new Error("判定モデルの設定が不正です。");
   }
   return manifest;
+}
+
+export function acceptsPrediction(
+  predictions: Classification[],
+  minimumConfidence: number,
+): boolean {
+  return (predictions[0]?.confidence ?? 0) >= minimumConfidence;
 }
 
 export async function fetchVerifiedModel(

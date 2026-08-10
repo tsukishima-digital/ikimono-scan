@@ -2,10 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { SiteHeader } from "../components/SiteHeader";
 import { createClassifier } from "../inference/classifier";
-import type {
-  ClassificationResult,
-  Classifier,
-} from "../inference/types";
+import type { ClassificationResult, Classifier } from "../inference/types";
 import { captureVideoFrame } from "../camera/captureVideoFrame";
 
 const TARGET_SCIENTIFIC_NAME = "Aromia bungii";
@@ -124,7 +121,9 @@ export function ScannerPage() {
     } catch (caught) {
       setPhase("error");
       setError(
-        caught instanceof Error ? caught.message : "写真を撮影できませんでした。",
+        caught instanceof Error
+          ? caught.message
+          : "写真を撮影できませんでした。",
       );
     }
   }
@@ -160,7 +159,7 @@ export function ScannerPage() {
         aria-label="生き物を撮影して判定"
       >
         <div
-          className="absolute top-[calc(94px+env(safe-area-inset-top))] left-1/2 z-12 flex -translate-x-1/2 rounded-full border border-white/16 bg-[rgb(8_16_11/58%)] p-1 backdrop-blur-[20px] backdrop-saturate-140 max-[720px]:top-[calc(76px+env(safe-area-inset-top))] [@media(prefers-contrast:more)]:border-2 [@media(prefers-contrast:more)]:border-current [@media(prefers-reduced-transparency:reduce)]:backdrop-blur-none"
+          className="absolute top-[calc(84px+env(safe-area-inset-top))] left-1/2 z-12 flex -translate-x-1/2 rounded-full border border-white/16 bg-[rgb(8_16_11/58%)] p-1 backdrop-blur-[20px] backdrop-saturate-140 max-[720px]:top-[calc(70px+env(safe-area-inset-top))] [@media(prefers-contrast:more)]:border-2 [@media(prefers-contrast:more)]:border-current [@media(prefers-reduced-transparency:reduce)]:backdrop-blur-none"
           role="tablist"
           aria-label="写真の入力方法"
         >
@@ -187,7 +186,7 @@ export function ScannerPage() {
         <div className="absolute inset-0 grid place-items-center overflow-hidden bg-[radial-gradient(circle_at_50%_42%,#23342a_0,#0c1510_56%,#070c09_100%)] after:pointer-events-none after:absolute after:inset-0 after:bg-[linear-gradient(to_bottom,rgb(0_0_0/28%),transparent_26%),linear-gradient(to_top,rgb(0_0_0/52%),transparent_32%)] after:content-['']">
           {previewUrl ? (
             <img
-              className="size-full bg-[#070c09] object-contain"
+              className="size-full bg-[#070c09] object-cover"
               src={previewUrl}
               alt="判定する写真"
             />
@@ -324,7 +323,9 @@ function ResultSheet({
           <p className="mb-3 text-[11px] font-[850] tracking-[0.17em] text-danger uppercase">
             判定できませんでした
           </p>
-          <strong className="mb-6 block text-[17px] leading-normal">{error}</strong>
+          <strong className="mb-6 block text-[17px] leading-normal">
+            {error}
+          </strong>
           <button
             className="cursor-pointer rounded-full border-0 bg-brand-dark px-[18px] py-[11px] font-extrabold text-white active:scale-[0.97] focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-lime"
             type="button"
@@ -337,82 +338,107 @@ function ResultSheet({
 
       {phase === "complete" && topPrediction && (
         <div className="p-[30px] max-[720px]:p-6">
-          <p
-            className={`mb-3 text-[11px] font-[850] tracking-[0.17em] uppercase ${isTarget ? "text-danger" : "text-brand"}`}
-          >
-            判定結果
-          </p>
-          <div className="flex items-start justify-between gap-5">
-            <div>
-              <h1 className="m-0 font-mincho text-[clamp(28px,4vw,42px)] leading-[1.15] font-semibold tracking-[-0.045em] max-[720px]:text-[29px]">
-                {topPrediction.classInfo.commonName ??
-                  topPrediction.classInfo.scientificName}
+          {!result.accepted ? (
+            <>
+              <p className="mb-3 text-[11px] font-[850] tracking-[0.17em] text-brand uppercase">
+                判定結果
+              </p>
+              <h1 className="m-0 font-mincho text-[clamp(25px,4vw,36px)] leading-[1.25] font-semibold tracking-[-0.035em]">
+                甲虫を判定できませんでした
               </h1>
-              <p className="mt-[7px] text-[13px] text-muted italic">
-                {topPrediction.classInfo.scientificName}
+              <p className="mt-3 text-sm leading-[1.7] text-muted">
+                甲虫を画面いっぱいに、明るく写して撮り直してください。
               </p>
-            </div>
-            <strong className="font-serif text-[44px] leading-none font-medium text-brand-dark max-[720px]:text-[38px]">
-              {Math.round(topPrediction.confidence * 100)}
-              <small className="text-lg">%</small>
-            </strong>
-          </div>
-
-          {isTarget && (
-            <div className="mt-6 rounded-2xl border border-danger/20 bg-[#fff1e8] p-[18px]">
-              <span className="inline-block rounded-[5px] bg-danger px-[9px] py-1 text-[11px] font-[850] text-white">
-                特定外来生物
-              </span>
-              <p className="my-3 text-sm leading-[1.65]">
-                クビアカツヤカミキリの可能性があります。
-                生体を持ち運ばず、最新情報を確認してください。
-              </p>
-              <a
-                className="text-[13px] font-extrabold text-danger"
-                href={ENVIRONMENT_MINISTRY_URL}
-                target="_blank"
-                rel="noreferrer"
+              <div className="mt-6">
+                <button
+                  className="cursor-pointer rounded-full border-0 bg-brand-dark px-[18px] py-[11px] font-extrabold text-white active:scale-[0.97] focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-lime"
+                  type="button"
+                  onClick={onReset}
+                >
+                  撮り直す
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <p
+                className={`mb-3 text-[11px] font-[850] tracking-[0.17em] uppercase ${isTarget ? "text-danger" : "text-brand"}`}
               >
-                環境省の情報を見る <span aria-hidden="true">↗</span>
-              </a>
-            </div>
-          )}
+                判定結果
+              </p>
+              <div className="flex items-start justify-between gap-5">
+                <div>
+                  <h1 className="m-0 font-mincho text-[clamp(28px,4vw,42px)] leading-[1.15] font-semibold tracking-[-0.045em] max-[720px]:text-[29px]">
+                    {topPrediction.classInfo.commonName ??
+                      topPrediction.classInfo.scientificName}
+                  </h1>
+                  <p className="mt-[7px] text-[13px] text-muted italic">
+                    {topPrediction.classInfo.scientificName}
+                  </p>
+                </div>
+                <strong className="font-serif text-[44px] leading-none font-medium text-brand-dark max-[720px]:text-[38px]">
+                  {Math.round(topPrediction.confidence * 100)}
+                  <small className="text-lg">%</small>
+                </strong>
+              </div>
 
-          {result.predictions.length > 1 && (
-            <details className="mt-5 border-t border-line">
-              <summary className="cursor-pointer px-0 pt-[17px] pb-1 text-[13px] font-extrabold">
-                ほかの候補
-              </summary>
-              <ol className="mt-[9px] list-none p-0">
-                {result.predictions.slice(1).map((prediction) => (
-                  <li
-                    className="flex justify-between gap-[18px] py-[7px] text-[13px] text-muted"
-                    key={prediction.classInfo.id}
+              {isTarget && (
+                <div className="mt-6 rounded-2xl border border-danger/20 bg-[#fff1e8] p-[18px]">
+                  <span className="inline-block rounded-[5px] bg-danger px-[9px] py-1 text-[11px] font-[850] text-white">
+                    特定外来生物
+                  </span>
+                  <p className="my-3 text-sm leading-[1.65]">
+                    クビアカツヤカミキリの可能性があります。
+                    生体を持ち運ばず、最新情報を確認してください。
+                  </p>
+                  <a
+                    className="text-[13px] font-extrabold text-danger"
+                    href={ENVIRONMENT_MINISTRY_URL}
+                    target="_blank"
+                    rel="noreferrer"
                   >
-                    <span>
-                      {prediction.classInfo.commonName ??
-                        prediction.classInfo.scientificName}
-                    </span>
-                    <span>{Math.round(prediction.confidence * 100)}%</span>
-                  </li>
-                ))}
-              </ol>
-            </details>
-          )}
+                    環境省の情報を見る <span aria-hidden="true">↗</span>
+                  </a>
+                </div>
+              )}
 
-          <div className="mt-6 flex items-center justify-between gap-4">
-            <button
-              className="cursor-pointer rounded-full border-0 bg-brand-dark px-[18px] py-[11px] font-extrabold text-white active:scale-[0.97] focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-lime"
-              type="button"
-              onClick={onReset}
-            >
-              撮り直す
-            </button>
-            <span className="text-[10px] text-muted">
-              {result.executionProvider === "webgpu" ? "WebGPU" : "WASM"}
-              で端末内判定
-            </span>
-          </div>
+              {result.predictions.length > 1 && (
+                <details className="mt-5 border-t border-line">
+                  <summary className="cursor-pointer px-0 pt-[17px] pb-1 text-[13px] font-extrabold">
+                    ほかの候補
+                  </summary>
+                  <ol className="mt-[9px] list-none p-0">
+                    {result.predictions.slice(1).map((prediction) => (
+                      <li
+                        className="flex justify-between gap-[18px] py-[7px] text-[13px] text-muted"
+                        key={prediction.classInfo.id}
+                      >
+                        <span>
+                          {prediction.classInfo.commonName ??
+                            prediction.classInfo.scientificName}
+                        </span>
+                        <span>{Math.round(prediction.confidence * 100)}%</span>
+                      </li>
+                    ))}
+                  </ol>
+                </details>
+              )}
+
+              <div className="mt-6 flex items-center justify-between gap-4">
+                <button
+                  className="cursor-pointer rounded-full border-0 bg-brand-dark px-[18px] py-[11px] font-extrabold text-white active:scale-[0.97] focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-lime"
+                  type="button"
+                  onClick={onReset}
+                >
+                  撮り直す
+                </button>
+                <span className="text-[10px] text-muted">
+                  {result.executionProvider === "webgpu" ? "WebGPU" : "WASM"}
+                  で端末内判定
+                </span>
+              </div>
+            </>
+          )}
         </div>
       )}
     </aside>

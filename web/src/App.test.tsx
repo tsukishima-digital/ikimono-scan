@@ -5,7 +5,8 @@ import { createClassifier } from "./inference/classifier";
 import App from "./App";
 
 vi.mock("./inference/classifier", async (importOriginal) => {
-  const original = await importOriginal<typeof import("./inference/classifier")>();
+  const original =
+    await importOriginal<typeof import("./inference/classifier")>();
   return {
     ...original,
     createClassifier: vi.fn(),
@@ -43,6 +44,7 @@ describe("App", () => {
             confidence: 0.93,
           },
         ],
+        accepted: true,
         executionProvider: "wasm",
       }),
     });
@@ -79,7 +81,9 @@ describe("App", () => {
     render(<App />);
 
     expect(
-      await screen.findByText("カメラを利用できないため、写真から選んでください。"),
+      await screen.findByText(
+        "カメラを利用できないため、写真から選んでください。",
+      ),
     ).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "写真" })).toHaveAttribute(
       "aria-selected",
@@ -116,13 +120,52 @@ describe("App", () => {
     const input = await screen.findByLabelText("写真を選ぶ");
 
     fireEvent.change(input, {
-      target: { files: [new File(["text"], "note.txt", { type: "text/plain" })] },
+      target: {
+        files: [new File(["text"], "note.txt", { type: "text/plain" })],
+      },
     });
 
     expect(screen.getByRole("alert")).toHaveTextContent(
       "画像ファイルを選んでください",
     );
     expect(mockedCreateClassifier).not.toHaveBeenCalled();
+  });
+
+  it("does not name a beetle when the closed-set result is uncertain", async () => {
+    mockedCreateClassifier.mockResolvedValueOnce({
+      classify: vi.fn().mockResolvedValue({
+        predictions: [
+          {
+            classInfo: {
+              id: "270209",
+              commonName: "ガムシ",
+              scientificName: "Hydrophilus acuminatus",
+            },
+            confidence: 0.49,
+          },
+        ],
+        accepted: false,
+        executionProvider: "wasm",
+      }),
+    });
+    installCamera(
+      vi.fn().mockRejectedValue(new DOMException("denied", "NotAllowedError")),
+    );
+    render(<App />);
+    const input = await screen.findByLabelText("写真を選ぶ");
+
+    fireEvent.change(input, {
+      target: {
+        files: [new File(["image"], "person.jpg", { type: "image/jpeg" })],
+      },
+    });
+
+    expect(
+      await screen.findByRole("heading", {
+        name: "甲虫を判定できませんでした",
+      }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("ガムシ")).not.toBeInTheDocument();
   });
 
   it("routes product and supported-species information to about", () => {
@@ -135,7 +178,9 @@ describe("App", () => {
     expect(
       screen.getByRole("heading", { name: "現在判定できる生き物" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("422種", { selector: "strong" })).toBeInTheDocument();
+    expect(
+      screen.getByText("422種", { selector: "strong" }),
+    ).toBeInTheDocument();
     expect(screen.getByText(/写真は外部へ送信しません/)).toBeInTheDocument();
     expect(getUserMedia).not.toHaveBeenCalled();
   });

@@ -10,8 +10,8 @@ import torch
 
 from ikimono_scan_ml.training import _build_model
 
-TARGET_TAXON_ID = "494519"
-TARGET_COMMON_NAME = "クビアカツヤカミキリ"
+DEFAULT_MINIMUM_CONFIDENCE = 0.6
+DEFAULT_TAXONOMY_CATALOG_PATH = Path(__file__).resolve().parents[1] / "taxonomy" / "ja.json"
 
 
 @dataclass(frozen=True)
@@ -27,6 +27,7 @@ def export_checkpoint(
     version: str,
     license_name: str,
     source: str,
+    taxonomy_catalog_path: str | Path | None = DEFAULT_TAXONOMY_CATALOG_PATH,
 ) -> WebExportArtifacts:
     checkpoint_path = Path(checkpoint_path)
     output_dir = Path(output_dir)
@@ -54,8 +55,10 @@ def export_checkpoint(
         dynamo=False,
     )
     sha256 = hashlib.sha256(model_path.read_bytes()).hexdigest()
+    taxonomy_catalog = _load_taxonomy_catalog(taxonomy_catalog_path)
     manifest = build_manifest(
         classes=classes,
+        taxonomy_catalog=taxonomy_catalog,
         image_size=image_size,
         model_url=f"/models/{model_path.name}",
         sha256=sha256,
@@ -74,6 +77,7 @@ def export_checkpoint(
 def build_manifest(
     *,
     classes: list[str],
+    taxonomy_catalog: dict[str, dict[str, str]] | None = None,
     image_size: int,
     model_url: str,
     sha256: str,
@@ -90,11 +94,12 @@ def build_manifest(
         "imageSize": image_size,
         "inputName": "input",
         "outputName": "logits",
-        "classes": [_manifest_class(label) for label in classes],
+        "minimumConfidence": DEFAULT_MINIMUM_CONFIDENCE,
+        "classes": [_manifest_class(label, taxonomy_catalog or {}) for label in classes],
     }
 
 
-def _manifest_class(label: str) -> dict[str, str]:
+def _manifest_class(label: str, taxonomy_catalog: dict[str, dict[str, str]]) -> dict[str, str]:
     taxon_id, separator, scientific_slug = label.partition("_")
     if not separator or not taxon_id.isdigit() or "_" not in scientific_slug:
         raise ValueError(f"Unsupported class label: {label}")
@@ -103,9 +108,22 @@ def _manifest_class(label: str) -> dict[str, str]:
         "id": taxon_id,
         "scientificName": " ".join([name_parts[0].capitalize(), *name_parts[1:]]),
     }
-    if taxon_id == TARGET_TAXON_ID:
-        result["commonName"] = TARGET_COMMON_NAME
+    common_name = taxonomy_catalog.get(taxon_id, {}).get("commonName")
+    if common_name:
+        result["commonName"] = common_name
     return result
+
+
+def _load_taxonomy_catalog(
+    path: str | Path | None,
+) -> dict[str, dict[str, str]]:
+    if path is None:
+        return {}
+    payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    taxa = payload.get("taxa")
+    if not isinstance(taxa, dict):
+        raise ValueError("Taxonomy catalog must contain a taxa object")
+    return taxa
 
 
 def export_web_cli() -> None:
@@ -115,6 +133,10 @@ def export_web_cli() -> None:
     parser.add_argument("--version", required=True)
     parser.add_argument("--license", required=True, dest="license_name")
     parser.add_argument("--source", required=True)
+    parser.add_argument(
+        "--taxonomy-catalog",
+        default=str(DEFAULT_TAXONOMY_CATALOG_PATH),
+    )
     args = parser.parse_args()
     artifacts = export_checkpoint(
         checkpoint_path=args.checkpoint,
@@ -122,5 +144,6 @@ def export_web_cli() -> None:
         version=args.version,
         license_name=args.license_name,
         source=args.source,
+        taxonomy_catalog_path=args.taxonomy_catalog,
     )
     print(json.dumps({key: str(value) for key, value in artifacts.__dict__.items()}, indent=2))

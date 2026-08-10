@@ -6,14 +6,14 @@ interface SiteHeaderProps {
 
 export function SiteHeader({ overlay = false }: SiteHeaderProps) {
   const headerClassName = [
-    "relative z-20 flex min-h-[78px] items-center justify-between gap-7",
+    "z-20 flex min-h-[78px] items-center justify-between gap-7",
     "border-b border-ink/10 bg-paper/82 px-[max(24px,env(safe-area-inset-left))]",
     "backdrop-blur-[24px] backdrop-saturate-150",
     "max-[720px]:min-h-[68px] max-[720px]:px-4",
     "[@media(prefers-reduced-transparency:reduce)]:backdrop-blur-none",
     overlay
-      ? "absolute inset-x-0 top-0 border-0 bg-[linear-gradient(rgb(0_0_0/54%),transparent)] pt-[env(safe-area-inset-top)] text-white backdrop-blur-none"
-      : "text-ink",
+      ? "absolute inset-x-0 top-0 border-0 bg-[linear-gradient(to_bottom,rgb(0_0_0/58%)_0%,rgb(0_0_0/22%)_68%,transparent_100%)] pt-[env(safe-area-inset-top)] text-white backdrop-blur-none"
+      : "relative text-ink",
   ].join(" ");
 
   return (

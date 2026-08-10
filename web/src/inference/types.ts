@@ -11,6 +11,7 @@ export interface ModelManifest {
   license: string;
   source: string;
   imageSize: number;
+  minimumConfidence: number;
   inputName?: string;
   outputName?: string;
   classes: ModelClass[];
@@ -23,6 +24,7 @@ export interface Classification {
 
 export interface ClassificationResult {
   predictions: Classification[];
+  accepted: boolean;
   executionProvider: "webgpu" | "wasm";
 }
 

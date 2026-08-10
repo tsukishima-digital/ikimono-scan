@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
+  acceptsPrediction,
   fetchModelManifest,
   fetchVerifiedModel,
   topK,
@@ -19,11 +20,27 @@ describe("topK", () => {
 
     expect(result.map((item) => item.classInfo.id)).toEqual(["b", "c"]);
     expect(result[0].confidence).toBeGreaterThan(result[1].confidence);
-    expect(result.reduce((sum, item) => sum + item.confidence, 0)).toBeLessThan(1);
+    expect(result.reduce((sum, item) => sum + item.confidence, 0)).toBeLessThan(
+      1,
+    );
   });
 
   it("rejects a label count mismatch", () => {
     expect(() => topK([1], classes, 1)).toThrow("分類結果のサイズ");
+  });
+});
+
+describe("acceptsPrediction", () => {
+  it("rejects a closed-set result below the release threshold", () => {
+    expect(
+      acceptsPrediction([{ classInfo: classes[0], confidence: 0.49 }], 0.6),
+    ).toBe(false);
+  });
+
+  it("accepts a result at the release threshold", () => {
+    expect(
+      acceptsPrediction([{ classInfo: classes[0], confidence: 0.6 }], 0.6),
+    ).toBe(true);
   });
 });
 

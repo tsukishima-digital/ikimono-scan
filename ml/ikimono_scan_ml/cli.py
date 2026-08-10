@@ -24,6 +24,14 @@ def main() -> None:
     export_parser.add_argument("--version", required=True)
     export_parser.add_argument("--license", required=True, dest="license_name")
     export_parser.add_argument("--source", required=True)
+    export_parser.add_argument(
+        "--taxonomy-catalog",
+        default="ml/taxonomy/ja.json",
+    )
+
+    taxonomy_parser = subparsers.add_parser("refresh-taxonomy-ja")
+    taxonomy_parser.add_argument("--checkpoint", required=True)
+    taxonomy_parser.add_argument("--output", default="ml/taxonomy/ja.json")
 
     args = parser.parse_args()
     if args.command == "fetch-inat":
@@ -49,8 +57,17 @@ def main() -> None:
             version=args.version,
             license_name=args.license_name,
             source=args.source,
+            taxonomy_catalog_path=args.taxonomy_catalog,
         )
         print(json.dumps({key: str(value) for key, value in artifacts.__dict__.items()}, indent=2))
+    elif args.command == "refresh-taxonomy-ja":
+        from ikimono_scan_ml.taxonomy import refresh_japanese_catalog
+
+        output_path = refresh_japanese_catalog(
+            checkpoint_path=args.checkpoint,
+            output_path=args.output,
+        )
+        print(output_path)
 
 
 if __name__ == "__main__":
