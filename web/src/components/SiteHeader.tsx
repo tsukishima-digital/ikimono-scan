@@ -38,18 +38,18 @@ export function SiteHeader({ overlay = false }: SiteHeaderProps) {
   }, [menuOpen]);
 
   const headerClassName = [
-    "z-20 flex min-h-[78px] items-center justify-between gap-7",
+    "z-30 flex min-h-[78px] items-center justify-between gap-7",
     "px-[max(24px,env(safe-area-inset-left))]",
     "max-[720px]:min-h-[68px] max-[720px]:px-4",
     "[@media(prefers-reduced-transparency:reduce)]:backdrop-blur-none",
     overlay
       ? "absolute inset-x-0 top-0 bg-[linear-gradient(to_bottom,rgb(4_10_7/70%)_0%,rgb(4_10_7/30%)_62%,transparent_100%)] pt-[env(safe-area-inset-top)] text-white"
-      : "relative border-b border-ink/10 bg-paper/82 text-ink backdrop-blur-[24px] backdrop-saturate-150",
+      : "fixed inset-x-0 top-0 bg-paper/78 text-ink backdrop-blur-[24px] backdrop-saturate-150 after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-4 after:bg-gradient-to-b after:from-paper/35 after:to-transparent after:content-[''] [@media(prefers-reduced-transparency:reduce)]:bg-paper",
   ].join(" ");
   const menuLinkClassName = `block rounded-[14px] px-4 py-3 text-[15px] font-bold tracking-[0.01em] transition-colors focus-visible:outline-3 focus-visible:outline-offset-1 focus-visible:outline-lime ${overlay ? "hover:bg-white/10" : "hover:bg-ink/5"}`;
 
   return (
-    <header className={headerClassName}>
+    <header className={headerClassName} aria-label="サイトヘッダー">
       <AppLink
         className={`inline-flex items-center text-[15px] font-[750] tracking-[0.02em] no-underline transition-transform duration-100 ease-out active:scale-[0.97] max-[720px]:text-[13px] ${overlay ? "drop-shadow-[0_1px_5px_rgb(0_0_0/42%)]" : ""}`}
         href="/"

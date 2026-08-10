@@ -203,9 +203,20 @@ describe("App", () => {
       screen.getByRole("heading", { name: "現在判定できる生き物" }),
     ).toBeInTheDocument();
     expect(
+      screen.getByRole("heading", {
+        name: "生き物スキャンは、生物の写真を分類できます。",
+      }),
+    ).toBeInTheDocument();
+    expect(
       screen.getByText("422種", { selector: "strong" }),
     ).toBeInTheDocument();
-    expect(screen.getByText(/写真は外部へ送信しません/)).toBeInTheDocument();
+    expect(screen.getAllByRole("img", { name: /の観察写真/ })).toHaveLength(3);
+    expect(
+      screen.getAllByRole("link", { name: "iNaturalistで見る" }),
+    ).toHaveLength(3);
+    expect(
+      screen.getByRole("banner", { name: "サイトヘッダー" }),
+    ).toHaveClass("fixed");
     expect(getUserMedia).not.toHaveBeenCalled();
   });
 
@@ -219,6 +230,11 @@ describe("App", () => {
       screen.getByRole("heading", { name: "Changelog" }),
     ).toBeInTheDocument();
     expect(screen.getByText("v0.1.0")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "最初の公開版" })).toBeInTheDocument();
+    expect(screen.getByText(/通信なしで判定できます/)).toBeInTheDocument();
+    expect(
+      screen.getByRole("banner", { name: "サイトヘッダー" }),
+    ).toHaveClass("fixed");
   });
 
   it("renders a development result fixture without camera or model access", () => {

@@ -4,7 +4,7 @@ export function UpdatesPage() {
   return (
     <div className="min-h-dvh bg-paper text-ink">
       <SiteHeader />
-      <main className="mx-auto w-[min(1040px,calc(100%_-_48px))] max-[720px]:w-[min(1040px,calc(100%_-_36px))]">
+      <main className="mx-auto w-[min(1040px,calc(100%_-_48px))] pt-[78px] max-[720px]:w-[min(1040px,calc(100%_-_36px))] max-[720px]:pt-[68px]">
         <header className="grid grid-cols-1 gap-x-12 gap-y-6 py-[92px] pb-16 max-[720px]:py-16 max-[720px]:pb-[58px]">
           <p className="m-0 text-[11px] font-[850] tracking-[0.17em] text-brand uppercase">
             CHANGELOG
@@ -12,9 +12,6 @@ export function UpdatesPage() {
           <h1 className="m-0 font-mincho text-[clamp(48px,7vw,72px)] leading-[1.07] font-[550] tracking-[-0.06em]">
             Changelog
           </h1>
-          <p className="mb-1.5 text-[15px] leading-[1.9] text-muted">
-            アプリと判定モデルの変更を記録します。
-          </p>
         </header>
 
         <ol className="m-0 list-none p-0 pb-[120px]">
@@ -26,11 +23,14 @@ export function UpdatesPage() {
               </time>
             </div>
             <div>
-              <h2 className="m-0 font-mincho text-3xl">甲虫分類MVP</h2>
+              <h2 className="m-0 font-mincho text-3xl">最初の公開版</h2>
               <ul className="mt-5 list-disc pl-[1.4em] leading-8 text-muted">
-                <li>カメラと端末内画像から甲虫を分類</li>
-                <li>クビアカツヤカミキリを重点対象として表示</li>
-                <li>WebGPU対応端末ではWebGPU、その他はWASMで推論</li>
+                <li>カメラで撮影した写真や、端末内の写真から甲虫を判定</li>
+                <li>日本で観察された甲虫422種に対応</li>
+                <li>クビアカツヤカミキリを重点対象として案内</li>
+                <li>
+                  判定モデルを一度読み込めば、ページを開いた状態では通信なしで判定できます
+                </li>
               </ul>
             </div>
           </li>
