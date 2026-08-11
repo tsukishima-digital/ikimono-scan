@@ -18,4 +18,4 @@ task infra:plan
 
 `task preview:provision`は`dev.ikimono-scan.app`の開発用リソースを作成するworkflowを起動します。作成後はCloudflareへログイン済みの端末で`task dev:mobile`を実行すると、Accessで保護されたHTTPS経路からローカルUIを確認できます。
 
-GitHub ActionsのCloudflare API tokenには、開発用リソースの作成に必要なCloudflare Tunnel Edit、Access: Apps and Policies Edit、対象zoneのDNS Editを付与します。AccessはCloudflareアカウントのメンバーだけを許可し、共有パスワードは使用しません。
+preview workflowは専用のGitHub Secret `CLOUDFLARE_PREVIEW_API_TOKEN`を使用します。このCloudflare API tokenには、開発用リソースの作成に必要なCloudflare Tunnel Edit、Access: Apps and Policies Edit、対象zoneのDNS EditとZone Readだけを付与します。本番用の`CLOUDFLARE_API_TOKEN`とは分離します。AccessはCloudflareアカウントのメンバーだけを許可し、共有パスワードは使用しません。
