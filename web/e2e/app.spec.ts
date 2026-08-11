@@ -44,12 +44,8 @@ test("first-time visitors start the scanner deliberately and keep that choice", 
 }) => {
   await page.goto("/");
 
-  await expect(page).toHaveURL(/\/about$/);
-  await expect(
-    page.getByRole("heading", {
-      name: /生き物スキャンは、\s*生物の写真を分類できます。/,
-    }),
-  ).toBeVisible();
+  await expect(page).toHaveURL(/\/how-to$/);
+  await expect(page.getByRole("heading", { name: "How to use" })).toBeVisible();
   await expectNoAutomaticAccessibilityViolations(page);
 
   const startButton = page.getByRole("button", { name: "カメラを開く" });
