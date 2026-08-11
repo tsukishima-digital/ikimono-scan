@@ -92,6 +92,17 @@ async function denyCamera(page: Page) {
   });
 }
 
+async function keepCameraPending(page: Page) {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "mediaDevices", {
+      configurable: true,
+      value: {
+        getUserMedia: () => new Promise<MediaStream>(() => undefined),
+      },
+    });
+  });
+}
+
 async function completeOnboarding(page: Page) {
   await page.addInitScript(
     (key) => localStorage.setItem(key, "complete"),
@@ -146,6 +157,48 @@ async function expectDecodedImages(page: Page, images: Locator) {
 
 test.beforeEach(async ({ page }) => {
   await denyCamera(page);
+});
+
+test("scanner input modes stay inside the viewport on every screen size", async ({
+  page,
+}) => {
+  await completeOnboarding(page);
+  await keepCameraPending(page);
+
+  for (const viewport of [
+    { width: 390, height: 664 },
+    { width: 820, height: 1180 },
+    { width: 1280, height: 720 },
+  ]) {
+    await page.setViewportSize(viewport);
+
+    for (const search of ["", "?mode=photo"]) {
+      await page.goto(`/${search}`);
+      await expect(page.getByLabel("生き物を撮影して判定")).toBeVisible();
+      await expect(
+        page.getByRole("tab", { name: search ? "写真" : "撮影" }),
+      ).toHaveAttribute("aria-selected", "true");
+
+      const viewportState = await page.evaluate(() => {
+        const scrollingElement = document.scrollingElement!;
+        return {
+          bodyBackground: getComputedStyle(document.body).backgroundColor,
+          documentBackground: getComputedStyle(
+            document.documentElement,
+          ).backgroundColor,
+          innerHeight: window.innerHeight,
+          scrollHeight: scrollingElement.scrollHeight,
+        };
+      });
+
+      expect(viewportState.scrollHeight).toBe(viewportState.innerHeight);
+      expect(viewportState.bodyBackground).toBe("rgb(9, 16, 12)");
+      expect(viewportState.documentBackground).toBe("rgb(9, 16, 12)");
+
+      await page.evaluate(() => window.scrollTo(0, 100));
+      expect(await page.evaluate(() => window.scrollY)).toBe(0);
+    }
+  }
 });
 
 for (const pathname of contentPagePaths) {
