@@ -43,8 +43,8 @@ resource "cloudflare_zero_trust_access_policy" "owner" {
   decision   = "allow"
   include = [
     {
-      email = {
-        email = "itto.higuchi@gmail.com"
+      cloudflare_account_member = {
+        account_id = var.cloudflare_account_id
       }
     },
   ]

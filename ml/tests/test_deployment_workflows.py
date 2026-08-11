@@ -1,4 +1,5 @@
 import re
+import tomllib
 from pathlib import Path
 
 import yaml
@@ -6,6 +7,7 @@ import yaml
 REPOSITORY_ROOT = Path(__file__).parents[2]
 WORKFLOWS = REPOSITORY_ROOT / ".github" / "workflows"
 TASKFILE = REPOSITORY_ROOT / "Taskfile.yml"
+GITLEAKS_CONFIG = REPOSITORY_ROOT / ".gitleaks.toml"
 PINNED_ACTION = re.compile(r"^[^\s@]+@[0-9a-f]{40}$")
 
 
@@ -161,14 +163,31 @@ def test_preview_workflow_is_manual_serialized_and_applies_a_saved_plan():
     assert "pull_request_target" not in source
 
 
-def test_preview_infrastructure_is_access_protected_for_the_owner():
+def test_preview_infrastructure_is_access_protected_for_cloudflare_account_members():
     source = (REPOSITORY_ROOT / "infra" / "preview" / "main.tf").read_text()
 
     assert 'hostname = "dev.ikimono-scan.app"' in source
     assert 'service  = "http://localhost:5175"' in source
     assert "cloudflare_zero_trust_access_application" in source
     assert "cloudflare_zero_trust_access_policy" in source
-    assert 'email = "itto.higuchi@gmail.com"' in source
+    assert "cloudflare_account_member" in source
+    assert "email = {" not in source
+
+
+def test_gitleaks_rejects_personal_environment_identifiers():
+    config = tomllib.loads(GITLEAKS_CONFIG.read_text())
+    privacy_rule = next(
+        rule for rule in config["rules"] if rule["id"] == "public-repository-personal-identifiers"
+    )
+
+    assert "@gmail" in privacy_rule["regex"]
+    assert "/Users/" in privacy_rule["regex"]
+    assert "[.]ts[.]net" in privacy_rule["regex"]
+    assert privacy_rule["allowlist"]["commits"] == [
+        "68b78799af0c96e5e8e38d45ecf7e67cdec22e04",
+        "db47f6f9f6ab1404d3b0841f44bc56128ed79273",
+        "260b6bd3feb48d3501c4fddc8d10b75eaca60c5d",
+    ]
 
 
 def test_production_domain_can_be_removed_without_destroying_the_worker():

@@ -1,0 +1,16 @@
+[extend]
+useDefault = true
+
+[[rules]]
+id = "public-repository-personal-identifiers"
+description = "Personal environment identifiers do not belong in the public repository."
+regex = '''(?i)(?:[a-z0-9._%+-]+@gmail[.]com|/Users/[a-z0-9._-]+(?:/|$)|[a-z0-9-]+[.]ts[.]net)'''
+keywords = ["@gmail", "/Users/", ".ts.net"]
+
+[rules.allowlist]
+commits = [
+  "68b78799af0c96e5e8e38d45ecf7e67cdec22e04",
+  "db47f6f9f6ab1404d3b0841f44bc56128ed79273",
+  "260b6bd3feb48d3501c4fddc8d10b75eaca60c5d",
+]
+paths = ['''^\.gitleaks\.toml$''']
