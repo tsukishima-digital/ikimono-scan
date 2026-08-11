@@ -1,4 +1,5 @@
 import {
+  act,
   fireEvent,
   render,
   screen,
@@ -21,6 +22,33 @@ vi.mock("./inference/classifier", async (importOriginal) => {
 });
 
 const mockedCreateClassifier = vi.mocked(createClassifier);
+
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  let reject!: (reason?: unknown) => void;
+  const promise = new Promise<T>((resolvePromise, rejectPromise) => {
+    resolve = resolvePromise;
+    reject = rejectPromise;
+  });
+  return { promise, reject, resolve };
+}
+
+function classificationResult(commonName: string, id: string) {
+  return {
+    predictions: [
+      {
+        classInfo: {
+          id,
+          commonName,
+          scientificName: `Species ${id}`,
+        },
+        confidence: 0.93,
+      },
+    ],
+    accepted: true,
+    executionProvider: "wasm" as const,
+  };
+}
 
 function installCamera(getUserMedia: ReturnType<typeof vi.fn>) {
   Object.defineProperty(navigator, "mediaDevices", {
@@ -61,6 +89,7 @@ describe("App", () => {
 
   afterEach(() => {
     window.localStorage.clear();
+    vi.restoreAllMocks();
     vi.unstubAllGlobals();
     Reflect.deleteProperty(navigator, "mediaDevices");
   });
@@ -229,6 +258,118 @@ describe("App", () => {
     expect(
       screen.getByRole("button", { name: "選び直す" }),
     ).toBeInTheDocument();
+  });
+
+  it("invalidates a pending classification when the input method changes", async () => {
+    const pending = deferred<ReturnType<typeof classificationResult>>();
+    mockedCreateClassifier.mockResolvedValueOnce({
+      classify: vi.fn().mockReturnValue(pending.promise),
+    });
+    installCamera(
+      vi.fn().mockRejectedValue(new DOMException("denied", "NotAllowedError")),
+    );
+    render(<App />);
+    const input = await screen.findByLabelText("写真を選ぶ");
+
+    fireEvent.change(input, {
+      target: {
+        files: [new File(["old"], "old.jpg", { type: "image/jpeg" })],
+      },
+    });
+
+    expect(await screen.findByText("写真を判定しています")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("tab", { name: "撮影" }));
+
+    await act(async () => {
+      pending.resolve(classificationResult("古い判定", "old"));
+      await pending.promise;
+    });
+
+    expect(screen.queryByText("古い判定")).not.toBeInTheDocument();
+    expect(await screen.findByLabelText("写真を選ぶ")).toBeInTheDocument();
+  });
+
+  it("keeps the newest result when an earlier retry fails later", async () => {
+    const first = deferred<ReturnType<typeof classificationResult>>();
+    const classify = vi
+      .fn()
+      .mockReturnValueOnce(first.promise)
+      .mockResolvedValueOnce(classificationResult("新しい判定", "new"));
+    mockedCreateClassifier.mockResolvedValueOnce({ classify });
+    installCamera(
+      vi.fn().mockRejectedValue(new DOMException("denied", "NotAllowedError")),
+    );
+    render(<App />);
+    const firstInput = await screen.findByLabelText("写真を選ぶ");
+
+    fireEvent.change(firstInput, {
+      target: {
+        files: [new File(["old"], "old.jpg", { type: "image/jpeg" })],
+      },
+    });
+    expect(await screen.findByText("写真を判定しています")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "選び直す" }));
+
+    fireEvent.change(screen.getByLabelText("写真を選ぶ"), {
+      target: {
+        files: [new File(["new"], "new.jpg", { type: "image/jpeg" })],
+      },
+    });
+    expect(await screen.findByText("新しい判定")).toBeInTheDocument();
+
+    await act(async () => {
+      first.reject(new Error("古い判定の失敗"));
+      await first.promise.catch(() => undefined);
+    });
+
+    expect(screen.getByText("新しい判定")).toBeInTheDocument();
+    expect(screen.queryByText("古い判定の失敗")).not.toBeInTheDocument();
+  });
+
+  it("releases camera and preview resources when they leave use", async () => {
+    const pending = deferred<ReturnType<typeof classificationResult>>();
+    mockedCreateClassifier.mockResolvedValueOnce({
+      classify: vi.fn().mockReturnValue(pending.promise),
+    });
+    const stop = vi.fn();
+    const getUserMedia = vi.fn().mockResolvedValue({
+      getTracks: () => [{ stop }],
+    } as unknown as MediaStream);
+    const revokeObjectURL = vi.spyOn(URL, "revokeObjectURL");
+    vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:preview");
+    installCamera(getUserMedia);
+    render(<App />);
+
+    await waitFor(() => expect(getUserMedia).toHaveBeenCalledOnce());
+    fireEvent.click(screen.getByRole("tab", { name: "写真" }));
+    await waitFor(() => expect(stop).toHaveBeenCalledOnce());
+
+    fireEvent.change(screen.getByLabelText("写真を選ぶ"), {
+      target: {
+        files: [new File(["image"], "beetle.jpg", { type: "image/jpeg" })],
+      },
+    });
+    expect(await screen.findByAltText("判定する写真")).toHaveAttribute(
+      "src",
+      "blob:preview",
+    );
+    expect(await screen.findByText("写真を判定しています")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "メニューを開く" }));
+    fireEvent.click(screen.getByRole("link", { name: "About" }));
+
+    await waitFor(() =>
+      expect(revokeObjectURL).toHaveBeenCalledWith("blob:preview"),
+    );
+    expect(window.location.pathname).toBe("/about");
+
+    await act(async () => {
+      pending.reject(new Error("離脱後の失敗"));
+      await pending.promise.catch(() => undefined);
+    });
+    expect(
+      screen.getByRole("heading", { name: "現在判定できる生き物" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("離脱後の失敗")).not.toBeInTheDocument();
   });
 
   it("rejects a non-image file", async () => {

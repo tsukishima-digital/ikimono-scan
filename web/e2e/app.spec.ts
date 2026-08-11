@@ -81,6 +81,36 @@ test("model download failure leaves the photo flow usable for retry", async ({
   await expect(page.getByLabel("写真を選ぶ")).toBeVisible();
 });
 
+test("resetting during model loading ignores the abandoned request", async ({
+  page,
+}) => {
+  await completeOnboarding(page);
+  let releaseRequest!: () => void;
+  const requestReleased = new Promise<void>((resolve) => {
+    releaseRequest = resolve;
+  });
+  await page.route("**/models/manifest.json", async (route) => {
+    await requestReleased;
+    await route.fulfill({ status: 503, body: "abandoned request" });
+  });
+  await page.goto("/");
+
+  await page.getByLabel("写真を選ぶ").setInputFiles(specimenPath);
+  await expect(page.getByText("判定モデルを準備しています")).toBeVisible();
+  await page.getByRole("button", { name: "選び直す" }).click();
+  await expect(page.getByLabel("写真を選ぶ")).toBeVisible();
+
+  const abandonedResponse = page.waitForResponse((response) =>
+    response.url().endsWith("/models/manifest.json"),
+  );
+  releaseRequest();
+  await abandonedResponse;
+  await expect(page.getByRole("alert")).toHaveCount(0);
+  await expect(page.getByText("判定モデルを読み込めませんでした")).toHaveCount(
+    0,
+  );
+});
+
 test("a model integrity failure is explicit and recoverable", async ({
   page,
 }) => {

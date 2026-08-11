@@ -31,6 +31,7 @@ export function ScannerPage({
 }) {
   const classifier = useRef<Promise<Classifier> | null>(null);
   const objectUrl = useRef<string | null>(null);
+  const requestGeneration = useRef(0);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const cameraSupported = Boolean(navigator.mediaDevices?.getUserMedia);
@@ -86,6 +87,7 @@ export function ScannerPage({
 
   useEffect(
     () => () => {
+      requestGeneration.current += 1;
       stopCamera(streamRef);
       if (objectUrl.current) URL.revokeObjectURL(objectUrl.current);
     },
@@ -94,7 +96,13 @@ export function ScannerPage({
 
   async function handleFile(file?: File) {
     if (!file) return;
+    const requestId = ++requestGeneration.current;
+    await classifyFile(file, requestId);
+  }
+
+  async function classifyFile(file: File, requestId: number) {
     if (!file.type.startsWith("image/")) {
+      if (requestGeneration.current !== requestId) return;
       setPhase("error");
       setError("画像ファイルを選んでください。");
       return;
@@ -106,17 +114,37 @@ export function ScannerPage({
     setResult(undefined);
     setError(undefined);
 
+    setPhase("loading-model");
+    let classifierPromise = classifier.current;
+    let loadedClassifier: Classifier;
     try {
-      if (!classifier.current) {
-        setPhase("loading-model");
-        classifier.current = createClassifier();
+      if (!classifierPromise) {
+        classifierPromise = createClassifier();
+        classifier.current = classifierPromise;
       }
-      const loadedClassifier = await classifier.current;
-      setPhase("classifying");
-      setResult(await loadedClassifier.classify(file));
+      loadedClassifier = await classifierPromise;
+    } catch (caught) {
+      if (classifier.current === classifierPromise) classifier.current = null;
+      if (requestGeneration.current !== requestId) return;
+      setPhase("error");
+      setError(
+        caught instanceof Error
+          ? caught.message
+          : "判定中に問題が発生しました。",
+      );
+      return;
+    }
+    if (requestGeneration.current !== requestId) return;
+
+    setPhase("classifying");
+    try {
+      const classification = await loadedClassifier.classify(file);
+      if (requestGeneration.current !== requestId) return;
+      setResult(classification);
       setPhase("complete");
     } catch (caught) {
-      classifier.current = null;
+      if (requestGeneration.current !== requestId) return;
+      if (classifier.current === classifierPromise) classifier.current = null;
       setPhase("error");
       setError(
         caught instanceof Error
@@ -128,9 +156,13 @@ export function ScannerPage({
 
   async function capturePhoto() {
     if (!videoRef.current) return;
+    const requestId = ++requestGeneration.current;
     try {
-      await handleFile(await captureVideoFrame(videoRef.current));
+      const file = await captureVideoFrame(videoRef.current);
+      if (requestGeneration.current !== requestId) return;
+      await classifyFile(file, requestId);
     } catch (caught) {
+      if (requestGeneration.current !== requestId) return;
       setPhase("error");
       setError(
         caught instanceof Error
@@ -141,6 +173,7 @@ export function ScannerPage({
   }
 
   function resetScanner() {
+    requestGeneration.current += 1;
     if (objectUrl.current) URL.revokeObjectURL(objectUrl.current);
     objectUrl.current = null;
     setPreviewUrl(undefined);
@@ -318,23 +351,32 @@ export function ResultSheet({
       aria-live="polite"
     >
       {(phase === "loading-model" || phase === "classifying") && (
-        <div className="flex min-h-[210px] items-center gap-[18px] p-[34px] max-[720px]:p-6">
-          <span
-            className="size-7 shrink-0 animate-spin rounded-full border-3 border-[#c9d6c9] border-t-brand"
-            aria-hidden="true"
-          />
-          <div>
-            <strong className="text-lg">
-              {phase === "loading-model"
-                ? "判定モデルを準備しています"
-                : "写真を判定しています"}
-            </strong>
-            <p className="mt-[7px] text-[13px] text-muted">
-              {phase === "loading-model"
-                ? "初回だけモデルを端末に保存します。"
-                : "写真は端末の外へ送信しません。"}
-            </p>
+        <div className="min-h-[210px] p-[34px] max-[720px]:p-6">
+          <div className="flex items-center gap-[18px]">
+            <span
+              className="size-7 shrink-0 animate-spin rounded-full border-3 border-[#c9d6c9] border-t-brand"
+              aria-hidden="true"
+            />
+            <div>
+              <strong className="text-lg">
+                {phase === "loading-model"
+                  ? "判定モデルを準備しています"
+                  : "写真を判定しています"}
+              </strong>
+              <p className="mt-[7px] text-[13px] text-muted">
+                {phase === "loading-model"
+                  ? "初回だけモデルを端末に保存します。"
+                  : "写真は端末の外へ送信しません。"}
+              </p>
+            </div>
           </div>
+          <button
+            className="mt-6 cursor-pointer rounded-full border-0 bg-brand-dark px-[18px] py-[11px] font-extrabold text-white active:scale-[0.97] focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-lime"
+            type="button"
+            onClick={onReset}
+          >
+            {resetLabel}
+          </button>
         </div>
       )}
 
