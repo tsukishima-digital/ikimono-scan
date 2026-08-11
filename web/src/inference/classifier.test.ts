@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import * as ort from "onnxruntime-web/webgpu";
 
 import {
   acceptsPrediction,
@@ -13,6 +14,12 @@ const classes = [
   { id: "b", scientificName: "Species beta" },
   { id: "c", scientificName: "Species gamma" },
 ];
+
+describe("ONNX Runtime environment", () => {
+  it("runs WASM inference without spawning a worker", () => {
+    expect(ort.env.wasm.numThreads).toBe(1);
+  });
+});
 
 describe("topK", () => {
   it("returns predictions ordered by softmax confidence", () => {
