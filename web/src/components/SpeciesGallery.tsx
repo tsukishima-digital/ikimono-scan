@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { speciesPhotos, type SpeciesPhoto } from "../content/species-photos";
 import type { ModelClass } from "../inference/types";
+import { shouldDismissPhotoSheet } from "../photo-sheet-motion";
 
 const GALLERY_BATCH_SIZE = 24;
 
@@ -13,6 +14,17 @@ interface SelectedSpecies {
 interface RevealRequest {
   id: string;
   sequence: number;
+}
+
+interface DragSample {
+  position: number;
+  time: number;
+}
+
+const MOBILE_SHEET_MEDIA = "(max-width: 620px)";
+
+function matchesMedia(query: string) {
+  return typeof window.matchMedia === "function" && window.matchMedia(query).matches;
 }
 
 function normalizeSearchText(value: string) {
@@ -277,9 +289,201 @@ function PhotoDialog({
   selected: SelectedSpecies;
   onClose: () => void;
 }) {
+  const backdrop = useRef<HTMLDivElement>(null);
+  const scrim = useRef<HTMLDivElement>(null);
   const closeButton = useRef<HTMLButtonElement>(null);
   const dialog = useRef<HTMLElement>(null);
+  const animationFrame = useRef<number | undefined>(undefined);
+  const closing = useRef(false);
+  const sheetOffset = useRef(0);
+  const drag = useRef<
+    | {
+        active: boolean;
+        offset: number;
+        pointerId: number;
+        samples: DragSample[];
+        startOffset: number;
+        startY: number;
+      }
+    | undefined
+  >(undefined);
   const name = selected.species.commonName || "和名なし";
+
+  function stopAnimation() {
+    if (animationFrame.current !== undefined) {
+      window.cancelAnimationFrame(animationFrame.current);
+      animationFrame.current = undefined;
+    }
+  }
+
+  function applySheetOffset(offset: number) {
+    const sheet = dialog.current;
+    if (!sheet) return;
+    const clampedOffset = Math.max(0, offset);
+    sheetOffset.current = clampedOffset;
+    sheet.style.transform = `translate3d(0, ${clampedOffset}px, 0)`;
+    const progress = Math.min(clampedOffset / (sheet.offsetHeight * 0.8), 1);
+    if (scrim.current) scrim.current.style.opacity = `${1 - progress}`;
+    if (backdrop.current) {
+      backdrop.current.style.backdropFilter = `blur(${12 * (1 - progress)}px)`;
+      backdrop.current.style.setProperty(
+        "-webkit-backdrop-filter",
+        `blur(${12 * (1 - progress)}px)`,
+      );
+    }
+  }
+
+  function animateSheet(
+    target: number,
+    initialVelocity: number,
+    onComplete?: () => void,
+  ) {
+    const reduceMotion = matchesMedia("(prefers-reduced-motion: reduce)");
+    if (reduceMotion) {
+      applySheetOffset(target);
+      onComplete?.();
+      return;
+    }
+
+    stopAnimation();
+    let position = sheetOffset.current;
+    let velocity = initialVelocity;
+    let previousTime = performance.now();
+    const stiffness = 460;
+    const damping = 38;
+
+    const advance = (time: number) => {
+      const elapsed = Math.min((time - previousTime) / 1000, 0.032);
+      previousTime = time;
+      const acceleration =
+        -stiffness * (position - target) - damping * velocity;
+      velocity += acceleration * elapsed;
+      position += velocity * elapsed;
+      if (target === 0) position = Math.max(0, position);
+      if (drag.current) drag.current.offset = position;
+      applySheetOffset(position);
+
+      if (Math.abs(position - target) < 0.5 && Math.abs(velocity) < 5) {
+        applySheetOffset(target);
+        animationFrame.current = undefined;
+        onComplete?.();
+        return;
+      }
+      animationFrame.current = window.requestAnimationFrame(advance);
+    };
+
+    animationFrame.current = window.requestAnimationFrame(advance);
+  }
+
+  function dismissWithMotion(velocity = 0) {
+    if (closing.current) return;
+    if (!matchesMedia(MOBILE_SHEET_MEDIA) || !dialog.current) {
+      onClose();
+      return;
+    }
+    closing.current = true;
+    const currentTransform = getComputedStyle(dialog.current).transform;
+    sheetOffset.current =
+      currentTransform === "none"
+        ? sheetOffset.current
+        : Math.max(0, new DOMMatrixReadOnly(currentTransform).m42);
+    dialog.current.getAnimations().forEach((animation) => animation.cancel());
+    applySheetOffset(sheetOffset.current);
+    const target = window.innerHeight + 40;
+    animateSheet(target, Math.max(velocity, 0), onClose);
+  }
+
+  function handlePointerDown(event: React.PointerEvent<HTMLDivElement>) {
+    if (
+      event.button !== 0 ||
+      !matchesMedia(MOBILE_SHEET_MEDIA) ||
+      !dialog.current
+    ) {
+      return;
+    }
+
+    closing.current = false;
+    stopAnimation();
+    const currentTransform = getComputedStyle(dialog.current).transform;
+    const startOffset =
+      currentTransform === "none"
+        ? 0
+        : Math.max(0, new DOMMatrixReadOnly(currentTransform).m42);
+    dialog.current.getAnimations().forEach((animation) => animation.cancel());
+    drag.current = {
+      active: true,
+      offset: startOffset,
+      pointerId: event.pointerId,
+      samples: [{ position: event.clientY, time: performance.now() }],
+      startOffset,
+      startY: event.clientY,
+    };
+    event.currentTarget.setPointerCapture(event.pointerId);
+    applySheetOffset(startOffset);
+  }
+
+  function handlePointerMove(event: React.PointerEvent<HTMLDivElement>) {
+    const currentDrag = drag.current;
+    if (!currentDrag?.active || currentDrag.pointerId !== event.pointerId) {
+      return;
+    }
+    event.preventDefault();
+    const distance = event.clientY - currentDrag.startY;
+    const sheetHeight = dialog.current?.offsetHeight ?? window.innerHeight;
+    const offset =
+      distance >= 0
+        ? currentDrag.startOffset + distance
+        : currentDrag.startOffset -
+          (Math.abs(distance) * sheetHeight * 0.18) /
+            (sheetHeight + Math.abs(distance) * 0.18);
+    currentDrag.offset = Math.max(0, offset);
+    const sampleTime = performance.now();
+    currentDrag.samples.push({
+      position: event.clientY,
+      time: sampleTime,
+    });
+    currentDrag.samples = currentDrag.samples.filter(
+      ({ time }) => sampleTime - time <= 120,
+    );
+    applySheetOffset(currentDrag.offset);
+  }
+
+  function finishDrag(
+    event: React.PointerEvent<HTMLDivElement>,
+    cancelled = false,
+  ) {
+    const currentDrag = drag.current;
+    if (!currentDrag?.active || currentDrag.pointerId !== event.pointerId) {
+      return;
+    }
+    currentDrag.active = false;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    currentDrag.samples.push({
+      position: event.clientY,
+      time: performance.now(),
+    });
+    const firstSample = currentDrag.samples[0];
+    const lastSample = currentDrag.samples.at(-1) ?? firstSample;
+    const elapsed = Math.max(lastSample.time - firstSample.time, 1);
+    const velocity =
+      ((lastSample.position - firstSample.position) / elapsed) * 1000;
+    const sheetHeight = dialog.current?.offsetHeight ?? window.innerHeight;
+    const shouldDismiss =
+      !cancelled &&
+      shouldDismissPhotoSheet({
+        offset: currentDrag.offset,
+        sheetHeight,
+        velocity,
+      });
+
+    if (shouldDismiss) {
+      dismissWithMotion(velocity);
+    } else {
+      animateSheet(0, velocity);
+    }
+  }
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
@@ -289,7 +493,7 @@ function PhotoDialog({
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
-        onClose();
+        closeButton.current?.click();
         return;
       }
       if (event.key !== "Tab") return;
@@ -310,6 +514,7 @@ function PhotoDialog({
 
     document.addEventListener("keydown", handleKeyDown);
     return () => {
+      stopAnimation();
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", handleKeyDown);
     };
@@ -317,13 +522,19 @@ function PhotoDialog({
 
   return (
     <div
-      className="fixed inset-0 z-50 grid cursor-zoom-out place-items-center bg-ink/76 p-6 backdrop-blur-md max-[620px]:items-end max-[620px]:p-0"
+      className="photo-lightbox-backdrop fixed inset-0 z-50 grid cursor-zoom-out place-items-center p-6 backdrop-blur-md max-[620px]:items-end max-[620px]:p-0"
+      ref={backdrop}
       onMouseDown={(event) => {
-        if (event.target === event.currentTarget) onClose();
+        if (event.target === event.currentTarget) dismissWithMotion();
       }}
     >
+      <div
+        className="pointer-events-none absolute inset-0 bg-ink/76"
+        data-testid="species-photo-scrim"
+        ref={scrim}
+      />
       <section
-        className="animate-materialize relative grid h-[min(820px,calc(100dvh_-_48px))] max-h-[min(820px,calc(100dvh_-_48px))] w-[min(760px,100%)] cursor-auto grid-rows-[minmax(0,1fr)_180px] overflow-hidden rounded-[26px] bg-card shadow-[0_30px_80px_rgb(0_0_0/35%)] max-[620px]:h-[92dvh] max-[620px]:max-h-[92dvh] max-[620px]:w-full max-[620px]:grid-rows-[minmax(0,1fr)_210px] max-[620px]:rounded-t-[26px] max-[620px]:rounded-b-none"
+        className="photo-lightbox-sheet animate-materialize relative grid h-[min(820px,calc(100dvh_-_48px))] max-h-[min(820px,calc(100dvh_-_48px))] w-[min(760px,100%)] cursor-auto grid-rows-[minmax(0,1fr)_180px] overflow-hidden rounded-[26px] bg-card shadow-[0_30px_80px_rgb(0_0_0/35%)] max-[620px]:h-[92dvh] max-[620px]:max-h-[92dvh] max-[620px]:w-full max-[620px]:grid-rows-[minmax(0,1fr)_210px] max-[620px]:rounded-t-[26px] max-[620px]:rounded-b-none"
         role="dialog"
         aria-modal="true"
         aria-labelledby="species-photo-title"
@@ -333,21 +544,31 @@ function PhotoDialog({
           className="absolute top-3 right-3 z-10 grid size-11 cursor-pointer place-items-center rounded-full border border-white/25 bg-ink/72 text-xl text-white backdrop-blur-lg transition-transform duration-100 active:scale-[0.94] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-lime"
           type="button"
           aria-label="閉じる"
-          onClick={onClose}
+          onClick={() => dismissWithMotion()}
           ref={closeButton}
         >
           <span aria-hidden="true">×</span>
         </button>
         <div
-          className="relative min-h-0 overflow-hidden bg-[#101813]"
+          className="photo-lightbox-drag-surface relative min-h-0 overflow-hidden bg-[#101813]"
           data-testid="species-photo-stage"
+          onPointerCancel={(event) => finishDrag(event, true)}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={finishDrag}
         >
+          <div
+            className="pointer-events-none absolute top-2.5 left-1/2 z-10 hidden h-1.5 w-11 -translate-x-1/2 rounded-full bg-white/72 shadow-[0_1px_4px_rgb(0_0_0/25%)] max-[620px]:block"
+            data-testid="species-photo-drag-handle"
+            aria-hidden="true"
+          />
           <img
             className="absolute inset-0 block size-full object-contain object-center"
             src={selected.photo.photoUrl}
             alt={`${name}の写真`}
             width={selected.photo.width}
             height={selected.photo.height}
+            draggable={false}
           />
         </div>
         <div
