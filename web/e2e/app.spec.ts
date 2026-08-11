@@ -142,7 +142,10 @@ test("Safari can preprocess an iPhone HEIC photo", async ({
   page,
   browserName,
 }) => {
-  test.skip(browserName !== "webkit", "HEIC is a Safari compatibility contract");
+  test.skip(
+    browserName !== "webkit" || process.platform !== "darwin",
+    "HEIC requires Safari's Apple-platform image decoder",
+  );
   await page.goto("/__dev/preprocess");
 
   await page.getByLabel("前処理する写真").setInputFiles({

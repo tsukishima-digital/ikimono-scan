@@ -8,6 +8,7 @@
     "build:e2e": "npm run typecheck && VITE_E2E_FIXTURES=true vite build --config vite.e2e.config.ts",
     "dev": "vite",
     "e2e": "playwright test",
+    "e2e:heic": "playwright test e2e/app.spec.ts --project=webkit --grep \"iPhone HEIC\"",
     "e2e:production": "playwright test --config playwright.production.config.ts",
     "lint": "eslint .",
     "preview": "vite preview",
