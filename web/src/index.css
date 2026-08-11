@@ -35,7 +35,16 @@
 
   body {
     min-width: 320px;
-    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  :root:has([data-scanner-viewport]),
+  body:has([data-scanner-viewport]),
+  #root:has([data-scanner-viewport]) {
+    height: 100dvh;
+    overflow: hidden;
+    overscroll-behavior: none;
+    background: #09100c;
   }
 
   button,

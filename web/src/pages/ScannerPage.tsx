@@ -209,13 +209,16 @@ export function ScannerPage({
   }
 
   return (
-    <main className="min-h-dvh bg-[#09100c] text-white">
+    <main
+      className="h-dvh overflow-hidden bg-[#09100c] text-white"
+      data-scanner-viewport
+    >
       <SiteHeader
         overlay
         howToHref="/how-to#photo-guide"
       />
       <section
-        className="relative min-h-dvh w-full overflow-hidden bg-[#09100c]"
+        className="relative h-full w-full overflow-hidden bg-[#09100c]"
         aria-label="生き物を撮影して判定"
       >
         <div
