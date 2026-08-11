@@ -62,13 +62,15 @@ class INaturalistClient:
         *,
         per_page: int,
         max_taxa: int | None = None,
+        request_sleep_seconds: float = 0.0,
     ) -> list[Taxon]:
         taxa: list[Taxon] = []
         page = 1
+        page_size = min(per_page, 500)
         while max_taxa is None or len(taxa) < max_taxa:
             payload = self.get(
                 "observations/species_counts",
-                {**params, "page": page, "per_page": min(per_page, 500)},
+                {**params, "page": page, "per_page": page_size},
             )
             results = payload.get("results", [])
             if not results:
@@ -89,7 +91,10 @@ class INaturalistClient:
                 )
                 if max_taxa is not None and len(taxa) >= max_taxa:
                     break
+            if (max_taxa is not None and len(taxa) >= max_taxa) or len(results) < page_size:
+                break
             page += 1
+            time.sleep(request_sleep_seconds)
         return taxa
 
     def observations(
@@ -245,6 +250,43 @@ def build_fetch_plan(config: dict[str, Any], client) -> list[TaxonFetchPlanItem]
     per_page = int(limits["per_page"])
     plan: list[TaxonFetchPlanItem] = []
     claimed_taxon_ids: set[int] = set()
+
+    if "observed_species" in taxa_config:
+        observed_config = taxa_config["observed_species"]
+        if observed_config["strategy"] != "all_observed_species":
+            raise ValueError("taxa.observed_species.strategy must be all_observed_species")
+        params = {
+            "place_id": int(place["id"]),
+            "quality_grade": filters["quality_grade"],
+            "photos": str(filters["photos"]).lower(),
+            "rank": filters["rank"],
+            "order": filters.get("species_order", filters.get("order", "desc")),
+            "order_by": filters.get(
+                "species_order_by",
+                filters.get("order_by", "observations_count"),
+            ),
+        }
+        allowed_licenses = _allowed_licenses(filters)
+        if allowed_licenses is not None:
+            params["photo_license"] = ",".join(allowed_licenses)
+        taxa = client.species_counts(
+            params,
+            per_page=per_page,
+            max_taxa=observed_config.get("max_taxa"),
+            request_sleep_seconds=float(limits.get("request_sleep_seconds", 0.0)),
+        )
+        minimum_images = int(limits["min_images_per_taxon"])
+        for taxon in taxa:
+            if taxon.observations_count < minimum_images:
+                continue
+            _append_plan_item(
+                plan,
+                claimed_taxon_ids,
+                taxon,
+                group="observed_species",
+                max_images=int(limits["images_per_taxon"]),
+            )
+        return plan
 
     for target in taxa_config["target"]:
         taxon = client.resolve_taxon(target["scientific_name"])

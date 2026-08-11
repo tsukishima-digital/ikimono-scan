@@ -64,6 +64,12 @@ tasks:
     cmds:
       - npm run e2e
 
+  ui:e2e:heic:
+    desc: Run the HEIC preprocessing contract on macOS WebKit
+    dir: web
+    cmds:
+      - npm run e2e:heic
+
   ui:build:
     desc: Build the production web bundle
     dir: web

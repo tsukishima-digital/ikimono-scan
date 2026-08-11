@@ -7,6 +7,7 @@ import {
 import { contentPageIdFromPath } from "./content-page-routes";
 import { AboutPage } from "./pages/AboutPage";
 import { HowToPage } from "./pages/HowToPage";
+import { PreprocessFixturePage } from "./pages/PreprocessFixturePage";
 import { ResultFixturePage } from "./pages/ResultFixturePage";
 import { ScannerPage, type SourceMode } from "./pages/ScannerPage";
 import { UpdatesPage } from "./pages/UpdatesPage";
@@ -61,6 +62,9 @@ export default function App() {
     import.meta.env.DEV || import.meta.env.VITE_E2E_FIXTURES === "true";
   if (resultFixturesEnabled && pathname === "/__dev/result") {
     return <ResultFixturePage />;
+  }
+  if (resultFixturesEnabled && pathname === "/__dev/preprocess") {
+    return <PreprocessFixturePage />;
   }
   const initialSourceMode =
     new URLSearchParams(window.location.search).get("mode") === "photo"
