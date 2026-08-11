@@ -12,7 +12,7 @@ import { captureVideoFrame } from "../camera/captureVideoFrame";
 
 const TARGET_SCIENTIFIC_NAME = "Aromia bungii";
 
-type SourceMode = "camera" | "library";
+export type SourceMode = "camera" | "library";
 type CameraStatus = "requesting" | "active" | "denied" | "unavailable";
 export type ResultPhase =
   | "idle"
@@ -24,14 +24,18 @@ export type ResultPhase =
 const CAMERA_FALLBACK_MESSAGE =
   "カメラを利用できないため、写真から選んでください。";
 
-export function ScannerPage() {
+export function ScannerPage({
+  initialSourceMode = "camera",
+}: {
+  initialSourceMode?: SourceMode;
+}) {
   const classifier = useRef<Promise<Classifier> | null>(null);
   const objectUrl = useRef<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const cameraSupported = Boolean(navigator.mediaDevices?.getUserMedia);
-  const [sourceMode, setSourceMode] = useState<SourceMode>(
-    cameraSupported ? "camera" : "library",
+  const [sourceMode, setSourceMode] = useState<SourceMode>(() =>
+    initialSourceMode === "library" || !cameraSupported ? "library" : "camera",
   );
   const [cameraStatus, setCameraStatus] = useState<CameraStatus>(
     cameraSupported ? "requesting" : "unavailable",
@@ -161,7 +165,10 @@ export function ScannerPage() {
 
   return (
     <main className="min-h-dvh bg-[#09100c] text-white">
-      <SiteHeader overlay />
+      <SiteHeader
+        overlay
+        howToHref={`/how-to#${sourceMode === "camera" ? "camera" : "photo"}`}
+      />
       <section
         className="relative min-h-dvh w-full overflow-hidden bg-[#09100c]"
         aria-label="生き物を撮影して判定"
