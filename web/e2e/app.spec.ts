@@ -1,11 +1,79 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
+import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 const onboardingKey = "ikimono-scan:onboarding:v1";
 const specimenPath = fileURLToPath(
   new URL("../public/specimens/aromia-bungii-712990656.jpg", import.meta.url),
 );
+const heicFixture = Buffer.from(
+  readFileSync(
+    fileURLToPath(new URL("./fixtures/iphone.heic.base64", import.meta.url)),
+    "utf8",
+  ).trim(),
+  "base64",
+);
+
+async function selectPatternImage(
+  page: Page,
+  type: "image/jpeg" | "image/png" | "image/webp",
+  layout: "landscape" | "portrait",
+  exifOrientation?: 6,
+) {
+  await page.getByLabel("前処理する写真").evaluate(
+    async (element, options) => {
+      const input = element as HTMLInputElement;
+      const canvas = document.createElement("canvas");
+      canvas.width = options.layout === "landscape" ? 120 : 80;
+      canvas.height = options.layout === "landscape" ? 80 : 120;
+      const context = canvas.getContext("2d");
+      if (!context) throw new Error("2D canvas is unavailable");
+
+      context.fillStyle = "#ff0000";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.fillStyle = "#0000ff";
+      if (options.layout === "landscape") {
+        context.fillRect(canvas.width / 2, 0, canvas.width / 2, canvas.height);
+      } else {
+        context.fillRect(0, canvas.height / 2, canvas.width, canvas.height / 2);
+      }
+
+      const blob = await new Promise<Blob>((resolve, reject) =>
+        canvas.toBlob(
+          (value) =>
+            value ? resolve(value) : reject(new Error("image encoding failed")),
+          options.type,
+          0.95,
+        ),
+      );
+      let bytes = new Uint8Array(await blob.arrayBuffer());
+      if (options.exifOrientation === 6) {
+        const exif = new Uint8Array([
+          0xff, 0xe1, 0x00, 0x22, 0x45, 0x78, 0x69, 0x66, 0x00, 0x00,
+          0x49, 0x49, 0x2a, 0x00, 0x08, 0x00, 0x00, 0x00, 0x01, 0x00,
+          0x12, 0x01, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x06, 0x00,
+          0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        ]);
+        const oriented = new Uint8Array(bytes.length + exif.length);
+        oriented.set(bytes.subarray(0, 2));
+        oriented.set(exif, 2);
+        oriented.set(bytes.subarray(2), 2 + exif.length);
+        bytes = oriented;
+      }
+
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(
+        new File([bytes], `pattern.${options.type.split("/")[1]}`, {
+          type: options.type,
+        }),
+      );
+      input.files = dataTransfer.files;
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+    },
+    { exifOrientation, layout, type },
+  );
+}
 
 async function denyCamera(page: Page) {
   await page.addInitScript(() => {
@@ -37,6 +105,53 @@ async function expectNoAutomaticAccessibilityViolations(page: Page) {
 
 test.beforeEach(async ({ page }) => {
   await denyCamera(page);
+});
+
+test("JPEG, PNG, and WebP keep portrait and landscape orientation while resizing", async ({
+  page,
+}) => {
+  await page.goto("/__dev/preprocess");
+
+  for (const type of ["image/jpeg", "image/png", "image/webp"] as const) {
+    await test.step(`${type} landscape`, async () => {
+      await selectPatternImage(page, type, "landscape");
+      await expect(page.getByLabel("前処理結果")).toHaveText(
+        "red,blue,red,blue",
+      );
+    });
+    await test.step(`${type} portrait`, async () => {
+      await selectPatternImage(page, type, "portrait");
+      await expect(page.getByLabel("前処理結果")).toHaveText(
+        "red,red,blue,blue",
+      );
+    });
+  }
+});
+
+test("EXIF Orientation is applied before center cropping", async ({ page }) => {
+  await page.goto("/__dev/preprocess");
+
+  await selectPatternImage(page, "image/jpeg", "landscape", 6);
+
+  await expect(page.getByLabel("前処理結果")).toHaveText(
+    "red,red,blue,blue",
+  );
+});
+
+test("Safari can preprocess an iPhone HEIC photo", async ({
+  page,
+  browserName,
+}) => {
+  test.skip(browserName !== "webkit", "HEIC is a Safari compatibility contract");
+  await page.goto("/__dev/preprocess");
+
+  await page.getByLabel("前処理する写真").setInputFiles({
+    name: "iphone.heic",
+    mimeType: "image/heic",
+    buffer: heicFixture,
+  });
+
+  await expect(page.getByText("処理できました")).toBeVisible();
 });
 
 test("first-time visitors start the scanner deliberately and keep that choice", async ({

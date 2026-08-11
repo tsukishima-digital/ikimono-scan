@@ -391,6 +391,67 @@ describe("App", () => {
     expect(mockedCreateClassifier).not.toHaveBeenCalled();
   });
 
+  it("accepts an iPhone HEIC file when the browser omits its MIME type", async () => {
+    installCamera(
+      vi.fn().mockRejectedValue(new DOMException("denied", "NotAllowedError")),
+    );
+    render(<App />);
+
+    fireEvent.change(await screen.findByLabelText("写真を選ぶ"), {
+      target: {
+        files: [new File(["heic"], "iphone.HEIC")],
+      },
+    });
+
+    expect(await screen.findByText("クビアカツヤカミキリ")).toBeInTheDocument();
+  });
+
+  it("rejects an unsupported image format before loading the model", async () => {
+    installCamera(
+      vi.fn().mockRejectedValue(new DOMException("denied", "NotAllowedError")),
+    );
+    render(<App />);
+
+    fireEvent.change(await screen.findByLabelText("写真を選ぶ"), {
+      target: {
+        files: [new File(["gif"], "animated.gif", { type: "image/gif" })],
+      },
+    });
+
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "JPEG、PNG、WebP、HEIC",
+    );
+    expect(mockedCreateClassifier).not.toHaveBeenCalled();
+  });
+
+  it("lets the user choose another photo after browser decoding fails", async () => {
+    mockedCreateClassifier.mockResolvedValueOnce({
+      classify: vi
+        .fn()
+        .mockRejectedValue(
+          new Error(
+            "この写真を読み込めませんでした。JPEG、PNG、WebP、HEICの写真を選んでください。",
+          ),
+        ),
+    });
+    installCamera(
+      vi.fn().mockRejectedValue(new DOMException("denied", "NotAllowedError")),
+    );
+    render(<App />);
+
+    fireEvent.change(await screen.findByLabelText("写真を選ぶ"), {
+      target: {
+        files: [new File(["broken"], "broken.jpg", { type: "image/jpeg" })],
+      },
+    });
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "この写真を読み込めませんでした",
+    );
+    fireEvent.click(screen.getByRole("button", { name: "選び直す" }));
+    expect(screen.getByLabelText("写真を選ぶ")).toBeInTheDocument();
+  });
+
   it("does not name a beetle when the closed-set result is uncertain", async () => {
     mockedCreateClassifier.mockResolvedValueOnce({
       classify: vi.fn().mockResolvedValue({
