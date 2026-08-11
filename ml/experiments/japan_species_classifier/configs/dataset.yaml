@@ -1,0 +1,32 @@
+source:
+  name: inaturalist
+  phase: local_noncommercial_research
+  api_base_url: https://api.inaturalist.org/v1
+
+place:
+  name: Japan
+  id: 6737
+
+taxa:
+  observed_species:
+    strategy: all_observed_species
+
+filters:
+  quality_grade: research
+  photos: true
+  rank: species
+  species_order: desc
+  species_order_by: observations_count
+  observation_order: desc
+  observation_order_by: observed_on
+
+limits:
+  images_per_taxon: 40
+  min_images_per_taxon: 20
+  per_page: 500
+  download_workers: 1
+  request_sleep_seconds: 1.0
+
+paths:
+  output_dir: ml/data/japan_species/raw/inaturalist
+  cache_dir: ml/experiments/japan_species_classifier/.cache
