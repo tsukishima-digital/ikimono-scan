@@ -11,6 +11,11 @@ import type {
 const DEFAULT_MANIFEST_URL = "/models/manifest.json";
 const MODEL_CACHE_NAME = "ikimono-scan-models-v1";
 
+// Implementation: The isolated production route enables threaded WASM, whose
+// worker resolves the bundled app entry instead of the ONNX Runtime worker module.
+// Remove only after explicit worker assets pass the production real-model E2E.
+ort.env.wasm.numThreads = 1;
+
 export async function createClassifier(
   manifestUrl = DEFAULT_MANIFEST_URL,
 ): Promise<Classifier> {
