@@ -27,6 +27,7 @@ ikimono-scan-ml-fetch-inat = "ikimono_scan_ml.inat:fetch_dataset_cli"
 ikimono-scan-ml-train = "ikimono_scan_ml.training:train_cli"
 ikimono-scan-ml-evaluate = "ikimono_scan_ml.training:evaluate_cli"
 ikimono-scan-ml-export-web = "ikimono_scan_ml.web_export:export_web_cli"
+ikimono-scan-ml-audit-provenance = "ikimono_scan_ml.provenance:main"
 
 [project.optional-dependencies]
 dev = [

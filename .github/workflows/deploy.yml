@@ -88,6 +88,8 @@ jobs:
         run: python scripts/terraform_backend.py backup production post-apply
       - name: Smoke test
         run: task deploy:smoke
+      - name: Verify public model
+        run: task model:smoke
       - name: Install production browser
         run: npm --prefix web exec -- playwright install --with-deps chromium
       - name: End-to-end smoke
