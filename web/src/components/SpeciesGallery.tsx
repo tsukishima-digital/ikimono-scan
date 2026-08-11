@@ -10,13 +10,19 @@ interface SelectedSpecies {
   photo: SpeciesPhoto;
 }
 
+interface RevealRequest {
+  id: string;
+  sequence: number;
+}
+
 export function SpeciesGallery({ species }: { species: ModelClass[] }) {
   const [visibleCount, setVisibleCount] = useState(GALLERY_BATCH_SIZE);
   const [query, setQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [highlightedId, setHighlightedId] = useState<string>();
+  const [revealRequest, setRevealRequest] = useState<RevealRequest>();
   const [selectedSpecies, setSelectedSpecies] = useState<SelectedSpecies>();
   const lastTrigger = useRef<HTMLElement | null>(null);
+  const highlightedId = revealRequest?.id;
 
   const normalizedQuery = query.trim().toLocaleLowerCase("ja");
   const suggestions = useMemo(() => {
@@ -30,6 +36,14 @@ export function SpeciesGallery({ species }: { species: ModelClass[] }) {
       .slice(0, 8);
   }, [normalizedQuery, species]);
 
+  useEffect(() => {
+    if (!revealRequest) return;
+    const card = document.getElementById(`species-${revealRequest.id}`);
+    if (!card) return;
+    card.scrollIntoView({ behavior: "auto", block: "center" });
+    card.querySelector<HTMLElement>("button")?.focus({ preventScroll: true });
+  }, [revealRequest, visibleCount]);
+
   function revealSpecies(target: ModelClass) {
     const targetIndex = species.findIndex(({ id }) => id === target.id);
     if (targetIndex < 0) return;
@@ -41,22 +55,10 @@ export function SpeciesGallery({ species }: { species: ModelClass[] }) {
     );
     setQuery(target.commonName || target.scientificName);
     setShowSuggestions(false);
-    setHighlightedId(target.id);
-    window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(() => {
-        const card = document.getElementById(`species-${target.id}`);
-        card?.scrollIntoView({
-          behavior: window.matchMedia?.("(prefers-reduced-motion: reduce)")
-            .matches
-            ? "auto"
-            : "smooth",
-          block: "center",
-        });
-        card?.querySelector<HTMLElement>("button")?.focus({
-          preventScroll: true,
-        });
-      });
-    });
+    setRevealRequest((current) => ({
+      id: target.id,
+      sequence: (current?.sequence ?? 0) + 1,
+    }));
   }
 
   function openPhoto(
@@ -94,6 +96,12 @@ export function SpeciesGallery({ species }: { species: ModelClass[] }) {
               setShowSuggestions(true);
             }}
             onFocus={() => setShowSuggestions(true)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" && suggestions[0]) {
+                event.preventDefault();
+                revealSpecies(suggestions[0]);
+              }
+            }}
             placeholder="和名または学名"
             autoComplete="off"
             role="combobox"

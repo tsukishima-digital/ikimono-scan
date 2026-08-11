@@ -12,12 +12,16 @@ from typing import Any
 import requests
 from PIL import Image, ImageOps
 
-ALLOWED_PHOTO_LICENSES = ("cc0", "cc-by")
+ALLOWED_PHOTO_LICENSES = ("cc0", "cc-by", "cc-by-nc")
 INATURALIST_API_URL = "https://api.inaturalist.org/v1"
 JAPAN_PLACE_ID = 6737
 LICENSE_DETAILS = {
     "cc0": ("CC0", "https://creativecommons.org/publicdomain/zero/1.0/"),
     "cc-by": ("CC BY", "https://creativecommons.org/licenses/by/4.0/"),
+    "cc-by-nc": (
+        "CC BY-NC",
+        "https://creativecommons.org/licenses/by-nc/4.0/",
+    ),
 }
 USER_AGENT = "Ikimono Scan species gallery (https://github.com/tsukishima-digital/ikimono-scan)"
 
@@ -107,6 +111,7 @@ def build_gallery(
     image_size: int,
     image_quality: int,
     download_workers: int,
+    retry_missing: bool,
 ) -> None:
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     classes = manifest.get("classes")
@@ -141,7 +146,10 @@ def build_gallery(
         for index, class_info in enumerate(classes):
             taxon_id = int(class_info["id"])
             destination = output_dir / f"{taxon_id}.webp"
-            if (str(taxon_id) in photos and destination.is_file()) or str(taxon_id) in missing:
+            if str(taxon_id) in photos and destination.is_file():
+                missing.discard(str(taxon_id))
+                continue
+            if str(taxon_id) in missing and not retry_missing:
                 continue
 
             selection = select_photo(
@@ -158,6 +166,8 @@ def build_gallery(
                     flush=True,
                 )
                 continue
+
+            missing.discard(str(taxon_id))
 
             future = executor.submit(
                 _download_and_optimize,
@@ -183,6 +193,7 @@ def build_gallery(
                 flush=True,
             )
 
+    catalog["missing"] = sorted(missing, key=int)
     _write_catalog(catalog_path, catalog)
 
 
@@ -259,6 +270,7 @@ def main() -> None:
     parser.add_argument("--image-size", type=int, default=512)
     parser.add_argument("--image-quality", type=int, default=65)
     parser.add_argument("--download-workers", type=int, default=6)
+    parser.add_argument("--retry-missing", action="store_true")
     args = parser.parse_args()
 
     build_gallery(
@@ -269,6 +281,7 @@ def main() -> None:
         image_size=args.image_size,
         image_quality=args.image_quality,
         download_workers=args.download_workers,
+        retry_missing=args.retry_missing,
     )
 
 

@@ -754,6 +754,7 @@ describe("App", () => {
       configurable: true,
       value: scrollIntoView,
     });
+    vi.stubGlobal("requestAnimationFrame", vi.fn());
 
     render(<App />);
 
@@ -766,17 +767,18 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(screen.queryByText(/次の24/)).not.toBeInTheDocument();
 
-    fireEvent.change(screen.getByRole("combobox", { name: "生き物を検索" }), {
+    const search = screen.getByRole("combobox", { name: "生き物を検索" });
+    fireEvent.change(search, {
       target: { value: "生き物26" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "生き物26を表示" }));
+    fireEvent.keyDown(search, { key: "Enter" });
 
     await waitFor(() =>
       expect(within(speciesList).getAllByRole("listitem")).toHaveLength(26),
     );
     await waitFor(() =>
       expect(scrollIntoView).toHaveBeenCalledWith({
-        behavior: "smooth",
+        behavior: "auto",
         block: "center",
       }),
     );

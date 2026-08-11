@@ -6,7 +6,7 @@ export interface SpeciesPhoto {
   observationId: number;
   sourcePhotoUrl: string;
   attribution: string;
-  license: "CC0" | "CC BY";
+  license: "CC0" | "CC BY" | "CC BY-NC";
   licenseUrl: string;
   width: number;
   height: number;
