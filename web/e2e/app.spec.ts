@@ -437,7 +437,9 @@ test("visitors start the scanner deliberately from the public introduction", asy
   await page.goto("/");
 
   await expect(page).toHaveURL(/\/$/);
-  await expect(page.getByRole("heading", { name: "写真から、生き物を知る。" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "見つけた生き物の、名前を調べる" }),
+  ).toBeVisible();
   await expectNoAutomaticAccessibilityViolations(page);
 
   const startButton = page.getByRole("link", { name: "生物を判定する" });

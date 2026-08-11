@@ -103,7 +103,7 @@ describe("App", () => {
     expect(window.location.pathname).toBe("/");
     expect(
       screen.getByRole("heading", {
-        name: "写真から、生き物を知る。",
+        name: "見つけた生き物の、名前を調べる",
       }),
     ).toBeInTheDocument();
     expect(getUserMedia).not.toHaveBeenCalled();
@@ -167,7 +167,7 @@ describe("App", () => {
 
     expect(window.location.pathname).toBe("/");
     expect(
-      screen.getByRole("heading", { name: "写真から、生き物を知る。" }),
+      screen.getByRole("heading", { name: "見つけた生き物の、名前を調べる" }),
     ).toBeInTheDocument();
   });
 
@@ -424,7 +424,7 @@ describe("App", () => {
       await pending.promise.catch(() => undefined);
     });
     expect(
-      screen.getByRole("heading", { name: "写真から、生き物を知る。" }),
+      screen.getByRole("heading", { name: "見つけた生き物の、名前を調べる" }),
     ).toBeInTheDocument();
     expect(screen.queryByText("離脱後の失敗")).not.toBeInTheDocument();
   });
@@ -554,17 +554,14 @@ describe("App", () => {
     render(<App />);
 
     expect(
-      screen.getByRole("heading", { name: "見つけた生き物の、名前を調べる" }),
-    ).toBeInTheDocument();
-    expect(
       screen.getByRole("heading", {
-        name: "写真から、生き物を知る。",
+        level: 1,
+        name: "見つけた生き物の、名前を調べる",
       }),
     ).toBeInTheDocument();
     expect(
       screen.getByText("見つけた生き物を写真に撮ると、名前の候補を調べられます。"),
     ).toBeInTheDocument();
-    expect(screen.getByText(/写真から生き物の種類の候補を調べられる/)).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "写真は端末内で判定" }),
     ).toBeInTheDocument();
@@ -583,7 +580,7 @@ describe("App", () => {
       "/scan",
     );
     expect(
-      screen.getByRole("region", { name: "見つけた生き物の、名前を調べる" }),
+      screen.getByRole("region", { name: "生き物スキャンについて" }),
     ).toHaveTextContent("現在は、日本で観察された甲虫422種に対応");
     expect(
       screen.getByRole("banner", { name: "サイトヘッダー" }),
@@ -598,7 +595,9 @@ describe("App", () => {
     render(<App />);
 
     expect(screen.getByRole("heading", { name: "ページが見つかりません" })).toBeInTheDocument();
-    expect(screen.queryByRole("heading", { name: "写真から、生き物を知る。" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "見つけた生き物の、名前を調べる" }),
+    ).not.toBeInTheDocument();
   });
 
   it("renders supported species and public evaluation values from the model manifest", async () => {

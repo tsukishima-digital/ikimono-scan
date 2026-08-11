@@ -8,35 +8,28 @@ export function HomePage() {
       currentPage="home"
       description="見つけた生き物を写真に撮ると、名前の候補を調べられます。"
       eyebrow="IKIMONO SCAN"
-      title="写真から、生き物を知る。"
+      title={
+        <span className="block text-[clamp(40px,6vw,64px)] max-[720px]:text-[clamp(34px,9.5vw,40px)]">
+          見つけた生き物の、
+          <br />
+          名前を調べる
+        </span>
+      }
     >
       <section
         className="border-t border-line py-16 max-[720px]:py-12"
-        aria-labelledby="identification-title"
+        aria-label="生き物スキャンについて"
       >
-        <div className="grid grid-cols-[minmax(0,0.9fr)_minmax(280px,1.1fr)] gap-16 max-[760px]:grid-cols-1 max-[760px]:gap-8">
-          <h2
-            className="m-0 font-mincho text-[clamp(30px,4vw,48px)] leading-[1.3] font-semibold tracking-[-0.04em]"
-            id="identification-title"
+        <div className="max-w-[680px] text-[15px] leading-[1.95] text-muted">
+          <p className="m-0">
+            現在は、日本で観察された甲虫422種に対応しています。対応範囲は、甲虫に限らず段階的に広げていきます。
+          </p>
+          <AppLink
+            className="mt-8 inline-flex min-h-14 items-center justify-center rounded-full bg-brand-dark px-8 text-[16px] font-extrabold text-white no-underline shadow-[0_14px_32px_rgb(18_64_39/20%)] transition-[background,transform] duration-100 ease-out hover:bg-brand active:scale-[0.97] focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-lime max-[520px]:w-full"
+            href="/scan"
           >
-            見つけた生き物の、
-            <br />
-            名前を調べる
-          </h2>
-          <div className="text-[15px] leading-[1.95] text-muted">
-            <p className="m-0">
-              生き物スキャンは、写真から生き物の種類の候補を調べられるWebアプリです。
-            </p>
-            <p className="mt-5 mb-0">
-              現在は、日本で観察された甲虫422種に対応しています。対応範囲は、甲虫に限らず段階的に広げていきます。
-            </p>
-            <AppLink
-              className="mt-8 inline-flex min-h-14 items-center justify-center rounded-full bg-brand-dark px-8 text-[16px] font-extrabold text-white no-underline shadow-[0_14px_32px_rgb(18_64_39/20%)] transition-[background,transform] duration-100 ease-out hover:bg-brand active:scale-[0.97] focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-lime max-[520px]:w-full"
-              href="/scan"
-            >
-              生物を判定する
-            </AppLink>
-          </div>
+            生物を判定する
+          </AppLink>
         </div>
       </section>
 
