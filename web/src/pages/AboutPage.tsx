@@ -1,7 +1,8 @@
+import { AppLink } from "../components/AppLink";
 import { SiteHeader } from "../components/SiteHeader";
 import { specimenPhotos } from "../content/specimen-gallery";
 
-export function AboutPage({ onStartScanner }: { onStartScanner: () => void }) {
+export function AboutPage() {
   return (
     <div className="min-h-dvh bg-paper text-ink">
       <SiteHeader />
@@ -109,14 +110,13 @@ export function AboutPage({ onStartScanner }: { onStartScanner: () => void }) {
 
           <div className="mt-12 flex flex-col items-center border-t border-line pt-12 text-center">
             <p className="m-0 text-sm text-muted">見つけた生き物を撮影します</p>
-            <button
+            <AppLink
               className="mt-5 inline-flex min-h-14 cursor-pointer items-center justify-center gap-3 rounded-full border-0 bg-brand-dark px-8 text-[16px] font-extrabold text-white shadow-[0_14px_32px_rgb(18_64_39/20%)] transition-[background,transform] duration-100 ease-out hover:bg-brand active:scale-[0.97] focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-lime max-[720px]:w-full"
-              type="button"
-              onClick={onStartScanner}
+              href="/how-to#camera"
             >
-              カメラを開く
+              使い方を見る
               <span aria-hidden="true">→</span>
-            </button>
+            </AppLink>
           </div>
         </section>
       </main>
