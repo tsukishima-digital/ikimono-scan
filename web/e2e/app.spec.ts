@@ -423,12 +423,24 @@ test("Species photo preview keeps its image and information positions across asp
     const dialog = page.getByRole("dialog", { name });
     const image = dialog.getByRole("img", { name: `${name}の写真` });
     await expect(image).toBeVisible();
+    await page.evaluate(
+      () =>
+        new Promise<void>((resolve) =>
+          requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+        ),
+    );
+    await dialog.evaluate(async (element) => {
+      await Promise.all(
+        element
+          .getAnimations()
+          .map((animation) => animation.finished.catch(() => undefined)),
+      );
+    });
     await expect
       .poll(() =>
-        dialog.evaluate((element) =>
-          element.getAnimations().every(({ playState }) =>
-            ["finished", "idle"].includes(playState),
-          ),
+        dialog.evaluate(
+          (element) =>
+            Math.abs(element.getBoundingClientRect().bottom - innerHeight) < 1,
         ),
       )
       .toBe(true);
