@@ -13,7 +13,7 @@ export interface SpecimenPhoto {
   designation?: "特定外来生物";
 }
 
-export const featuredSpecimenPhoto: SpecimenPhoto = {
+const featuredSpecimenPhoto: SpecimenPhoto = {
   commonName: "クビアカツヤカミキリ",
   scientificName: "Aromia bungii",
   photoUrl: "/specimens/aromia-bungii-712990656.jpg",
@@ -24,6 +24,18 @@ export const featuredSpecimenPhoto: SpecimenPhoto = {
   license: "CC0",
   licenseUrl: externalLinks.licenseCc0,
   designation: "特定外来生物",
+};
+
+export const photoGuideExample: SpecimenPhoto = {
+  commonName: "ヨツスジトラカミキリ",
+  scientificName: "Chlorophorus quinquefasciatus",
+  photoUrl: "/specimens/chlorophorus-quinquefasciatus-129999042.jpg",
+  photoId: 129999042,
+  sourcePhotoUrl: externalLinks.photoGuidePhoto,
+  observationId: 79369950,
+  attribution: "no rights reserved",
+  license: "CC0",
+  licenseUrl: externalLinks.licenseCc0,
 };
 
 export const specimenPhotos: SpecimenPhoto[] = [
@@ -51,3 +63,9 @@ export const specimenPhotos: SpecimenPhoto[] = [
     licenseUrl: externalLinks.licenseCcBy,
   },
 ];
+
+export const photosRequiringAttribution = specimenPhotos.filter(
+  ({ license }) => license !== "CC0",
+);
+
+export const redistributedPhotos = [photoGuideExample, ...specimenPhotos];

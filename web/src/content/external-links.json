@@ -8,5 +8,7 @@
   "specimenHarmoniaObservationApi": "https://api.inaturalist.org/v1/observations/388316828",
   "specimenHarmoniaPhoto": "https://inaturalist-open-data.s3.amazonaws.com/photos/711179139/large.jpg",
   "specimenRosaliaObservationApi": "https://api.inaturalist.org/v1/observations/378294423",
-  "specimenRosaliaPhoto": "https://inaturalist-open-data.s3.amazonaws.com/photos/691864486/large.jpg"
+  "specimenRosaliaPhoto": "https://inaturalist-open-data.s3.amazonaws.com/photos/691864486/large.jpg",
+  "photoGuideObservationApi": "https://api.inaturalist.org/v1/observations/79369950",
+  "photoGuidePhoto": "https://inaturalist-open-data.s3.amazonaws.com/photos/129999042/large.jpeg"
 }

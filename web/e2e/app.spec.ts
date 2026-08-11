@@ -73,7 +73,7 @@ for (const pathname of contentPagePaths) {
   });
 }
 
-test("About keeps specimen metadata aligned across cards", async ({ page }) => {
+test("About keeps image credits out of specimen cards", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/about");
 
@@ -82,14 +82,9 @@ test("About keeps specimen metadata aligned across cards", async ({ page }) => {
     .evaluateAll((elements) =>
       elements.map((element) => element.getBoundingClientRect().top),
     );
-  const licenses = await page
-    .getByTestId("specimen-license")
-    .evaluateAll((elements) =>
-      elements.map((element) => element.getBoundingClientRect().top),
-    );
-
   expect(new Set(names).size).toBe(1);
-  expect(new Set(licenses).size).toBe(1);
+  await expect(page.getByTestId("specimen-license")).toHaveCount(0);
+  await expect(page.getByRole("note", { name: "写真クレジット" })).toBeVisible();
 });
 
 test("How to use guide and actions fit the minimum viewport", async ({
@@ -140,6 +135,31 @@ test("How to use guide and actions fit the minimum viewport", async ({
     expect(action.scrollWidth).toBeLessThanOrEqual(action.clientWidth);
     expect(action.whiteSpace).toBe("nowrap");
   }
+});
+
+test("How to use example and tips share their desktop baseline", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/how-to");
+
+  const layout = await page.evaluate(() => {
+    const example = document
+      .querySelector<HTMLElement>('[data-testid="photo-guide-example"]')!
+      .getBoundingClientRect();
+    const tips = document
+      .querySelector<HTMLElement>('[data-testid="photo-guide-tips"]')!
+      .getBoundingClientRect();
+    return {
+      exampleTop: example.top,
+      exampleBottom: example.bottom,
+      tipsTop: tips.top,
+      tipsBottom: tips.bottom,
+    };
+  });
+
+  expect(layout.exampleTop).toBe(layout.tipsTop);
+  expect(layout.exampleBottom).toBe(layout.tipsBottom);
 });
 
 test("first-time visitors start the scanner deliberately and keep that choice", async ({

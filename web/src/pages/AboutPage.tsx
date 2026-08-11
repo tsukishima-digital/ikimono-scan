@@ -1,5 +1,8 @@
 import { ContentPageLayout } from "../components/ContentPageLayout";
-import { specimenPhotos } from "../content/specimen-gallery";
+import {
+  photosRequiringAttribution,
+  specimenPhotos,
+} from "../content/specimen-gallery";
 
 export function AboutPage({ onStartScanner }: { onStartScanner: () => void }) {
   return (
@@ -81,32 +84,43 @@ export function AboutPage({ onStartScanner }: { onStartScanner: () => void }) {
                   <em className="mt-1 block text-xs text-muted">
                     {specimen.scientificName}
                   </em>
-                  <p
-                    className="mt-4 text-[11px] leading-[1.7] text-muted"
-                    data-testid="specimen-license"
-                  >
-                    写真: {specimen.attribution} /{" "}
-                    <a
-                      className="underline underline-offset-2"
-                      href={specimen.licenseUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {specimen.license}
-                    </a>
-                  </p>
-                  <a
-                    className="mt-3 inline-block text-xs font-bold text-brand underline-offset-4 hover:underline focus-visible:underline"
-                    href={`https://www.inaturalist.org/observations/${specimen.observationId}`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    iNaturalistで見る <span aria-hidden="true">↗</span>
-                  </a>
                 </figcaption>
               </figure>
             ))}
           </div>
+
+          <aside
+            aria-label="写真クレジット"
+            className="mt-3 text-[10px] leading-[1.7] text-muted"
+            role="note"
+          >
+            <span>写真クレジット</span>
+            <ul className="m-0 inline list-none p-0">
+              {photosRequiringAttribution.map((specimen) => (
+                <li className="inline" key={specimen.photoId}>
+                  {" / "}
+                  <a
+                    className="underline underline-offset-2"
+                    href={specimen.sourcePhotoUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {specimen.commonName}: {specimen.attribution}
+                  </a>{" "}
+                  (
+                  <a
+                    className="underline underline-offset-2"
+                    href={specimen.licenseUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {specimen.license} 4.0
+                  </a>
+                  )
+                </li>
+              ))}
+            </ul>
+          </aside>
 
         <div className="mt-10 rounded-[18px] bg-[#e8edde] p-6">
           <strong>判定結果について</strong>

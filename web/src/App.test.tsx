@@ -211,7 +211,7 @@ describe("App", () => {
     expect(screen.getByLabelText("カメラ映像")).toHaveStyle({
       transform: "scale(1.15)",
     });
-    expect(screen.getByText("判定に使う正方形")).toBeInTheDocument();
+    expect(screen.getByText("判定範囲")).toBeInTheDocument();
     expect(screen.getByText("虫全体を中央に収める")).toBeInTheDocument();
   });
 
@@ -313,7 +313,7 @@ describe("App", () => {
     expect(screen.getByRole("img", { name: "判定する写真" })).toHaveStyle({
       transform: "scale(1.15)",
     });
-    expect(screen.getByText("判定に使う正方形")).toBeInTheDocument();
+    expect(screen.getByText("判定範囲")).toBeInTheDocument();
     expect(screen.getByText("クビアカツヤカミキリ")).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "選び直す" }),
@@ -519,8 +519,14 @@ describe("App", () => {
     ).toHaveLength(3);
     expect(screen.getAllByRole("img", { name: /の観察写真/ })).toHaveLength(3);
     expect(
-      screen.getAllByRole("link", { name: "iNaturalistで見る" }),
-    ).toHaveLength(3);
+      screen.queryByRole("link", { name: /iNaturalist/ }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/^写真:/)).not.toBeInTheDocument();
+    expect(
+      within(screen.getByRole("note", { name: "写真クレジット" })).getAllByRole(
+        "listitem",
+      ),
+    ).toHaveLength(2);
     expect(screen.getByText("特定外来生物")).toBeInTheDocument();
     expect(screen.getAllByTestId("specimen-designation-slot")).toHaveLength(3);
     expect(
@@ -532,7 +538,7 @@ describe("App", () => {
     expect(getUserMedia).not.toHaveBeenCalled();
   });
 
-  it("uses an iNaturalist example to explain one shared photo guide", () => {
+  it("uses one clear example to explain the shared photo guide", () => {
     const getUserMedia = vi.fn();
     installCamera(getUserMedia);
     window.history.replaceState({}, "", "/how-to#photo-guide");
@@ -545,12 +551,13 @@ describe("App", () => {
     expect(
       screen.getByRole("heading", { name: "判定しやすい写真を用意する" }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByText(/iNaturalistに投稿された研究用グレードの観察写真/),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/虫全体が中央に写り/)).toBeInTheDocument();
+    expect(screen.queryByText(/iNaturalist/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/学習/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/切り出/)).not.toBeInTheDocument();
     expect(
       screen.getByRole("img", {
-        name: "判定しやすい写真の見本: クビアカツヤカミキリ",
+        name: "判定しやすい写真の見本",
       }),
     ).toBeInTheDocument();
     expect(
@@ -564,13 +571,12 @@ describe("App", () => {
     expect(screen.getByTestId("model-crop-example")).toHaveClass(
       "aspect-square",
     );
-    expect(screen.getByText("特定外来生物")).toBeInTheDocument();
+    expect(screen.getByText("大きさの見本")).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: "iNaturalistで写真を見る" }),
-    ).toHaveAttribute(
-      "href",
-      "https://www.inaturalist.org/observations/389254258",
-    );
+      within(screen.getByRole("region", { name: "判定しやすい写真を用意する" })).queryByRole(
+        "link",
+      ),
+    ).not.toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "カメラを開く" }),
     ).toBeInTheDocument();
