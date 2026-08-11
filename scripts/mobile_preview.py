@@ -48,6 +48,20 @@ def read_tailscale_status(executable: str) -> dict[str, Any]:
     return json.loads(result.stdout)
 
 
+def preview_url(hostname: str, insecure_http: bool) -> str:
+    """Return the tailnet-only URL for the selected transport."""
+    protocol = "http" if insecure_http else "https"
+    return f"{protocol}://{hostname}"
+
+
+def serve_command(executable: str, port: int, insecure_http: bool) -> list[str]:
+    """Build a foreground Tailscale Serve command for the local Vite port."""
+    command = [executable, "serve", "--yes"]
+    if insecure_http:
+        command.append("--http=80")
+    return [*command, str(port)]
+
+
 def stop_process(process: subprocess.Popen[bytes] | None) -> None:
     """Stop a child command and its process group, escalating after a timeout."""
     if process is None or process.poll() is not None:
@@ -60,14 +74,16 @@ def stop_process(process: subprocess.Popen[bytes] | None) -> None:
         process.wait()
 
 
-def run_preview(port: int) -> None:
+def run_preview(port: int, insecure_http: bool) -> None:
     """Run Vite and a foreground Tailscale Serve proxy until interrupted."""
     executable = tailscale_executable()
     hostname = tailnet_hostname(read_tailscale_status(executable))
     environment = os.environ.copy()
     environment["__VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS"] = hostname
 
-    print(f"スマホで開く: https://{hostname}", flush=True)
+    print(f"スマホで開く: {preview_url(hostname, insecure_http)}", flush=True)
+    if insecure_http:
+        print("注意: HTTPではカメラを利用できません。", flush=True)
     print("終了するには Ctrl+C を押してください。", flush=True)
 
     vite: subprocess.Popen[bytes] | None = None
@@ -90,7 +106,7 @@ def run_preview(port: int) -> None:
             start_new_session=True,
         )
         serve = subprocess.Popen(
-            [executable, "serve", "--yes", str(port)],
+            serve_command(executable, port, insecure_http),
             start_new_session=True,
         )
 
@@ -109,9 +125,10 @@ def run_preview(port: int) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--port", type=int, default=5175)
+    parser.add_argument("--insecure-http", action="store_true")
     args = parser.parse_args()
     try:
-        run_preview(args.port)
+        run_preview(args.port, args.insecure_http)
     except (OSError, RuntimeError, subprocess.SubprocessError, json.JSONDecodeError) as error:
         print(f"エラー: {error}", file=sys.stderr)
         return 1

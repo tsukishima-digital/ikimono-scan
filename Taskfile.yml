@@ -18,6 +18,11 @@ tasks:
     cmds:
       - python scripts/mobile_preview.py --port {{.PORT | default "5175"}}
 
+  dev:mobile:http:
+    desc: Start a tailnet-only HTTP preview when HTTPS certificate issuance is unavailable
+    cmds:
+      - python scripts/mobile_preview.py --insecure-http --port {{.PORT | default "5175"}}
+
   ui:
     desc: Run the fast UI feedback checks in parallel
     deps: [ui:test, ui:lint, ui:typecheck]

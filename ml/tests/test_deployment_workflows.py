@@ -132,8 +132,11 @@ def test_task_unpublish_dispatches_the_main_workflow_instead_of_applying_locally
 def test_mobile_preview_task_uses_the_private_tailscale_runner():
     taskfile = yaml.safe_load(TASKFILE.read_text())
     source = "\n".join(taskfile["tasks"]["dev:mobile"]["cmds"])
+    fallback_source = "\n".join(taskfile["tasks"]["dev:mobile:http"]["cmds"])
 
     assert "scripts/mobile_preview.py" in source
+    assert "scripts/mobile_preview.py" in fallback_source
+    assert "--insecure-http" in fallback_source
 
 
 def test_production_domain_can_be_removed_without_destroying_the_worker():
