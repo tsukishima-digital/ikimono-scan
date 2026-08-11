@@ -1,12 +1,15 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import { fileURLToPath } from "node:url";
 
 import { contentPagePaths } from "../src/content-page-routes";
 
 const onboardingKey = "ikimono-scan:onboarding:v1";
 const specimenPath = fileURLToPath(
-  new URL("../public/specimens/aromia-bungii-712990656.jpg", import.meta.url),
+  new URL(
+    "../src/assets/specimens/aromia-bungii-712990656.jpg",
+    import.meta.url,
+  ),
 );
 
 async function denyCamera(page: Page) {
@@ -44,6 +47,33 @@ async function contentFrameRects(page: Page) {
       return { left: rect.left, right: rect.right, width: rect.width };
     }),
   );
+}
+
+async function expectDecodedImages(page: Page, images: Locator) {
+  const count = await images.count();
+  expect(count).toBeGreaterThan(0);
+
+  for (let index = 0; index < count; index += 1) {
+    const image = images.nth(index);
+    await image.scrollIntoViewIfNeeded();
+
+    const source = await image.getAttribute("src");
+    expect(source).toBeTruthy();
+    const response = await page.request.get(source!);
+    expect(response.ok()).toBe(true);
+    expect(response.headers()["content-type"]).toMatch(/^image\//);
+
+    await expect
+      .poll(() =>
+        image.evaluate(
+          (element: HTMLImageElement) =>
+            element.complete &&
+            element.naturalWidth > 0 &&
+            element.naturalHeight > 0,
+        ),
+      )
+      .toBe(true);
+  }
 }
 
 test.beforeEach(async ({ page }) => {
@@ -85,6 +115,20 @@ test("About keeps image credits out of specimen cards", async ({ page }) => {
   expect(new Set(names).size).toBe(1);
   await expect(page.getByTestId("specimen-license")).toHaveCount(0);
   await expect(page.getByRole("note", { name: "写真クレジット" })).toBeVisible();
+});
+
+test("specimen examples load as decodable images", async ({ page }) => {
+  await page.goto("/about");
+  await expectDecodedImages(
+    page,
+    page.getByRole("img", { name: /の観察写真$/ }),
+  );
+
+  await page.goto("/how-to");
+  await expectDecodedImages(
+    page,
+    page.getByRole("img", { name: "判定しやすい写真の見本" }),
+  );
 });
 
 test("How to use guide and actions fit the minimum viewport", async ({

@@ -2,15 +2,12 @@ import { describe, expect, it } from "vitest";
 
 import { redistributedPhotos } from "./specimen-gallery";
 
-const trackedAssets = Object.keys(
-  import.meta.glob("../../public/specimens/*.jpg", { eager: true }),
-).map((path) => path.replace("../../public", ""));
-
 describe("specimen gallery", () => {
-  it("serves every specimen from a tracked same-origin asset", () => {
+  it("uses a bundled same-origin image for every specimen", () => {
     for (const specimen of redistributedPhotos) {
-      expect(specimen.photoUrl).toMatch(/^\/specimens\/[a-z0-9-]+\.jpg$/);
-      expect(trackedAssets).toContain(specimen.photoUrl);
+      const photoUrl = new URL(specimen.photoUrl, window.location.origin);
+      expect(photoUrl.origin).toBe(window.location.origin);
+      expect(photoUrl.pathname).toMatch(/\.jpg$/);
     }
   });
 
