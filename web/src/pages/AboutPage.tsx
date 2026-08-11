@@ -102,7 +102,7 @@ export function AboutPage() {
 
           <div className="mt-10 rounded-[18px] bg-[#e8edde] p-6">
             <strong>判定結果について</strong>
-            <p className="mt-2.5 text-sm leading-[1.8] text-muted">
+            <p className="mt-2.5 text-sm leading-[1.8] text-muted-strong">
               判定は専門家による同定ではありません。甲虫以外の写真や、暗い・小さい写真では
               正しく判定できないことがあります。防除などの判断には公的情報を確認してください。
             </p>
