@@ -58,6 +58,9 @@ jobs:
       - name: Validate storage root
         if: steps.scope.outputs.run == 'true'
         run: terraform -chdir=infra/storage init -backend=false -input=false && terraform -chdir=infra/storage validate
+      - name: Validate preview root
+        if: steps.scope.outputs.run == 'true'
+        run: terraform -chdir=infra/preview init -backend=false -input=false && terraform -chdir=infra/preview validate
       - name: Validate production root
         if: steps.scope.outputs.run == 'true'
         run: terraform -chdir=infra/production init -backend=false -input=false && terraform -chdir=infra/production validate
