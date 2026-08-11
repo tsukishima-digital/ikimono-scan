@@ -46,7 +46,6 @@ export function HowToPage({
       currentPage="how-to"
       description="撮影でも保存済みの写真でも、判定に向いた1枚を用意するポイントは同じです。"
       eyebrow="HOW TO USE"
-      onStartScanner={() => onStartScanner("camera")}
       title="How to use"
     >
       <section
@@ -65,7 +64,7 @@ export function HowToPage({
         </h2>
         <p className="mt-6 mb-0 max-w-[780px] text-[15px] leading-[1.9] text-muted">
           虫全体が中央に写り、模様や輪郭が明るく鮮明に見える写真は、より安定して判定できます。
-          撮影する場合も保存済みの写真を選ぶ場合も、左の見本を目安にしてください。
+          撮影する場合も保存済みの写真を選ぶ場合も、見本の画像を参考にしてください。
         </p>
 
         <div className="mt-10 grid grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] items-stretch gap-12 max-[760px]:grid-cols-1 max-[760px]:gap-9">

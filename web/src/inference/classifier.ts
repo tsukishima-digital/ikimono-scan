@@ -80,7 +80,16 @@ export async function fetchModelManifest(url: string): Promise<ModelManifest> {
     manifest.minimumConfidence < 0 ||
     manifest.minimumConfidence > 1 ||
     !Array.isArray(manifest.classes) ||
-    manifest.classes.length === 0
+    manifest.classes.length === 0 ||
+    (manifest.evaluation !== undefined &&
+      (!Number.isInteger(manifest.evaluation.validationImages) ||
+        manifest.evaluation.validationImages <= 0 ||
+        typeof manifest.evaluation.accuracy !== "number" ||
+        manifest.evaluation.accuracy < 0 ||
+        manifest.evaluation.accuracy > 1 ||
+        typeof manifest.evaluation.macroF1 !== "number" ||
+        manifest.evaluation.macroF1 < 0 ||
+        manifest.evaluation.macroF1 > 1))
   ) {
     throw new Error("判定モデルの設定が不正です。");
   }

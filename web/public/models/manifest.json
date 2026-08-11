@@ -8,6 +8,11 @@
   "inputName": "input",
   "outputName": "logits",
   "minimumConfidence": 0.6,
+  "evaluation": {
+    "validationImages": 3188,
+    "accuracy": 0.7971,
+    "macroF1": 0.7771
+  },
   "classes": [
     {
       "id": "1008176",

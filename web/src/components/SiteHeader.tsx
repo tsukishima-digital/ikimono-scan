@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   contentPageRoutes,
@@ -11,9 +11,8 @@ export type CurrentPage = "scan" | ContentPageId;
 
 interface SiteHeaderProps {
   contentFrame?: boolean;
-  currentPage?: CurrentPage;
+  currentPage?: CurrentPage | null;
   howToHref?: string;
-  onStartScanner?: () => void;
   overlay?: boolean;
 }
 
@@ -21,7 +20,6 @@ export function SiteHeader({
   contentFrame = false,
   currentPage = "scan",
   howToHref = "/how-to",
-  onStartScanner,
   overlay = false,
 }: SiteHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -63,12 +61,12 @@ export function SiteHeader({
   ].join(" ");
   const menuLinkClassName = (active: boolean) =>
     [
-      "flex items-center justify-between rounded-[14px] px-4 py-3 text-[15px] font-bold tracking-[0.01em] transition-colors focus-visible:outline-3 focus-visible:outline-offset-1 focus-visible:outline-lime",
+      "grid min-h-12 grid-cols-[18px_1fr] items-center rounded-[14px] px-4 py-3 text-[15px] font-bold tracking-[0.01em] transition-[color,background,transform] focus-visible:outline-3 focus-visible:outline-offset-1 focus-visible:outline-lime",
       overlay ? "hover:bg-white/10" : "hover:bg-ink/5",
       active
         ? overlay
-          ? "bg-white/14 text-white"
-          : "bg-ink/8 text-brand-dark"
+          ? "bg-white text-brand-dark shadow-[0_8px_24px_rgb(0_0_0/18%)]"
+          : "bg-brand-dark text-white shadow-[0_8px_24px_rgb(18_64_39/16%)]"
         : "",
     ].join(" ");
 
@@ -79,25 +77,25 @@ export function SiteHeader({
         aria-current={active ? "page" : undefined}
         className={menuLinkClassName(active)}
         href={href}
-        onClick={(event) => {
-          setMenuOpen(false);
-          if (page !== "scan" || !onStartScanner) return;
-          event.preventDefault();
-          onStartScanner();
-        }}
+        onClick={() => setMenuOpen(false)}
       >
-        {label}
-        {active && (
-          <span className="size-1.5 rounded-full bg-current" aria-hidden="true" />
-        )}
+        <span
+          className={
+            active
+              ? "h-0 w-0 border-y-[5px] border-l-[8px] border-y-transparent border-l-current"
+              : ""
+          }
+          data-testid={active ? "current-page-cursor" : undefined}
+          aria-hidden="true"
+        />
+        <span
+          className={active ? "translate-x-1" : ""}
+          data-testid="menu-link-label"
+        >
+          {label}
+        </span>
       </AppLink>
     );
-  }
-
-  function startScannerFromTitle(event: MouseEvent<HTMLAnchorElement>) {
-    if (!onStartScanner) return;
-    event.preventDefault();
-    onStartScanner();
   }
 
   return (
@@ -110,7 +108,6 @@ export function SiteHeader({
           className={`inline-flex items-center text-[15px] font-[750] tracking-[0.02em] no-underline transition-transform duration-100 ease-out active:scale-[0.97] max-[720px]:text-[13px] ${overlay ? "drop-shadow-[0_1px_5px_rgb(0_0_0/42%)]" : ""}`}
           href="/"
           aria-label="生き物スキャン ホーム"
-          onClick={startScannerFromTitle}
         >
           <span>生き物スキャン</span>
         </AppLink>
@@ -139,7 +136,7 @@ export function SiteHeader({
           </button>
           {menuOpen && (
             <nav
-              className={`animate-materialize absolute top-[calc(100%+8px)] right-0 w-[190px] origin-top-right rounded-[20px] border p-2 shadow-[0_20px_60px_rgb(0_0_0/28%)] backdrop-blur-[24px] backdrop-saturate-150 ${
+              className={`animate-materialize absolute top-[calc(100%+8px)] right-0 w-[260px] origin-top-right rounded-[20px] border p-2 shadow-[0_20px_60px_rgb(0_0_0/28%)] backdrop-blur-[24px] backdrop-saturate-150 ${
                 overlay
                   ? "border-white/14 bg-[rgb(8_15_11/88%)] text-white"
                   : "border-ink/10 bg-card/94 text-ink"
@@ -147,7 +144,6 @@ export function SiteHeader({
               id="site-menu"
               aria-label="メインナビゲーション"
             >
-              {menuLink("scan", "/", "Scan")}
               {contentPageRoutes.map(({ id, menuLabel, paths }) => (
                 <span className="contents" key={id}>
                   {menuLink(
@@ -157,6 +153,11 @@ export function SiteHeader({
                   )}
                 </span>
               ))}
+              <div
+                className={`mt-2 border-t pt-2 ${overlay ? "border-white/14" : "border-ink/10"}`}
+              >
+                {menuLink("scan", "/scan", "生物を判定する")}
+              </div>
             </nav>
           )}
         </div>

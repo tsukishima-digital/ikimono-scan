@@ -5,7 +5,6 @@ import { fileURLToPath } from "node:url";
 
 import { contentPagePaths } from "../src/content-page-routes";
 
-const onboardingKey = "ikimono-scan:onboarding:v1";
 const specimenPath = fileURLToPath(
   new URL(
     "../src/assets/specimens/aromia-bungii-712990656.jpg",
@@ -55,10 +54,10 @@ async function selectPatternImage(
       let bytes = new Uint8Array(await blob.arrayBuffer());
       if (options.exifOrientation === 6) {
         const exif = new Uint8Array([
-          0xff, 0xe1, 0x00, 0x22, 0x45, 0x78, 0x69, 0x66, 0x00, 0x00,
-          0x49, 0x49, 0x2a, 0x00, 0x08, 0x00, 0x00, 0x00, 0x01, 0x00,
-          0x12, 0x01, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x06, 0x00,
-          0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+          0xff, 0xe1, 0x00, 0x22, 0x45, 0x78, 0x69, 0x66, 0x00, 0x00, 0x49,
+          0x49, 0x2a, 0x00, 0x08, 0x00, 0x00, 0x00, 0x01, 0x00, 0x12, 0x01,
+          0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x00,
+          0x00, 0x00, 0x00,
         ]);
         const oriented = new Uint8Array(bytes.length + exif.length);
         oriented.set(bytes.subarray(0, 2));
@@ -102,14 +101,6 @@ async function keepCameraPending(page: Page) {
     });
   });
 }
-
-async function completeOnboarding(page: Page) {
-  await page.addInitScript(
-    (key) => localStorage.setItem(key, "complete"),
-    onboardingKey,
-  );
-}
-
 async function expectNoAutomaticAccessibilityViolations(page: Page) {
   const result = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa"])
@@ -159,10 +150,26 @@ test.beforeEach(async ({ page }) => {
   await denyCamera(page);
 });
 
+test("search discovery files list only public content pages", async ({
+  request,
+}) => {
+  const robots = await request.get("/robots.txt");
+  expect(robots.ok()).toBe(true);
+  expect(await robots.text()).toContain(
+    "Sitemap: https://ikimono-scan.app/sitemap.xml",
+  );
+
+  const sitemap = await request.get("/sitemap.xml");
+  const sitemapText = await sitemap.text();
+  expect(sitemap.ok()).toBe(true);
+  expect(sitemapText).toContain("https://ikimono-scan.app/supported-species");
+  expect(sitemapText).not.toContain("https://ikimono-scan.app/scan");
+  expect(sitemapText).not.toContain("https://ikimono-scan.app/about");
+});
+
 test("scanner input modes stay inside the viewport on every screen size", async ({
   page,
 }) => {
-  await completeOnboarding(page);
   await keepCameraPending(page);
 
   for (const viewport of [
@@ -173,7 +180,7 @@ test("scanner input modes stay inside the viewport on every screen size", async 
     await page.setViewportSize(viewport);
 
     for (const search of ["", "?mode=photo"]) {
-      await page.goto(`/${search}`);
+      await page.goto(`/scan${search}`);
       await expect(page.getByLabel("生き物を撮影して判定")).toBeVisible();
       await expect(
         page.getByRole("tab", { name: search ? "写真" : "撮影" }),
@@ -183,9 +190,8 @@ test("scanner input modes stay inside the viewport on every screen size", async 
         const scrollingElement = document.scrollingElement!;
         return {
           bodyBackground: getComputedStyle(document.body).backgroundColor,
-          documentBackground: getComputedStyle(
-            document.documentElement,
-          ).backgroundColor,
+          documentBackground: getComputedStyle(document.documentElement)
+            .backgroundColor,
           innerHeight: window.innerHeight,
           scrollHeight: scrollingElement.scrollHeight,
         };
@@ -224,25 +230,260 @@ for (const pathname of contentPagePaths) {
   });
 }
 
-test("About keeps image credits out of specimen cards", async ({ page }) => {
-  await page.setViewportSize({ width: 1280, height: 900 });
-  await page.goto("/about");
+test("menu order and cursor make the current page unambiguous", async ({
+  page,
+}) => {
+  await page.goto("/supported-species");
+  await page.getByRole("button", { name: "メニューを開く" }).click();
 
-  const names = await page
-    .getByTestId("specimen-common-name")
-    .evaluateAll((elements) =>
-      elements.map((element) => element.getBoundingClientRect().top),
-    );
-  expect(new Set(names).size).toBe(1);
-  await expect(page.getByTestId("specimen-license")).toHaveCount(0);
-  await expect(page.getByRole("note", { name: "写真クレジット" })).toBeVisible();
+  const menu = page.getByRole("navigation", { name: "メインナビゲーション" });
+  await expect(menu.getByTestId("menu-link-label")).toHaveText([
+    "このサイトについて",
+    "判定できる生き物",
+    "使い方",
+    "更新情報",
+    "生物を判定する",
+  ]);
+
+  const current = menu.getByRole("link", { name: "判定できる生き物" });
+  const other = menu.getByRole("link", { name: "使い方" });
+  await expect(current).toHaveAttribute("aria-current", "page");
+  expect(
+    await current
+      .getByTestId("current-page-cursor")
+      .evaluate((element) => getComputedStyle(element).borderLeftWidth),
+  ).toBe("8px");
+
+  const presentation = await Promise.all(
+    [current, other].map((link) =>
+      link.evaluate((element) => {
+        const label = element.querySelector<HTMLElement>(
+          '[data-testid="menu-link-label"]',
+        )!;
+        return {
+          backgroundColor: getComputedStyle(element).backgroundColor,
+          labelLeft: label.getBoundingClientRect().left,
+        };
+      }),
+    ),
+  );
+  expect(presentation[0]?.backgroundColor).not.toBe(
+    presentation[1]?.backgroundColor,
+  );
+  expect(presentation[0]!.labelLeft).toBeGreaterThan(
+    presentation[1]!.labelLeft,
+  );
+});
+
+test("Supported species is a browsable photo gallery with credits at the bottom", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/supported-species");
+
+  const gallery = page.getByRole("list", {
+    name: "判定できる生き物の一覧",
+  });
+  const cards = gallery.getByRole("listitem");
+  await expect(cards).toHaveCount(24);
+  await expect(page.getByRole("button", { name: "さらに表示" })).toBeVisible();
+  await expect(page.getByText(/次の24/)).toHaveCount(0);
+
+  const firstRow = await cards.evaluateAll((elements) =>
+    elements.slice(0, 4).map((element) => element.getBoundingClientRect().top),
+  );
+  expect(new Set(firstRow).size).toBe(1);
+
+  await cards.first().getByRole("button").click();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toBeVisible();
+  await expectDecodedImages(page, dialog.getByRole("img"));
+  await expect(dialog.getByRole("link", { name: /CC/ })).toBeVisible();
+  await expectNoAutomaticAccessibilityViolations(page);
+  await dialog.getByRole("button", { name: "閉じる" }).click();
+  await expect(dialog).toBeHidden();
+
+  const credit = page.getByRole("note", { name: "写真クレジット" });
+  await expect(credit).toBeVisible();
+  expect(
+    await gallery.evaluate(
+      (list, creditElement) =>
+        Boolean(
+          list.compareDocumentPosition(creditElement) &
+          Node.DOCUMENT_POSITION_FOLLOWING,
+        ),
+      await credit.elementHandle(),
+    ),
+  ).toBe(true);
+});
+
+test("Supported species uses two compact card columns on mobile", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/supported-species");
+
+  const cards = page
+    .getByRole("list", { name: "判定できる生き物の一覧" })
+    .getByRole("listitem");
+  await expect(cards.first()).toBeVisible();
+  const rects = await cards.evaluateAll((elements) =>
+    elements.slice(0, 3).map((element) => {
+      const rect = element.getBoundingClientRect();
+      return { left: rect.left, top: rect.top, width: rect.width };
+    }),
+  );
+
+  expect(rects[0]?.top).toBe(rects[1]?.top);
+  expect(rects[0]?.width).toBe(rects[1]?.width);
+  expect(rects[0]!.left).toBeLessThan(rects[1]!.left);
+  expect(rects[2]!.top).toBeGreaterThan(rects[0]!.top);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(
+    390,
+  );
+});
+
+test("Supported species search reveals and moves to an unloaded card", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/supported-species");
+
+  await page
+    .getByRole("combobox", { name: "生き物を検索" })
+    .fill("ヨナグニゴマフカミキリ");
+  await page
+    .getByRole("button", { name: "ヨナグニゴマフカミキリを表示" })
+    .click();
+
+  const target = page.locator("#species-1008176");
+  await expect(target).toHaveAttribute("aria-current", "true");
+  await expect
+    .poll(() =>
+      target.evaluate((element) => {
+        const rect = element.getBoundingClientRect();
+        return rect.top >= 0 && rect.bottom <= window.innerHeight;
+      }),
+    )
+    .toBe(true);
+  expect(
+    await page
+      .getByRole("list", { name: "判定できる生き物の一覧" })
+      .getByRole("listitem")
+      .count(),
+  ).toBeGreaterThan(24);
+});
+
+test("Supported species search stays below the header only while browsing cards", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/supported-species");
+
+  const search = page.getByRole("combobox", { name: "生き物を検索" });
+  const cards = page
+    .getByRole("list", { name: "判定できる生き物の一覧" })
+    .getByRole("listitem");
+  await expect(search).toBeVisible();
+
+  await cards.nth(16).scrollIntoViewIfNeeded();
+  await expect
+    .poll(() =>
+      search.evaluate((element) => element.getBoundingClientRect().top),
+    )
+    .toBeGreaterThanOrEqual(68);
+  await expect
+    .poll(() =>
+      search.evaluate((element) => element.getBoundingClientRect().top),
+    )
+    .toBeLessThan(90);
+
+  const credits = page.getByRole("note", { name: "写真クレジット" });
+  await credits.getByText("写真クレジット", { exact: true }).click();
+  await credits.getByRole("listitem").last().scrollIntoViewIfNeeded();
+  await expect
+    .poll(() =>
+      search.evaluate((element) => element.getBoundingClientRect().bottom),
+    )
+    .toBeLessThanOrEqual(68);
+});
+
+test("Species photo preview keeps its image and information positions across aspect ratios", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/supported-species");
+
+  async function openPreview(name: string) {
+    const search = page.getByRole("combobox", { name: "生き物を検索" });
+    await search.fill(name);
+    await page.getByRole("button", { name: `${name}を表示` }).click();
+    await page.getByRole("button", { name: `${name}の写真を拡大` }).click();
+
+    const dialog = page.getByRole("dialog", { name });
+    const image = dialog.getByRole("img", { name: `${name}の写真` });
+    await expect(image).toBeVisible();
+    await page.waitForTimeout(300);
+    return dialog.evaluate((element) => {
+      const imageStage = element.querySelector<HTMLElement>(
+        '[data-testid="species-photo-stage"]',
+      )!;
+      const information = element.querySelector<HTMLElement>(
+        '[data-testid="species-photo-information"]',
+      )!;
+      const image = element.querySelector<HTMLImageElement>("img")!;
+      const dialogRect = element.getBoundingClientRect();
+      const stageRect = imageStage.getBoundingClientRect();
+      const informationRect = information.getBoundingClientRect();
+      const imageRect = image.getBoundingClientRect();
+      const imageStyle = getComputedStyle(image);
+      return {
+        dialogTop: dialogRect.top,
+        imageCenterX: imageRect.left + imageRect.width / 2,
+        imageCenterY: imageRect.top + imageRect.height / 2,
+        informationTop: informationRect.top,
+        naturalHeight: image.naturalHeight,
+        naturalWidth: image.naturalWidth,
+        objectFit: imageStyle.objectFit,
+        objectPosition: imageStyle.objectPosition,
+        stageCenterX: stageRect.left + stageRect.width / 2,
+        stageCenterY: stageRect.top + stageRect.height / 2,
+      };
+    });
+  }
+
+  const portrait = await openPreview("クロツヤキマワリ");
+  await page.getByRole("button", { name: "閉じる" }).click();
+  const landscape = await openPreview("ノコギリクワガタ");
+
+  expect(portrait.dialogTop).toBeCloseTo(landscape.dialogTop, 0);
+  expect(portrait.informationTop).toBeCloseTo(landscape.informationTop, 0);
+  expect(portrait.stageCenterX).toBeCloseTo(landscape.stageCenterX, 0);
+  expect(portrait.stageCenterY).toBeCloseTo(landscape.stageCenterY, 0);
+  expect(portrait.imageCenterX).toBeCloseTo(portrait.stageCenterX, 0);
+  expect(portrait.imageCenterY).toBeCloseTo(portrait.stageCenterY, 0);
+  expect(landscape.imageCenterX).toBeCloseTo(landscape.stageCenterX, 0);
+  expect(landscape.imageCenterY).toBeCloseTo(landscape.stageCenterY, 0);
+  expect(portrait.naturalHeight).toBeGreaterThan(portrait.naturalWidth);
+  expect(landscape.naturalWidth).toBeGreaterThan(landscape.naturalHeight);
+  expect(portrait.objectFit).toBe("contain");
+  expect(landscape.objectFit).toBe("contain");
+  expect(portrait.objectPosition).toBe("50% 50%");
+  expect(landscape.objectPosition).toBe("50% 50%");
 });
 
 test("specimen examples load as decodable images", async ({ page }) => {
-  await page.goto("/about");
+  await page.goto("/supported-species");
   await expectDecodedImages(
     page,
     page.getByRole("img", { name: /の観察写真$/ }),
+  );
+  await expectDecodedImages(
+    page,
+    page
+      .getByRole("list", { name: "判定できる生き物の一覧" })
+      .getByRole("img")
+      .first(),
   );
 
   await page.goto("/how-to");
@@ -283,15 +524,16 @@ test("How to use guide and actions fit the minimum viewport", async ({
   expect(guideLayout.tipWidths).toEqual([284, 284, 284, 284]);
   expect(guideLayout.pageWidth).toBe(guideLayout.viewportWidth);
 
-  const actions = await page.getByTestId("how-to-action").evaluateAll(
-    (elements) =>
+  const actions = await page
+    .getByTestId("how-to-action")
+    .evaluateAll((elements) =>
       elements.map((element) => ({
         clientHeight: element.clientHeight,
         clientWidth: element.clientWidth,
         scrollWidth: element.scrollWidth,
         whiteSpace: getComputedStyle(element).whiteSpace,
       })),
-  );
+    );
 
   expect(actions).toHaveLength(2);
   for (const action of actions) {
@@ -353,9 +595,7 @@ test("EXIF Orientation is applied before center cropping", async ({ page }) => {
 
   await selectPatternImage(page, "image/jpeg", "landscape", 6);
 
-  await expect(page.getByLabel("前処理結果")).toHaveText(
-    "red,red,blue,blue",
-  );
+  await expect(page.getByLabel("前処理結果")).toHaveText("red,red,blue,blue");
 });
 
 test("Safari can preprocess an iPhone HEIC photo", async ({
@@ -377,36 +617,36 @@ test("Safari can preprocess an iPhone HEIC photo", async ({
   await expect(page.getByText("処理できました")).toBeVisible();
 });
 
-test("first-time visitors start the scanner deliberately and keep that choice", async ({
+test("visitors start the scanner deliberately from the public introduction", async ({
   page,
 }) => {
   await page.goto("/");
 
-  await expect(page).toHaveURL(/\/how-to$/);
-  await expect(page.getByRole("heading", { name: "How to use" })).toBeVisible();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(
+    page.getByRole("heading", {
+      level: 1,
+      name: /見つけた生き物の、\s*名前を調べる/,
+    }),
+  ).toBeVisible();
   await expectNoAutomaticAccessibilityViolations(page);
 
-  const startButton = page.getByRole("button", { name: "カメラを開く" });
+  const startButton = page.getByRole("link", { name: "生物を判定する" });
   await startButton.focus();
   await page.keyboard.press("Enter");
 
-  await expect(page).toHaveURL(/\/$/);
-  await expect(page.getByLabel("写真を選ぶ")).toBeVisible();
-
-  await page.reload();
-  await expect(page).toHaveURL(/\/$/);
+  await expect(page).toHaveURL(/\/scan$/);
   await expect(page.getByLabel("写真を選ぶ")).toBeVisible();
 });
 
 test("model download failure leaves the photo flow usable for retry", async ({
   page,
 }) => {
-  await completeOnboarding(page);
   await page.route("**/models/manifest.json", async (route) => {
     await new Promise((resolve) => setTimeout(resolve, 300));
     await route.fulfill({ status: 503, body: "temporarily unavailable" });
   });
-  await page.goto("/");
+  await page.goto("/scan");
   const input = page.getByLabel("写真を選ぶ");
 
   await input.setInputFiles(specimenPath);
@@ -422,7 +662,6 @@ test("model download failure leaves the photo flow usable for retry", async ({
 test("resetting during model loading ignores the abandoned request", async ({
   page,
 }) => {
-  await completeOnboarding(page);
   let releaseRequest!: () => void;
   const requestReleased = new Promise<void>((resolve) => {
     releaseRequest = resolve;
@@ -431,7 +670,7 @@ test("resetting during model loading ignores the abandoned request", async ({
     await requestReleased;
     await route.fulfill({ status: 503, body: "abandoned request" });
   });
-  await page.goto("/");
+  await page.goto("/scan");
 
   await page.getByLabel("写真を選ぶ").setInputFiles(specimenPath);
   await expect(page.getByText("判定モデルを準備しています")).toBeVisible();
@@ -452,7 +691,6 @@ test("resetting during model loading ignores the abandoned request", async ({
 test("a model integrity failure is explicit and recoverable", async ({
   page,
 }) => {
-  await completeOnboarding(page);
   await page.route("**/models/manifest.json", async (route) => {
     await route.fulfill({
       contentType: "application/json",
@@ -477,7 +715,7 @@ test("a model integrity failure is explicit and recoverable", async ({
   await page.route("**/models/e2e.onnx", (route) =>
     route.fulfill({ body: "not an ONNX model" }),
   );
-  await page.goto("/");
+  await page.goto("/scan");
 
   await page.getByLabel("写真を選ぶ").setInputFiles(specimenPath);
 
