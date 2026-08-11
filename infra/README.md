@@ -14,4 +14,4 @@ task infra:bootstrap:plan
 task infra:plan
 ```
 
-`task deploy`はmain上の手動GitHub Actionsを起動します。ローカルから本番applyは実行せず、workflowだけが保存済みplanを使います。
+`task deploy`はmain上の公開workflowを、`task unpublish`はCustom Domainを外す公開停止workflowを起動します。ローカルから本番applyは実行せず、workflowだけが保存済みplanを使います。通常のdeployはCustom Domainを再作成するため、公開再開にも使えます。

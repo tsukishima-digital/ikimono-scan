@@ -29,14 +29,24 @@ def _uses_values(value: object) -> list[str]:
 
 
 def test_deployment_workflows_pin_every_third_party_action():
-    for workflow_name in ("ci.yml", "terraform-plan.yml", "deploy.yml"):
+    for workflow_name in (
+        "ci.yml",
+        "terraform-plan.yml",
+        "deploy.yml",
+        "unpublish.yml",
+    ):
         workflow, _ = _workflow(workflow_name)
         for action in _uses_values(workflow):
             assert PINNED_ACTION.fullmatch(action), f"{workflow_name}: {action}"
 
 
 def test_deployment_workflows_only_use_actions_allowed_by_repository_policy():
-    for workflow_name in ("ci.yml", "terraform-plan.yml", "deploy.yml"):
+    for workflow_name in (
+        "ci.yml",
+        "terraform-plan.yml",
+        "deploy.yml",
+        "unpublish.yml",
+    ):
         workflow, _ = _workflow(workflow_name)
         for action in _uses_values(workflow):
             assert action.startswith("actions/"), f"{workflow_name}: {action}"
@@ -86,6 +96,49 @@ def test_task_deploy_dispatches_the_main_workflow_instead_of_applying_locally():
     assert "gh workflow run deploy.yml" in source
     assert "--ref main" in source
     assert "terraform apply" not in source
+
+
+def test_unpublish_is_manual_serialized_and_removes_only_publication():
+    workflow, source = _workflow("unpublish.yml")
+
+    assert set(workflow[True]) == {"workflow_dispatch"}
+    assert workflow["permissions"] == {"contents": "read"}
+    assert workflow["concurrency"] == {
+        "group": "production-deployment",
+        "cancel-in-progress": False,
+    }
+    assert "unpublish ikimono-scan.app" in source
+    assert "merge-base --is-ancestor" in source
+    assert re.search(
+        r"terraform .* plan .* -var=site_published=false .*out=\S+\.tfplan",
+        source,
+    )
+    assert re.search(r"terraform .* apply .* \S+\.tfplan", source)
+    assert "terraform_backend.py backup production pre-apply" in source
+    assert "terraform_backend.py backup production post-apply" in source
+    assert "task unpublish:smoke" in source
+    assert "pull_request_target" not in source
+
+
+def test_task_unpublish_dispatches_the_main_workflow_instead_of_applying_locally():
+    taskfile = yaml.safe_load(TASKFILE.read_text())
+    source = "\n".join(taskfile["tasks"]["unpublish"]["cmds"])
+
+    assert "gh workflow run unpublish.yml" in source
+    assert "--ref main" in source
+    assert "terraform apply" not in source
+
+
+def test_production_domain_can_be_removed_without_destroying_the_worker():
+    source = (REPOSITORY_ROOT / "infra" / "production" / "main.tf").read_text()
+    variables = (REPOSITORY_ROOT / "infra" / "production" / "variables.tf").read_text()
+
+    assert 'variable "site_published"' in variables
+    assert "count      = var.site_published ? 1 : 0" in source
+    worker_block = source.split('resource "cloudflare_workers_script"', 1)[1].split(
+        'resource "cloudflare_workers_custom_domain"', 1
+    )[0]
+    assert "site_published" not in worker_block
 
 
 def test_secret_scan_runs_the_synced_pre_commit_environment():

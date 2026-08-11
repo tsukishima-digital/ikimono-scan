@@ -15,6 +15,12 @@ variable "model_bucket_name" {
   default     = "ikimono-scan-models"
 }
 
+variable "site_published" {
+  description = "Whether the application custom domain is publicly routed to the Worker."
+  type        = bool
+  default     = true
+}
+
 variable "worker_name" {
   description = "Cloudflare Worker service name."
   type        = string
