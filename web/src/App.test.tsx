@@ -634,14 +634,14 @@ describe("App", () => {
             },
             classes: [
               {
-                id: "48484",
-                commonName: "ナミテントウ",
-                scientificName: "Harmonia axyridis",
+                id: "1008176",
+                commonName: "ヨナグニゴマフカミキリ",
+                scientificName: "Agelasta yonaguni",
               },
               {
-                id: "494519",
-                commonName: "クビアカツヤカミキリ",
-                scientificName: "Aromia bungii",
+                id: "1036702",
+                commonName: "ムネアカセンチコガネ",
+                scientificName: "Bolbocerodema nigroplagiatum",
               },
             ],
           }),
@@ -657,15 +657,26 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("2種", { selector: "strong" })).toBeInTheDocument();
     expect(
-      screen.getByRole("table", { name: "判定できる生き物の一覧" }),
+      screen.getByText("写真をタップすると、大きく表示できます。"),
     ).toBeInTheDocument();
-    const speciesTable = screen.getByRole("table", {
+    const speciesList = screen.getByRole("list", {
       name: "判定できる生き物の一覧",
     });
     expect(
-      within(speciesTable).getByText("クビアカツヤカミキリ"),
+      within(speciesList).getByText("ムネアカセンチコガネ"),
     ).toBeInTheDocument();
-    expect(within(speciesTable).getByText("Aromia bungii")).toBeInTheDocument();
+    expect(
+      within(speciesList).getByText("Bolbocerodema nigroplagiatum"),
+    ).toBeInTheDocument();
+    expect(within(speciesList).getAllByRole("listitem")).toHaveLength(2);
+    expect(
+      within(speciesList)
+        .getAllByTestId("species-card-common-name")
+        .map((element) => element.textContent),
+    ).toEqual(["ムネアカセンチコガネ", "ヨナグニゴマフカミキリ"]);
+    expect(
+      screen.getByRole("img", { name: "ムネアカセンチコガネの写真" }),
+    ).toHaveAttribute("loading", "lazy");
     expect(screen.getByText("3,188枚")).toBeInTheDocument();
     expect(screen.getByText("79.7%")).toBeInTheDocument();
     expect(
@@ -680,26 +691,104 @@ describe("App", () => {
       "https://github.com/tsukishima-digital/ikimono-scan",
     );
 
+    const photoButton = screen.getByRole("button", {
+      name: "ヨナグニゴマフカミキリの写真を拡大",
+    });
+    fireEvent.click(photoButton);
+    const dialog = screen.getByRole("dialog", {
+      name: "ヨナグニゴマフカミキリ",
+    });
     expect(
-      within(speciesTable)
-        .getAllByRole("row")
-        .slice(1)
-        .map((row) => within(row).getAllByRole("cell")[0]?.textContent),
-    ).toEqual(["クビアカツヤカミキリ", "ナミテントウ"]);
+      within(dialog).getByRole("img", {
+        name: "ヨナグニゴマフカミキリの写真",
+      }),
+    ).toBeInTheDocument();
+    expect(within(dialog).getByRole("link", { name: "CC BY" })).toHaveAttribute(
+      "href",
+      "https://creativecommons.org/licenses/by/4.0/",
+    );
+    expect(within(dialog).getByRole("button", { name: "閉じる" })).toHaveFocus();
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    await waitFor(() => expect(photoButton).toHaveFocus());
 
     const credit = screen.getByRole("note", { name: "写真クレジット" });
     expect(
-      speciesTable.compareDocumentPosition(credit) &
+      speciesList.compareDocumentPosition(credit) &
         Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
+  });
 
-    fireEvent.change(screen.getByRole("searchbox", { name: "生き物を検索" }), {
-      target: { value: "ナミテントウ" },
+  it("adds gallery cards without exposing the internal page size and searches every species", async () => {
+    installCamera(vi.fn());
+    window.history.replaceState({}, "", "/supported-species");
+    const classes = Array.from({ length: 26 }, (_, index) => ({
+      id: String(2_000_000 + index),
+      commonName: `生き物${String(index + 1).padStart(2, "0")}`,
+      scientificName: `Species ${index + 1}`,
+    }));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            version: "0.1.0",
+            modelUrl: "/models/model.onnx",
+            sha256: "a".repeat(64),
+            license: "CC-BY-NC-4.0",
+            source: "/models/v0.1.0.md",
+            imageSize: 320,
+            minimumConfidence: 0.6,
+            classes,
+          }),
+          { headers: { "content-type": "application/json" } },
+        ),
+      ),
+    );
+    const scrollIntoView = vi.fn();
+    const originalScrollIntoView = Object.getOwnPropertyDescriptor(
+      HTMLElement.prototype,
+      "scrollIntoView",
+    );
+    Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
+      configurable: true,
+      value: scrollIntoView,
     });
+
+    render(<App />);
+
+    const speciesList = await screen.findByRole("list", {
+      name: "判定できる生き物の一覧",
+    });
+    expect(within(speciesList).getAllByRole("listitem")).toHaveLength(24);
     expect(
-      within(speciesTable).queryByText("クビアカツヤカミキリ"),
-    ).not.toBeInTheDocument();
-    expect(within(speciesTable).getByText("ナミテントウ")).toBeInTheDocument();
+      screen.getByRole("button", { name: "さらに表示" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/次の24/)).not.toBeInTheDocument();
+
+    fireEvent.change(screen.getByRole("combobox", { name: "生き物を検索" }), {
+      target: { value: "生き物26" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "生き物26を表示" }));
+
+    await waitFor(() =>
+      expect(within(speciesList).getAllByRole("listitem")).toHaveLength(26),
+    );
+    await waitFor(() =>
+      expect(scrollIntoView).toHaveBeenCalledWith({
+        behavior: "smooth",
+        block: "center",
+      }),
+    );
+    if (originalScrollIntoView) {
+      Object.defineProperty(
+        HTMLElement.prototype,
+        "scrollIntoView",
+        originalScrollIntoView,
+      );
+    } else {
+      Reflect.deleteProperty(HTMLElement.prototype, "scrollIntoView");
+    }
   });
 
   it("uses one clear example to explain the shared photo guide", () => {

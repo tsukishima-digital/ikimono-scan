@@ -275,33 +275,103 @@ test("menu order and cursor make the current page unambiguous", async ({
   );
 });
 
-test("Supported species keeps image credits out of specimen cards", async ({
+test("Supported species is a browsable photo gallery with credits at the bottom", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/supported-species");
 
-  const names = await page
-    .getByTestId("specimen-common-name")
-    .evaluateAll((elements) =>
-      elements.map((element) => element.getBoundingClientRect().top),
-    );
-  expect(new Set(names).size).toBe(1);
-  await expect(page.getByTestId("specimen-license")).toHaveCount(0);
+  const gallery = page.getByRole("list", {
+    name: "判定できる生き物の一覧",
+  });
+  const cards = gallery.getByRole("listitem");
+  await expect(cards).toHaveCount(24);
+  await expect(page.getByRole("button", { name: "さらに表示" })).toBeVisible();
+  await expect(page.getByText(/次の24/)).toHaveCount(0);
+
+  const firstRow = await cards.evaluateAll((elements) =>
+    elements.slice(0, 4).map((element) => element.getBoundingClientRect().top),
+  );
+  expect(new Set(firstRow).size).toBe(1);
+
+  await cards.first().getByRole("button").click();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toBeVisible();
+  await expectDecodedImages(page, dialog.getByRole("img"));
+  await expect(dialog.getByRole("link", { name: /CC/ })).toBeVisible();
+  await expectNoAutomaticAccessibilityViolations(page);
+  await dialog.getByRole("button", { name: "閉じる" }).click();
+  await expect(dialog).toBeHidden();
+
   const credit = page.getByRole("note", { name: "写真クレジット" });
   await expect(credit).toBeVisible();
   expect(
-    await page
-      .getByRole("table", { name: "判定できる生き物の一覧" })
-      .evaluate(
-        (table, creditElement) =>
-          Boolean(
-            table.compareDocumentPosition(creditElement) &
-            Node.DOCUMENT_POSITION_FOLLOWING,
-          ),
-        await credit.elementHandle(),
-      ),
+    await gallery.evaluate(
+      (list, creditElement) =>
+        Boolean(
+          list.compareDocumentPosition(creditElement) &
+          Node.DOCUMENT_POSITION_FOLLOWING,
+        ),
+      await credit.elementHandle(),
+    ),
   ).toBe(true);
+});
+
+test("Supported species uses two compact card columns on mobile", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/supported-species");
+
+  const cards = page
+    .getByRole("list", { name: "判定できる生き物の一覧" })
+    .getByRole("listitem");
+  await expect(cards.first()).toBeVisible();
+  const rects = await cards.evaluateAll((elements) =>
+    elements.slice(0, 3).map((element) => {
+      const rect = element.getBoundingClientRect();
+      return { left: rect.left, top: rect.top, width: rect.width };
+    }),
+  );
+
+  expect(rects[0]?.top).toBe(rects[1]?.top);
+  expect(rects[0]?.width).toBe(rects[1]?.width);
+  expect(rects[0]!.left).toBeLessThan(rects[1]!.left);
+  expect(rects[2]!.top).toBeGreaterThan(rects[0]!.top);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(
+    390,
+  );
+});
+
+test("Supported species search reveals and moves to an unloaded card", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/supported-species");
+
+  await page
+    .getByRole("combobox", { name: "生き物を検索" })
+    .fill("ヨナグニゴマフカミキリ");
+  await page
+    .getByRole("button", { name: "ヨナグニゴマフカミキリを表示" })
+    .click();
+
+  const target = page.locator("#species-1008176");
+  await expect(target).toHaveAttribute("aria-current", "true");
+  await expect
+    .poll(() =>
+      target.evaluate((element) => {
+        const rect = element.getBoundingClientRect();
+        return rect.top >= 0 && rect.bottom <= window.innerHeight;
+      }),
+    )
+    .toBe(true);
+  expect(
+    await page
+      .getByRole("list", { name: "判定できる生き物の一覧" })
+      .getByRole("listitem")
+      .count(),
+  ).toBeGreaterThan(24);
 });
 
 test("specimen examples load as decodable images", async ({ page }) => {
@@ -309,6 +379,13 @@ test("specimen examples load as decodable images", async ({ page }) => {
   await expectDecodedImages(
     page,
     page.getByRole("img", { name: /の観察写真$/ }),
+  );
+  await expectDecodedImages(
+    page,
+    page
+      .getByRole("list", { name: "判定できる生き物の一覧" })
+      .getByRole("img")
+      .first(),
   );
 
   await page.goto("/how-to");

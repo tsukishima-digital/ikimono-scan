@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { ContentPageLayout } from "../components/ContentPageLayout";
+import { SpeciesGallery } from "../components/SpeciesGallery";
 import externalLinks from "../content/external-links.json";
 import {
   photosRequiringAttribution,
   specimenPhotos,
 } from "../content/specimen-gallery";
+import { speciesPhotosRequiringAttribution } from "../content/species-photos";
 import { fetchModelManifest } from "../inference/classifier";
 import type { ModelManifest } from "../inference/types";
 
@@ -17,7 +19,6 @@ const japaneseNameCollator = new Intl.Collator("ja", {
 export function SupportedSpeciesPage() {
   const [manifest, setManifest] = useState<ModelManifest>();
   const [loadFailed, setLoadFailed] = useState(false);
-  const [query, setQuery] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -33,21 +34,18 @@ export function SupportedSpeciesPage() {
     };
   }, []);
 
-  const visibleClasses = useMemo(() => {
-    const normalizedQuery = query.trim().toLocaleLowerCase("ja");
-    const matches = (manifest?.classes ?? []).filter(
-      ({ commonName, scientificName }) =>
-        !normalizedQuery ||
-        `${commonName ?? ""} ${scientificName}`
-          .toLocaleLowerCase("ja")
-          .includes(normalizedQuery),
-    );
-    return matches.sort((first, second) => {
-      if (!first.commonName) return second.commonName ? 1 : 0;
-      if (!second.commonName) return -1;
-      return japaneseNameCollator.compare(first.commonName, second.commonName);
-    });
-  }, [manifest, query]);
+  const sortedClasses = useMemo(
+    () =>
+      [...(manifest?.classes ?? [])].sort((first, second) => {
+        if (!first.commonName) return second.commonName ? 1 : 0;
+        if (!second.commonName) return -1;
+        return japaneseNameCollator.compare(
+          first.commonName,
+          second.commonName,
+        );
+      }),
+    [manifest],
+  );
 
   return (
     <ContentPageLayout
@@ -195,16 +193,9 @@ export function SupportedSpeciesPage() {
           >
             生き物の一覧
           </h2>
-          <label className="mt-8 block max-w-[680px] text-sm font-bold">
-            生き物を検索
-            <input
-              className="mt-3 h-14 w-full rounded-[16px] border border-line bg-card px-5 text-base outline-none transition-shadow focus:border-brand focus:ring-3 focus:ring-lime"
-              type="search"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="和名または学名"
-            />
-          </label>
+          <p className="mt-4 max-w-[680px] text-sm leading-[1.8] text-muted">
+            写真をタップすると、大きく表示できます。
+          </p>
           {loadFailed && (
             <p
               className="mt-8 rounded-[16px] bg-[#fff1e8] p-5 text-sm text-danger"
@@ -213,53 +204,20 @@ export function SupportedSpeciesPage() {
               一覧を読み込めませんでした。時間をおいてもう一度お試しください。
             </p>
           )}
-          {manifest && (
-            <div className="mt-8 overflow-hidden rounded-[18px] border border-line bg-card">
-              <table
-                className="w-full table-fixed border-collapse text-left"
-                aria-label="判定できる生き物の一覧"
-              >
-                <thead className="bg-[#e8edde] text-xs text-muted-strong">
-                  <tr>
-                    <th className="w-[44%] p-4 font-bold">名前</th>
-                    <th className="p-4 font-bold">学名</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {visibleClasses.map(({ id, commonName, scientificName }) => (
-                    <tr
-                      className="border-t border-line first:border-t-0"
-                      key={id}
-                    >
-                      <td className="break-words p-4 text-sm font-bold">
-                        {commonName || "和名なし"}
-                      </td>
-                      <td className="break-words p-4 text-sm text-muted">
-                        <i>{scientificName}</i>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {visibleClasses.length === 0 && (
-                <p className="m-0 p-6 text-sm text-muted">
-                  一致する生き物はありません。
-                </p>
-              )}
-            </div>
-          )}
+          {manifest && <SpeciesGallery species={sortedClasses} />}
         </section>
 
-        <aside
+        <details
           aria-label="写真クレジット"
           className="mt-16 border-t border-line pt-8 text-[10px] leading-[1.7] text-muted max-[720px]:mt-12"
           role="note"
         >
-          <span>写真クレジット</span>
-          <ul className="m-0 inline list-none p-0">
+          <summary className="cursor-pointer text-xs font-bold text-muted-strong">
+            写真クレジット
+          </summary>
+          <ul className="mt-4 mb-0 grid list-none gap-2 p-0">
             {photosRequiringAttribution.map((specimen) => (
-              <li className="inline" key={specimen.photoId}>
-                {" / "}
+              <li key={`featured-${specimen.photoId}`}>
                 <a
                   className="underline underline-offset-2"
                   href={specimen.sourcePhotoUrl}
@@ -268,7 +226,7 @@ export function SupportedSpeciesPage() {
                 >
                   {specimen.commonName}: {specimen.attribution}
                 </a>{" "}
-                (
+                /{" "}
                 <a
                   className="underline underline-offset-2"
                   href={specimen.licenseUrl}
@@ -277,11 +235,31 @@ export function SupportedSpeciesPage() {
                 >
                   {specimen.license} 4.0
                 </a>
-                )
+              </li>
+            ))}
+            {speciesPhotosRequiringAttribution.map((photo) => (
+              <li key={`gallery-${photo.photoId}`}>
+                <a
+                  className="underline underline-offset-2"
+                  href={photo.sourcePhotoUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {photo.attribution}
+                </a>{" "}
+                /{" "}
+                <a
+                  className="underline underline-offset-2"
+                  href={photo.licenseUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {photo.license}
+                </a>
               </li>
             ))}
           </ul>
-        </aside>
+        </details>
       </section>
     </ContentPageLayout>
   );

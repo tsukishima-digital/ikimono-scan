@@ -39,12 +39,23 @@ tasks:
       - npm test -- {{.CLI_ARGS}}
 
   ui:assets:
-    desc: Check bundled specimen assets and their metadata
+    desc: Check bundled gallery assets, licenses, and metadata
     vars:
       WEB_ROOT: '{{.WEB_ROOT | default "web"}}'
     dir: "{{.WEB_ROOT}}"
     cmds:
       - npm test -- src/content/specimen-gallery.test.ts
+      - uv run --project .. pytest -q ../ml/tests/test_species_gallery.py
+
+  gallery:build:
+    desc: Select licensed iNaturalist photos and rebuild the species gallery
+    cmds:
+      - uv run python scripts/build_species_gallery.py
+
+  gallery:check:
+    desc: Verify species gallery licenses, provenance, and model coverage
+    cmds:
+      - uv run pytest -q ml/tests/test_species_gallery.py
 
   ui:lint:
     desc: Lint the web app
