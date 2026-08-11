@@ -14,6 +14,11 @@ export interface ModelManifest {
   minimumConfidence: number;
   inputName?: string;
   outputName?: string;
+  evaluation?: {
+    validationImages: number;
+    accuracy: number;
+    macroF1: number;
+  };
   classes: ModelClass[];
 }
 

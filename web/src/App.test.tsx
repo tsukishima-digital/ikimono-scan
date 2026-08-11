@@ -10,7 +10,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { contentPagePaths, contentPageRoutes } from "./content-page-routes";
 import { createClassifier } from "./inference/classifier";
-import { ONBOARDING_STORAGE_KEY } from "./onboarding";
 import App from "./App";
 
 vi.mock("./inference/classifier", async (importOriginal) => {
@@ -66,8 +65,7 @@ function cameraStream() {
 
 describe("App", () => {
   beforeEach(() => {
-    window.history.replaceState({}, "", "/");
-    window.localStorage.setItem(ONBOARDING_STORAGE_KEY, "complete");
+    window.history.replaceState({}, "", "/scan");
     vi.stubGlobal("scrollTo", vi.fn());
     mockedCreateClassifier.mockReset();
     mockedCreateClassifier.mockResolvedValue({
@@ -95,42 +93,36 @@ describe("App", () => {
     Reflect.deleteProperty(navigator, "mediaDevices");
   });
 
-  it("shows How to use before requesting the camera on a first visit", async () => {
+  it("opens with a public introduction before requesting the camera", async () => {
     const getUserMedia = vi.fn().mockResolvedValue(cameraStream());
     installCamera(getUserMedia);
-    window.localStorage.removeItem(ONBOARDING_STORAGE_KEY);
+    window.history.replaceState({}, "", "/");
 
     render(<App />);
 
-    expect(window.location.pathname).toBe("/how-to");
+    expect(window.location.pathname).toBe("/");
     expect(
       screen.getByRole("heading", {
-        name: "How to use",
+        name: "写真から、生き物を知る。",
       }),
     ).toBeInTheDocument();
     expect(getUserMedia).not.toHaveBeenCalled();
 
-    fireEvent.click(screen.getByRole("button", { name: "カメラを開く" }));
+    fireEvent.click(screen.getByRole("link", { name: "写真を判定する" }));
 
-    expect(window.localStorage.getItem(ONBOARDING_STORAGE_KEY)).toBe(
-      "complete",
-    );
-    expect(window.location.pathname).toBe("/");
+    expect(window.location.pathname).toBe("/scan");
     await waitFor(() => expect(getUserMedia).toHaveBeenCalledOnce());
   });
 
   it("starts with image selection from the corresponding How to use action", () => {
     const getUserMedia = vi.fn().mockResolvedValue(cameraStream());
     installCamera(getUserMedia);
-    window.localStorage.removeItem(ONBOARDING_STORAGE_KEY);
+    window.history.replaceState({}, "", "/how-to");
 
     render(<App />);
     fireEvent.click(screen.getByRole("button", { name: "写真から始める" }));
 
-    expect(window.localStorage.getItem(ONBOARDING_STORAGE_KEY)).toBe(
-      "complete",
-    );
-    expect(window.location.pathname).toBe("/");
+    expect(window.location.pathname).toBe("/scan");
     expect(window.location.search).toBe("?mode=photo");
     expect(screen.getByRole("tab", { name: "写真" })).toHaveAttribute(
       "aria-selected",
@@ -140,10 +132,10 @@ describe("App", () => {
     expect(getUserMedia).not.toHaveBeenCalled();
   });
 
-  it("can start the current session when persistent storage is unavailable", async () => {
+  it("can start scanning when persistent storage is unavailable", async () => {
     const getUserMedia = vi.fn().mockResolvedValue(cameraStream());
     installCamera(getUserMedia);
-    window.localStorage.removeItem(ONBOARDING_STORAGE_KEY);
+    window.history.replaceState({}, "", "/how-to");
     const getItem = vi
       .spyOn(Storage.prototype, "getItem")
       .mockImplementation(() => {
@@ -158,39 +150,26 @@ describe("App", () => {
     render(<App />);
     fireEvent.click(screen.getByRole("button", { name: "カメラを開く" }));
 
-    expect(window.location.pathname).toBe("/");
+    expect(window.location.pathname).toBe("/scan");
     await waitFor(() => expect(getUserMedia).toHaveBeenCalledOnce());
     getItem.mockRestore();
     setItem.mockRestore();
   });
 
-  it.each(["Scan", "生き物スキャン ホーム"])(
-    "%s explicitly starts the scanner even before onboarding is complete",
-    async (controlName) => {
-      const getUserMedia = vi.fn().mockResolvedValue(cameraStream());
-      installCamera(getUserMedia);
-      window.localStorage.removeItem(ONBOARDING_STORAGE_KEY);
-      window.history.replaceState({}, "", "/how-to");
+  it("keeps the site title linked to the public introduction", () => {
+    installCamera(vi.fn());
+    window.history.replaceState({}, "", "/how-to");
 
-      render(<App />);
-      if (controlName === "Scan") {
-        fireEvent.click(
-          screen.getByRole("button", { name: "メニューを開く" }),
-        );
-      }
-      fireEvent.click(screen.getByRole("link", { name: controlName }));
+    render(<App />);
+    fireEvent.click(
+      screen.getByRole("link", { name: "生き物スキャン ホーム" }),
+    );
 
-      expect(window.localStorage.getItem(ONBOARDING_STORAGE_KEY)).toBe(
-        "complete",
-      );
-      expect(window.location.pathname).toBe("/");
-      await waitFor(() => expect(getUserMedia).toHaveBeenCalledOnce());
-      expect(screen.getByRole("tab", { name: "撮影" })).toHaveAttribute(
-        "aria-selected",
-        "true",
-      );
-    },
-  );
+    expect(window.location.pathname).toBe("/");
+    expect(
+      screen.getByRole("heading", { name: "写真から、生き物を知る。" }),
+    ).toBeInTheDocument();
+  });
 
   it("requests the rear camera when the scanner opens", async () => {
     const getUserMedia = vi.fn().mockResolvedValue(cameraStream());
@@ -215,7 +194,7 @@ describe("App", () => {
     expect(screen.getByText("虫全体を中央に収める")).toBeInTheDocument();
   });
 
-  it("opens the header menu and routes to the English-labeled pages", async () => {
+  it("orders the Japanese navigation around understanding before action", async () => {
     installCamera(vi.fn().mockResolvedValue(cameraStream()));
     render(<App />);
 
@@ -225,12 +204,25 @@ describe("App", () => {
     fireEvent.click(menuButton);
 
     expect(menuButton).toHaveAttribute("aria-expanded", "true");
-    expect(screen.getByRole("link", { name: "How to use" })).toHaveAttribute(
+    const menu = screen.getByRole("navigation", {
+      name: "メインナビゲーション",
+    });
+    expect(
+      within(menu)
+        .getAllByRole("link")
+        .map((link) => within(link).getByTestId("menu-link-label").textContent),
+    ).toEqual([
+      "このサイトについて",
+      "判定できる生き物",
+      "使い方",
+      "更新情報",
+      "写真を判定する",
+    ]);
+    expect(screen.getByRole("link", { name: "使い方" })).toHaveAttribute(
       "href",
       "/how-to#photo-guide",
     );
-    expect(screen.getByRole("link", { name: "About" })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("link", { name: "Changelog" }));
+    fireEvent.click(screen.getByRole("link", { name: "更新情報" }));
 
     expect(window.location.pathname).toBe("/changelog");
     expect(
@@ -239,7 +231,7 @@ describe("App", () => {
   });
 
   it.each([
-    ["/", "Scan"] as const,
+    ["/scan", "写真を判定する"] as const,
     ...contentPageRoutes.flatMap(({ menuLabel, paths }) =>
       paths.map((path) => [path, menuLabel] as const),
     ),
@@ -254,21 +246,26 @@ describe("App", () => {
       "aria-current",
       "page",
     );
+    expect(
+      within(screen.getByRole("link", { name: label })).getByTestId(
+        "current-page-cursor",
+      ),
+    ).toBeInTheDocument();
     for (const link of screen.getAllByRole("link")) {
       if (link.getAttribute("aria-label") === "生き物スキャン ホーム") continue;
-      if (link.textContent === label) continue;
+      if (within(link).queryByTestId("menu-link-label")?.textContent === label) continue;
       expect(link).not.toHaveAttribute("aria-current");
     }
   });
 
   it("links both input modes to the shared photo guide", () => {
     installCamera(vi.fn().mockResolvedValue(cameraStream()));
-    window.history.replaceState({}, "", "/?mode=photo");
+    window.history.replaceState({}, "", "/scan?mode=photo");
 
     render(<App />);
     fireEvent.click(screen.getByRole("button", { name: "メニューを開く" }));
 
-    expect(screen.getByRole("link", { name: "How to use" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "使い方" })).toHaveAttribute(
       "href",
       "/how-to#photo-guide",
     );
@@ -415,19 +412,19 @@ describe("App", () => {
     );
     expect(await screen.findByText("写真を判定しています")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "メニューを開く" }));
-    fireEvent.click(screen.getByRole("link", { name: "About" }));
+    fireEvent.click(screen.getByRole("link", { name: "このサイトについて" }));
 
     await waitFor(() =>
       expect(revokeObjectURL).toHaveBeenCalledWith("blob:preview"),
     );
-    expect(window.location.pathname).toBe("/about");
+    expect(window.location.pathname).toBe("/");
 
     await act(async () => {
       pending.reject(new Error("離脱後の失敗"));
       await pending.promise.catch(() => undefined);
     });
     expect(
-      screen.getByRole("heading", { name: "現在判定できる生き物" }),
+      screen.getByRole("heading", { name: "写真から、生き物を知る。" }),
     ).toBeInTheDocument();
     expect(screen.queryByText("離脱後の失敗")).not.toBeInTheDocument();
   });
@@ -549,54 +546,108 @@ describe("App", () => {
     expect(screen.queryByText("ガムシ")).not.toBeInTheDocument();
   });
 
-  it("routes product and supported-species information to about", () => {
+  it("routes product information to the public home page", () => {
     const getUserMedia = vi.fn();
     installCamera(getUserMedia);
-    window.history.replaceState({}, "", "/about");
+    window.history.replaceState({}, "", "/");
 
     render(<App />);
 
     expect(
-      screen.getByRole("heading", { name: "現在判定できる生き物" }),
+      screen.getByRole("heading", { name: "公益のために、生き物を見分ける" }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", {
-        name: "生き物スキャンは、生物の写真を分類できます。",
+        name: "写真から、生き物を知る。",
       }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("422種", { selector: "strong" }),
+      screen.getByText(/侵略的外来種の早期発見と、在来種の誤った駆除/),
     ).toBeInTheDocument();
-    const summaryItems = within(
-      screen.getByRole("list", { name: "判定対象の概要" }),
-    ).getAllByRole("listitem");
-    expect(summaryItems).toHaveLength(2);
-    expect(summaryItems[0]).toHaveTextContent(/^現在の分類対象422種$/);
-    expect(summaryItems[1]).toHaveTextContent(/^現在の対象グループ甲虫$/);
-    expect(
-      within(screen.getByRole("list", { name: "判定対象の例" })).getAllByRole(
-        "listitem",
-      ),
-    ).toHaveLength(3);
-    expect(screen.getAllByRole("img", { name: /の観察写真/ })).toHaveLength(3);
-    expect(
-      screen.queryByRole("link", { name: /iNaturalist/ }),
-    ).not.toBeInTheDocument();
-    expect(screen.queryByText(/^写真:/)).not.toBeInTheDocument();
-    expect(
-      within(screen.getByRole("note", { name: "写真クレジット" })).getAllByRole(
-        "listitem",
-      ),
-    ).toHaveLength(2);
-    expect(screen.getByText("特定外来生物")).toBeInTheDocument();
-    expect(screen.getAllByTestId("specimen-designation-slot")).toHaveLength(3);
-    expect(
-      screen.queryByRole("link", { name: "使い方を見る" }),
-    ).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "写真を判定する" })).toHaveAttribute(
+      "href",
+      "/scan",
+    );
+    expect(screen.getByRole("link", { name: "判定できる生き物を見る" })).toHaveAttribute(
+      "href",
+      "/supported-species",
+    );
     expect(
       screen.getByRole("banner", { name: "サイトヘッダー" }),
     ).toHaveClass("fixed");
     expect(getUserMedia).not.toHaveBeenCalled();
+  });
+
+  it("does not treat the retired about path as a page", () => {
+    installCamera(vi.fn());
+    window.history.replaceState({}, "", "/about");
+
+    render(<App />);
+
+    expect(screen.getByRole("heading", { name: "ページが見つかりません" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "写真から、生き物を知る。" })).not.toBeInTheDocument();
+  });
+
+  it("renders supported species and public evaluation values from the model manifest", async () => {
+    installCamera(vi.fn());
+    window.history.replaceState({}, "", "/supported-species");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            version: "0.1.0",
+            modelUrl: "/models/model.onnx",
+            sha256: "a".repeat(64),
+            license: "CC-BY-NC-4.0",
+            source: "/models/v0.1.0.md",
+            imageSize: 320,
+            minimumConfidence: 0.6,
+            evaluation: {
+              validationImages: 3188,
+              accuracy: 0.7971,
+              macroF1: 0.7771,
+            },
+            classes: [
+              {
+                id: "494519",
+                commonName: "クビアカツヤカミキリ",
+                scientificName: "Aromia bungii",
+              },
+              {
+                id: "48484",
+                commonName: "ナミテントウ",
+                scientificName: "Harmonia axyridis",
+              },
+            ],
+          }),
+          { headers: { "content-type": "application/json" } },
+        ),
+      ),
+    );
+
+    render(<App />);
+
+    expect(
+      await screen.findByRole("heading", { name: "判定できる生き物" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("2種", { selector: "strong" })).toBeInTheDocument();
+    expect(screen.getByRole("table", { name: "判定できる生き物の一覧" })).toBeInTheDocument();
+    const speciesTable = screen.getByRole("table", { name: "判定できる生き物の一覧" });
+    expect(within(speciesTable).getByText("クビアカツヤカミキリ")).toBeInTheDocument();
+    expect(within(speciesTable).getByText("Aromia bungii")).toBeInTheDocument();
+    expect(screen.getByText("3,188枚")).toBeInTheDocument();
+    expect(screen.getByText("79.7%" )).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "GitHubで詳しく見る" })).toHaveAttribute(
+      "href",
+      "https://github.com/tsukishima-digital/ikimono-scan",
+    );
+
+    fireEvent.change(screen.getByRole("searchbox", { name: "生き物を検索" }), {
+      target: { value: "ナミテントウ" },
+    });
+    expect(within(speciesTable).queryByText("クビアカツヤカミキリ")).not.toBeInTheDocument();
+    expect(within(speciesTable).getByText("ナミテントウ")).toBeInTheDocument();
   });
 
   it("uses one clear example to explain the shared photo guide", () => {

@@ -66,6 +66,33 @@ describe("fetchModelManifest", () => {
       "判定モデルを読み込めませんでした",
     );
   });
+
+  it("rejects invalid public evaluation values", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          version: "test",
+          modelUrl: "/models/test.onnx",
+          sha256: "a".repeat(64),
+          license: "TEST",
+          source: "/models/test.md",
+          imageSize: 320,
+          minimumConfidence: 0.6,
+          evaluation: {
+            validationImages: 0,
+            accuracy: 1.2,
+            macroF1: 0.5,
+          },
+          classes,
+        }),
+        { headers: { "content-type": "application/json" } },
+      ),
+    );
+
+    await expect(fetchModelManifest("/models/manifest.json")).rejects.toThrow(
+      "判定モデルの設定が不正です",
+    );
+  });
 });
 
 describe("verifySha256", () => {

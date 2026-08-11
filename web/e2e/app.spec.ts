@@ -5,7 +5,6 @@ import { fileURLToPath } from "node:url";
 
 import { contentPagePaths } from "../src/content-page-routes";
 
-const onboardingKey = "ikimono-scan:onboarding:v1";
 const specimenPath = fileURLToPath(
   new URL(
     "../src/assets/specimens/aromia-bungii-712990656.jpg",
@@ -92,13 +91,6 @@ async function denyCamera(page: Page) {
   });
 }
 
-async function completeOnboarding(page: Page) {
-  await page.addInitScript(
-    (key) => localStorage.setItem(key, "complete"),
-    onboardingKey,
-  );
-}
-
 async function expectNoAutomaticAccessibilityViolations(page: Page) {
   const result = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa"])
@@ -148,6 +140,25 @@ test.beforeEach(async ({ page }) => {
   await denyCamera(page);
 });
 
+test("search discovery files list only public content pages", async ({
+  request,
+}) => {
+  const robots = await request.get("/robots.txt");
+  expect(robots.ok()).toBe(true);
+  expect(await robots.text()).toContain(
+    "Sitemap: https://ikimono-scan.app/sitemap.xml",
+  );
+
+  const sitemap = await request.get("/sitemap.xml");
+  const sitemapText = await sitemap.text();
+  expect(sitemap.ok()).toBe(true);
+  expect(sitemapText).toContain(
+    "https://ikimono-scan.app/supported-species",
+  );
+  expect(sitemapText).not.toContain("https://ikimono-scan.app/scan");
+  expect(sitemapText).not.toContain("https://ikimono-scan.app/about");
+});
+
 for (const pathname of contentPagePaths) {
   test(`${pathname} obeys the shared content-page layout`, async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
@@ -171,9 +182,54 @@ for (const pathname of contentPagePaths) {
   });
 }
 
-test("About keeps image credits out of specimen cards", async ({ page }) => {
+test("menu order and cursor make the current page unambiguous", async ({
+  page,
+}) => {
+  await page.goto("/supported-species");
+  await page.getByRole("button", { name: "メニューを開く" }).click();
+
+  const menu = page.getByRole("navigation", { name: "メインナビゲーション" });
+  await expect(menu.getByTestId("menu-link-label")).toHaveText([
+    "このサイトについて",
+    "判定できる生き物",
+    "使い方",
+    "更新情報",
+    "写真を判定する",
+  ]);
+
+  const current = menu.getByRole("link", { name: "判定できる生き物" });
+  const other = menu.getByRole("link", { name: "使い方" });
+  await expect(current).toHaveAttribute("aria-current", "page");
+  expect(
+    await current
+      .getByTestId("current-page-cursor")
+      .evaluate((element) => getComputedStyle(element).borderLeftWidth),
+  ).toBe("8px");
+
+  const presentation = await Promise.all(
+    [current, other].map((link) =>
+      link.evaluate((element) => {
+        const label = element.querySelector<HTMLElement>(
+          '[data-testid="menu-link-label"]',
+        )!;
+        return {
+          backgroundColor: getComputedStyle(element).backgroundColor,
+          labelLeft: label.getBoundingClientRect().left,
+        };
+      }),
+    ),
+  );
+  expect(presentation[0]?.backgroundColor).not.toBe(
+    presentation[1]?.backgroundColor,
+  );
+  expect(presentation[0]!.labelLeft).toBeGreaterThan(
+    presentation[1]!.labelLeft,
+  );
+});
+
+test("Supported species keeps image credits out of specimen cards", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
-  await page.goto("/about");
+  await page.goto("/supported-species");
 
   const names = await page
     .getByTestId("specimen-common-name")
@@ -186,7 +242,7 @@ test("About keeps image credits out of specimen cards", async ({ page }) => {
 });
 
 test("specimen examples load as decodable images", async ({ page }) => {
-  await page.goto("/about");
+  await page.goto("/supported-species");
   await expectDecodedImages(
     page,
     page.getByRole("img", { name: /の観察写真$/ }),
@@ -324,36 +380,31 @@ test("Safari can preprocess an iPhone HEIC photo", async ({
   await expect(page.getByText("処理できました")).toBeVisible();
 });
 
-test("first-time visitors start the scanner deliberately and keep that choice", async ({
+test("visitors start the scanner deliberately from the public introduction", async ({
   page,
 }) => {
   await page.goto("/");
 
-  await expect(page).toHaveURL(/\/how-to$/);
-  await expect(page.getByRole("heading", { name: "How to use" })).toBeVisible();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.getByRole("heading", { name: "写真から、生き物を知る。" })).toBeVisible();
   await expectNoAutomaticAccessibilityViolations(page);
 
-  const startButton = page.getByRole("button", { name: "カメラを開く" });
+  const startButton = page.getByRole("link", { name: "写真を判定する" });
   await startButton.focus();
   await page.keyboard.press("Enter");
 
-  await expect(page).toHaveURL(/\/$/);
-  await expect(page.getByLabel("写真を選ぶ")).toBeVisible();
-
-  await page.reload();
-  await expect(page).toHaveURL(/\/$/);
+  await expect(page).toHaveURL(/\/scan$/);
   await expect(page.getByLabel("写真を選ぶ")).toBeVisible();
 });
 
 test("model download failure leaves the photo flow usable for retry", async ({
   page,
 }) => {
-  await completeOnboarding(page);
   await page.route("**/models/manifest.json", async (route) => {
     await new Promise((resolve) => setTimeout(resolve, 300));
     await route.fulfill({ status: 503, body: "temporarily unavailable" });
   });
-  await page.goto("/");
+  await page.goto("/scan");
   const input = page.getByLabel("写真を選ぶ");
 
   await input.setInputFiles(specimenPath);
@@ -369,7 +420,6 @@ test("model download failure leaves the photo flow usable for retry", async ({
 test("resetting during model loading ignores the abandoned request", async ({
   page,
 }) => {
-  await completeOnboarding(page);
   let releaseRequest!: () => void;
   const requestReleased = new Promise<void>((resolve) => {
     releaseRequest = resolve;
@@ -378,7 +428,7 @@ test("resetting during model loading ignores the abandoned request", async ({
     await requestReleased;
     await route.fulfill({ status: 503, body: "abandoned request" });
   });
-  await page.goto("/");
+  await page.goto("/scan");
 
   await page.getByLabel("写真を選ぶ").setInputFiles(specimenPath);
   await expect(page.getByText("判定モデルを準備しています")).toBeVisible();
@@ -399,7 +449,6 @@ test("resetting during model loading ignores the abandoned request", async ({
 test("a model integrity failure is explicit and recoverable", async ({
   page,
 }) => {
-  await completeOnboarding(page);
   await page.route("**/models/manifest.json", async (route) => {
     await route.fulfill({
       contentType: "application/json",
@@ -424,7 +473,7 @@ test("a model integrity failure is explicit and recoverable", async ({
   await page.route("**/models/e2e.onnx", (route) =>
     route.fulfill({ body: "not an ONNX model" }),
   );
-  await page.goto("/");
+  await page.goto("/scan");
 
   await page.getByLabel("写真を選ぶ").setInputFiles(specimenPath);
 

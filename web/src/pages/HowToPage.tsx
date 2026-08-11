@@ -46,7 +46,6 @@ export function HowToPage({
       currentPage="how-to"
       description="撮影でも保存済みの写真でも、判定に向いた1枚を用意するポイントは同じです。"
       eyebrow="HOW TO USE"
-      onStartScanner={() => onStartScanner("camera")}
       title="How to use"
     >
       <section
