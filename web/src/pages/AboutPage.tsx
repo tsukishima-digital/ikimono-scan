@@ -1,11 +1,12 @@
 import { ContentPageLayout } from "../components/ContentPageLayout";
 import { specimenPhotos } from "../content/specimen-gallery";
 
-export function AboutPage() {
+export function AboutPage({ onStartScanner }: { onStartScanner: () => void }) {
   return (
     <ContentPageLayout
       currentPage="about"
       eyebrow="ABOUT"
+      onStartScanner={onStartScanner}
       title={
         <>
           生き物スキャンは、

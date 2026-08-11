@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 
 import {
   contentPageRoutes,
@@ -13,6 +13,7 @@ interface SiteHeaderProps {
   contentFrame?: boolean;
   currentPage?: CurrentPage;
   howToHref?: string;
+  onStartScanner?: () => void;
   overlay?: boolean;
 }
 
@@ -20,6 +21,7 @@ export function SiteHeader({
   contentFrame = false,
   currentPage = "scan",
   howToHref = "/how-to",
+  onStartScanner,
   overlay = false,
 }: SiteHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -77,7 +79,12 @@ export function SiteHeader({
         aria-current={active ? "page" : undefined}
         className={menuLinkClassName(active)}
         href={href}
-        onClick={() => setMenuOpen(false)}
+        onClick={(event) => {
+          setMenuOpen(false);
+          if (page !== "scan" || !onStartScanner) return;
+          event.preventDefault();
+          onStartScanner();
+        }}
       >
         {label}
         {active && (
@@ -85,6 +92,12 @@ export function SiteHeader({
         )}
       </AppLink>
     );
+  }
+
+  function startScannerFromTitle(event: MouseEvent<HTMLAnchorElement>) {
+    if (!onStartScanner) return;
+    event.preventDefault();
+    onStartScanner();
   }
 
   return (
@@ -97,6 +110,7 @@ export function SiteHeader({
           className={`inline-flex items-center text-[15px] font-[750] tracking-[0.02em] no-underline transition-transform duration-100 ease-out active:scale-[0.97] max-[720px]:text-[13px] ${overlay ? "drop-shadow-[0_1px_5px_rgb(0_0_0/42%)]" : ""}`}
           href="/"
           aria-label="生き物スキャン ホーム"
+          onClick={startScannerFromTitle}
         >
           <span>生き物スキャン</span>
         </AppLink>

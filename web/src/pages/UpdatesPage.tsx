@@ -1,10 +1,11 @@
 import { ContentPageLayout } from "../components/ContentPageLayout";
 
-export function UpdatesPage() {
+export function UpdatesPage({ onStartScanner }: { onStartScanner: () => void }) {
   return (
     <ContentPageLayout
       currentPage="changelog"
       eyebrow="CHANGELOG"
+      onStartScanner={onStartScanner}
       title="Changelog"
     >
       <ol className="m-0 list-none p-0 pb-[120px]">

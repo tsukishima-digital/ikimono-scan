@@ -51,11 +51,11 @@ export default function App() {
     : contentPageIdFromPath(pathname);
   switch (contentPage) {
     case "about":
-      return <AboutPage />;
+      return <AboutPage onStartScanner={() => startScanner("camera")} />;
     case "how-to":
       return <HowToPage onStartScanner={startScanner} />;
     case "changelog":
-      return <UpdatesPage />;
+      return <UpdatesPage onStartScanner={() => startScanner("camera")} />;
   }
   const resultFixturesEnabled =
     import.meta.env.DEV || import.meta.env.VITE_E2E_FIXTURES === "true";

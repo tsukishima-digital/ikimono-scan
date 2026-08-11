@@ -3,12 +3,6 @@ import { useEffect } from "react";
 import { ContentPageLayout } from "../components/ContentPageLayout";
 import type { SourceMode } from "./ScannerPage";
 
-const methodLinkClassName =
-  "group flex min-h-[150px] flex-col justify-between rounded-[24px] bg-card p-6 no-underline shadow-[0_12px_36px_rgb(20_38_26/8%)] transition-transform duration-100 ease-out active:scale-[0.98] focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-lime max-[620px]:min-h-[132px] max-[620px]:p-5";
-
-const actionClassName =
-  "inline-flex min-h-14 min-w-[180px] cursor-pointer items-center justify-center whitespace-nowrap rounded-full border-0 bg-brand-dark px-8 text-[15px] font-extrabold text-white shadow-[0_14px_32px_rgb(18_64_39/18%)] transition-[background,transform] duration-100 ease-out hover:bg-brand active:scale-[0.97] focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-lime max-[620px]:w-full max-[620px]:min-w-0";
-
 export function HowToPage({
   onStartScanner,
 }: {
@@ -26,6 +20,7 @@ export function HowToPage({
       currentPage="how-to"
       description="カメラで撮影するか、端末に保存した写真を選んで判定します。"
       eyebrow="HOW TO USE"
+      onStartScanner={() => onStartScanner("camera")}
       title="How to use"
     >
       <nav
@@ -33,7 +28,7 @@ export function HowToPage({
         aria-label="使い方を選ぶ"
       >
         <a
-          className={methodLinkClassName}
+          className="group flex min-h-[150px] flex-col justify-between rounded-[24px] bg-card p-6 no-underline shadow-[0_12px_36px_rgb(20_38_26/8%)] transition-transform duration-100 ease-out active:scale-[0.98] focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-lime max-[620px]:min-h-[132px] max-[620px]:p-5"
           href="#camera"
           aria-label="カメラの使い方"
         >
@@ -49,7 +44,7 @@ export function HowToPage({
           </strong>
         </a>
         <a
-          className={methodLinkClassName}
+          className="group flex min-h-[150px] flex-col justify-between rounded-[24px] bg-card p-6 no-underline shadow-[0_12px_36px_rgb(20_38_26/8%)] transition-transform duration-100 ease-out active:scale-[0.98] focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-lime max-[620px]:min-h-[132px] max-[620px]:p-5"
           href="#photo"
           aria-label="写真の使い方"
         >
@@ -126,7 +121,7 @@ function HowToSection({
             {description}
           </p>
           <button
-            className={actionClassName}
+            className="how-to-action"
             data-testid="how-to-action"
             type="button"
             onClick={onAction}

@@ -9,6 +9,7 @@ interface ContentPageLayoutProps {
   currentPage: ContentPageId;
   description?: ReactNode;
   eyebrow: string;
+  onStartScanner: () => void;
   title: ReactNode;
 }
 
@@ -17,6 +18,7 @@ export function ContentPageLayout({
   currentPage,
   description,
   eyebrow,
+  onStartScanner,
   title,
 }: ContentPageLayoutProps) {
   return (
@@ -24,7 +26,11 @@ export function ContentPageLayout({
       className="min-h-dvh bg-paper text-ink"
       data-testid="content-page-layout"
     >
-      <SiteHeader currentPage={currentPage} contentFrame />
+      <SiteHeader
+        currentPage={currentPage}
+        contentFrame
+        onStartScanner={onStartScanner}
+      />
       <main
         className={`${contentPageFrameClassName} pt-[78px] max-[720px]:pt-[68px]`}
         data-testid="content-page-frame"

@@ -164,6 +164,34 @@ describe("App", () => {
     setItem.mockRestore();
   });
 
+  it.each(["Scan", "生き物スキャン ホーム"])(
+    "%s explicitly starts the scanner even before onboarding is complete",
+    async (controlName) => {
+      const getUserMedia = vi.fn().mockResolvedValue(cameraStream());
+      installCamera(getUserMedia);
+      window.localStorage.removeItem(ONBOARDING_STORAGE_KEY);
+      window.history.replaceState({}, "", "/how-to");
+
+      render(<App />);
+      if (controlName === "Scan") {
+        fireEvent.click(
+          screen.getByRole("button", { name: "メニューを開く" }),
+        );
+      }
+      fireEvent.click(screen.getByRole("link", { name: controlName }));
+
+      expect(window.localStorage.getItem(ONBOARDING_STORAGE_KEY)).toBe(
+        "complete",
+      );
+      expect(window.location.pathname).toBe("/");
+      await waitFor(() => expect(getUserMedia).toHaveBeenCalledOnce());
+      expect(screen.getByRole("tab", { name: "撮影" })).toHaveAttribute(
+        "aria-selected",
+        "true",
+      );
+    },
+  );
+
   it("requests the rear camera when the scanner opens", async () => {
     const getUserMedia = vi.fn().mockResolvedValue(cameraStream());
     installCamera(getUserMedia);

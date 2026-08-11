@@ -101,6 +101,7 @@ test("How to use actions contain their labels at the minimum viewport", async ({
   const actions = await page.getByTestId("how-to-action").evaluateAll(
     (elements) =>
       elements.map((element) => ({
+        clientHeight: element.clientHeight,
         clientWidth: element.clientWidth,
         scrollWidth: element.scrollWidth,
         whiteSpace: getComputedStyle(element).whiteSpace,
@@ -109,6 +110,8 @@ test("How to use actions contain their labels at the minimum viewport", async ({
 
   expect(actions).toHaveLength(2);
   for (const action of actions) {
+    expect(action.clientHeight).toBe(56);
+    expect(action.clientWidth).toBe(284);
     expect(action.scrollWidth).toBeLessThanOrEqual(action.clientWidth);
     expect(action.whiteSpace).toBe("nowrap");
   }
