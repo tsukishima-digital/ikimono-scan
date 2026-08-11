@@ -1,4 +1,5 @@
 import re
+import tomllib
 from pathlib import Path
 
 import yaml
@@ -6,6 +7,7 @@ import yaml
 REPOSITORY_ROOT = Path(__file__).parents[2]
 WORKFLOWS = REPOSITORY_ROOT / ".github" / "workflows"
 TASKFILE = REPOSITORY_ROOT / "Taskfile.yml"
+GITLEAKS_CONFIG = REPOSITORY_ROOT / ".gitleaks.toml"
 PINNED_ACTION = re.compile(r"^[^\s@]+@[0-9a-f]{40}$")
 
 
@@ -33,6 +35,7 @@ def test_deployment_workflows_pin_every_third_party_action():
         "ci.yml",
         "terraform-plan.yml",
         "deploy.yml",
+        "preview.yml",
         "unpublish.yml",
     ):
         workflow, _ = _workflow(workflow_name)
@@ -45,6 +48,7 @@ def test_deployment_workflows_only_use_actions_allowed_by_repository_policy():
         "ci.yml",
         "terraform-plan.yml",
         "deploy.yml",
+        "preview.yml",
         "unpublish.yml",
     ):
         workflow, _ = _workflow(workflow_name)
@@ -128,6 +132,81 @@ def test_task_unpublish_dispatches_the_main_workflow_instead_of_applying_locally
     assert "gh workflow run unpublish.yml" in source
     assert "--ref main" in source
     assert "terraform apply" not in source
+
+
+def test_mobile_preview_tasks_use_cloudflare_without_local_terraform_apply():
+    taskfile = yaml.safe_load(TASKFILE.read_text())
+    source = "\n".join(taskfile["tasks"]["dev:mobile"]["cmds"])
+    environment = taskfile["tasks"]["dev:mobile"]["env"]
+    provision_source = "\n".join(taskfile["tasks"]["preview:provision"]["cmds"])
+
+    assert "scripts/mobile_preview.py" in source
+    assert environment["IKIMONO_SCAN_WEB_ROOT"] == "{{.WEB_ROOT}}"
+    assert "gh workflow run preview.yml" in provision_source
+    assert "--ref main" in provision_source
+    assert "terraform apply" not in provision_source
+
+
+def test_preview_workflow_is_manual_serialized_and_applies_a_saved_plan():
+    workflow, source = _workflow("preview.yml")
+
+    assert set(workflow[True]) == {"workflow_dispatch"}
+    assert workflow["permissions"] == {"contents": "read"}
+    assert workflow["concurrency"] == {
+        "group": "preview-infrastructure",
+        "cancel-in-progress": False,
+    }
+    assert "provision dev.ikimono-scan.app" in source
+    assert "merge-base --is-ancestor" in source
+    assert re.search(r"terraform .* plan .* -out=preview\.tfplan", source)
+    assert re.search(r"terraform .* apply .* preview\.tfplan", source)
+    assert "terraform_backend.py backup preview pre-apply" in source
+    assert "terraform_backend.py backup preview post-apply" in source
+    assert "pull_request_target" not in source
+    assert "secrets.CLOUDFLARE_PREVIEW_API_TOKEN" in source
+    assert "secrets.CLOUDFLARE_API_TOKEN" not in source
+
+
+def test_preview_infrastructure_is_access_protected_for_cloudflare_account_members():
+    source = (REPOSITORY_ROOT / "infra" / "preview" / "main.tf").read_text()
+
+    assert 'hostname = "dev.ikimono-scan.app"' in source
+    assert 'service  = "http://localhost:5175"' in source
+    assert "cloudflare_zero_trust_access_application" in source
+    assert "cloudflare_zero_trust_access_policy" in source
+    assert "cloudflare_account_member" in source
+    assert "email = {" not in source
+
+
+def test_preview_routes_models_through_the_production_worker_and_r2():
+    source = (REPOSITORY_ROOT / "infra" / "preview" / "main.tf").read_text()
+    documentation = (REPOSITORY_ROOT / "infra" / "README.md").read_text()
+
+    worker_block = source.split('resource "cloudflare_workers_script"', 1)[1].split(
+        'resource "cloudflare_workers_route" "models"', 1
+    )[0]
+    assert 'content_file       = "${path.module}/../production/worker/index.js"' in worker_block
+    assert "bucket_name = var.model_bucket_name" in worker_block
+    assert 'name        = "MODELS"' in worker_block
+    assert 'type        = "r2_bucket"' in worker_block
+    assert 'pattern = "dev.ikimono-scan.app/models/*"' in source
+    assert 'pattern = "dev.ikimono-scan.app/models/manifest.json*"' in source
+    manifest_route = source.split('resource "cloudflare_workers_route" "model_manifest"', 1)[1]
+    assert "script" not in manifest_route
+    assert "Workers Scripts Edit" in documentation
+    assert "Workers Routes Edit" in documentation
+
+
+def test_gitleaks_rejects_personal_environment_identifiers():
+    config = tomllib.loads(GITLEAKS_CONFIG.read_text())
+    privacy_rule = next(
+        rule for rule in config["rules"] if rule["id"] == "public-repository-personal-identifiers"
+    )
+
+    assert "@gmail" in privacy_rule["regex"]
+    assert "/Users/" in privacy_rule["regex"]
+    assert "[.]ts[.]net" in privacy_rule["regex"]
+    assert "commits" not in privacy_rule["allowlist"]
 
 
 def test_production_domain_can_be_removed_without_destroying_the_worker():

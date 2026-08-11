@@ -14,7 +14,7 @@ from pathlib import Path
 REPOSITORY_ROOT = Path(__file__).parents[1]
 INFRA_ROOT = REPOSITORY_ROOT / "infra"
 STATE_BUCKET = "ikimono-scan-terraform-state"
-ROOTS = {"bootstrap", "production", "storage"}
+ROOTS = {"bootstrap", "preview", "production", "storage"}
 
 
 def _environment() -> dict[str, str]:
