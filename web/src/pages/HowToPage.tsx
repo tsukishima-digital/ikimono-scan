@@ -23,44 +23,6 @@ export function HowToPage({
       onStartScanner={() => onStartScanner("camera")}
       title="How to use"
     >
-      <nav
-        className="grid grid-cols-2 gap-4 border-t border-line py-12 max-[620px]:grid-cols-1 max-[620px]:py-9"
-        aria-label="使い方を選ぶ"
-      >
-        <a
-          className="group flex min-h-[150px] flex-col justify-between rounded-[24px] bg-card p-6 no-underline shadow-[0_12px_36px_rgb(20_38_26/8%)] transition-transform duration-100 ease-out active:scale-[0.98] focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-lime max-[620px]:min-h-[132px] max-[620px]:p-5"
-          href="#camera"
-          aria-label="カメラの使い方"
-        >
-          <span className="text-xs font-bold text-muted">その場で撮影</span>
-          <strong className="flex items-end justify-between gap-4 font-mincho text-[26px] tracking-[-0.03em] max-[360px]:text-[23px]">
-            カメラの使い方
-            <span
-              className="shrink-0 font-sans text-lg transition-transform group-hover:translate-y-1"
-              aria-hidden="true"
-            >
-              ↓
-            </span>
-          </strong>
-        </a>
-        <a
-          className="group flex min-h-[150px] flex-col justify-between rounded-[24px] bg-card p-6 no-underline shadow-[0_12px_36px_rgb(20_38_26/8%)] transition-transform duration-100 ease-out active:scale-[0.98] focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-lime max-[620px]:min-h-[132px] max-[620px]:p-5"
-          href="#photo"
-          aria-label="写真の使い方"
-        >
-          <span className="text-xs font-bold text-muted">保存済みの画像</span>
-          <strong className="flex items-end justify-between gap-4 font-mincho text-[26px] tracking-[-0.03em] max-[360px]:text-[23px]">
-            写真の使い方
-            <span
-              className="shrink-0 font-sans text-lg transition-transform group-hover:translate-y-1"
-              aria-hidden="true"
-            >
-              ↓
-            </span>
-          </strong>
-        </a>
-      </nav>
-
       <HowToSection
         eyebrow="CAMERA"
         id="camera"

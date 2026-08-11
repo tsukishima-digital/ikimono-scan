@@ -524,7 +524,7 @@ describe("App", () => {
     expect(getUserMedia).not.toHaveBeenCalled();
   });
 
-  it("provides camera and photo instructions on one How to use page", () => {
+  it("provides camera and photo instructions without an intermediate chooser", () => {
     const getUserMedia = vi.fn();
     installCamera(getUserMedia);
     window.history.replaceState({}, "", "/how-to#photo");
@@ -540,14 +540,9 @@ describe("App", () => {
     expect(
       screen.getByRole("heading", { name: "写真を選ぶ" }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "カメラの使い方" })).toHaveAttribute(
-      "href",
-      "#camera",
-    );
-    expect(screen.getByRole("link", { name: "写真の使い方" })).toHaveAttribute(
-      "href",
-      "#photo",
-    );
+    expect(
+      screen.queryByRole("navigation", { name: "使い方を選ぶ" }),
+    ).not.toBeInTheDocument();
     expect(getUserMedia).not.toHaveBeenCalled();
   });
 
