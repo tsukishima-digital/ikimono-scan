@@ -176,6 +176,11 @@ tasks:
     cmds:
       - python scripts/publish_model.py --bundle-dir "$MODEL_BUNDLE_DIR"
 
+  model:smoke:
+    desc: Verify the public model against the tracked manifest
+    cmds:
+      - python scripts/verify_public_model.py web/public/models/manifest.json
+
   model:prepare-and-upload:
     desc: Export, verify, and upload a checkpoint without deploying the app
     requires:
