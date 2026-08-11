@@ -129,6 +129,13 @@ def test_task_unpublish_dispatches_the_main_workflow_instead_of_applying_locally
     assert "terraform apply" not in source
 
 
+def test_mobile_preview_task_uses_the_private_tailscale_runner():
+    taskfile = yaml.safe_load(TASKFILE.read_text())
+    source = "\n".join(taskfile["tasks"]["dev:mobile"]["cmds"])
+
+    assert "scripts/mobile_preview.py" in source
+
+
 def test_production_domain_can_be_removed_without_destroying_the_worker():
     source = (REPOSITORY_ROOT / "infra" / "production" / "main.tf").read_text()
     variables = (REPOSITORY_ROOT / "infra" / "production" / "variables.tf").read_text()
