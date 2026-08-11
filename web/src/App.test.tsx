@@ -8,6 +8,7 @@ import {
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createClassifier } from "./inference/classifier";
+import { ONBOARDING_STORAGE_KEY } from "./onboarding";
 import App from "./App";
 
 vi.mock("./inference/classifier", async (importOriginal) => {
@@ -37,6 +38,7 @@ function cameraStream() {
 describe("App", () => {
   beforeEach(() => {
     window.history.replaceState({}, "", "/");
+    window.localStorage.setItem(ONBOARDING_STORAGE_KEY, "complete");
     vi.stubGlobal("scrollTo", vi.fn());
     mockedCreateClassifier.mockReset();
     mockedCreateClassifier.mockResolvedValue({
@@ -58,8 +60,57 @@ describe("App", () => {
   });
 
   afterEach(() => {
+    window.localStorage.clear();
     vi.unstubAllGlobals();
     Reflect.deleteProperty(navigator, "mediaDevices");
+  });
+
+  it("shows About before requesting the camera on a first visit", async () => {
+    const getUserMedia = vi.fn().mockResolvedValue(cameraStream());
+    installCamera(getUserMedia);
+    window.localStorage.removeItem(ONBOARDING_STORAGE_KEY);
+
+    render(<App />);
+
+    expect(window.location.pathname).toBe("/about");
+    expect(
+      screen.getByRole("heading", {
+        name: "生き物スキャンは、生物の写真を分類できます。",
+      }),
+    ).toBeInTheDocument();
+    expect(getUserMedia).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: "カメラを開く" }));
+
+    expect(window.localStorage.getItem(ONBOARDING_STORAGE_KEY)).toBe(
+      "complete",
+    );
+    expect(window.location.pathname).toBe("/");
+    await waitFor(() => expect(getUserMedia).toHaveBeenCalledOnce());
+  });
+
+  it("can start the current session when persistent storage is unavailable", async () => {
+    const getUserMedia = vi.fn().mockResolvedValue(cameraStream());
+    installCamera(getUserMedia);
+    window.localStorage.removeItem(ONBOARDING_STORAGE_KEY);
+    const getItem = vi
+      .spyOn(Storage.prototype, "getItem")
+      .mockImplementation(() => {
+        throw new DOMException("blocked", "SecurityError");
+      });
+    const setItem = vi
+      .spyOn(Storage.prototype, "setItem")
+      .mockImplementation(() => {
+        throw new DOMException("blocked", "SecurityError");
+      });
+
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "カメラを開く" }));
+
+    expect(window.location.pathname).toBe("/");
+    await waitFor(() => expect(getUserMedia).toHaveBeenCalledOnce());
+    getItem.mockRestore();
+    setItem.mockRestore();
   });
 
   it("requests the rear camera when the scanner opens", async () => {

@@ -1,7 +1,7 @@
 import { SiteHeader } from "../components/SiteHeader";
 import { specimenPhotos } from "../content/specimen-gallery";
 
-export function AboutPage() {
+export function AboutPage({ onStartScanner }: { onStartScanner: () => void }) {
   return (
     <div className="min-h-dvh bg-paper text-ink">
       <SiteHeader />
@@ -105,6 +105,18 @@ export function AboutPage() {
               判定は専門家による同定ではありません。甲虫以外の写真や、暗い・小さい写真では
               正しく判定できないことがあります。防除などの判断には公的情報を確認してください。
             </p>
+          </div>
+
+          <div className="mt-12 flex flex-col items-center border-t border-line pt-12 text-center">
+            <p className="m-0 text-sm text-muted">見つけた生き物を撮影します</p>
+            <button
+              className="mt-5 inline-flex min-h-14 cursor-pointer items-center justify-center gap-3 rounded-full border-0 bg-brand-dark px-8 text-[16px] font-extrabold text-white shadow-[0_14px_32px_rgb(18_64_39/20%)] transition-[background,transform] duration-100 ease-out hover:bg-brand active:scale-[0.97] focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-lime max-[720px]:w-full"
+              type="button"
+              onClick={onStartScanner}
+            >
+              カメラを開く
+              <span aria-hidden="true">→</span>
+            </button>
           </div>
         </section>
       </main>
