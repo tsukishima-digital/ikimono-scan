@@ -48,9 +48,15 @@ resource "cloudflare_workers_script" "app" {
 }
 
 resource "cloudflare_workers_custom_domain" "app" {
+  count      = var.site_published ? 1 : 0
   account_id = var.cloudflare_account_id
   hostname   = var.domain_name
   service    = cloudflare_workers_script.app.script_name
   zone_id    = one(data.cloudflare_zones.app.result).id
   zone_name  = var.domain_name
+}
+
+moved {
+  from = cloudflare_workers_custom_domain.app
+  to   = cloudflare_workers_custom_domain.app[0]
 }

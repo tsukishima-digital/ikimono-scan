@@ -131,6 +131,26 @@ tasks:
     cmds:
       - curl --fail --silent --show-error --retry 12 --retry-delay 10 --retry-max-time 180 --retry-all-errors https://ikimono-scan.app/ >/dev/null
 
+  unpublish:
+    desc: Dispatch the workflow that removes the production custom domain
+    cmds:
+      - gh workflow run unpublish.yml --ref main --field confirmation="unpublish ikimono-scan.app"
+
+  unpublish:smoke:
+    desc: Check that the application endpoint is no longer publicly available
+    cmds:
+      - |
+        for attempt in $(seq 1 18); do
+          if ! curl --fail --silent --show-error --max-time 10 https://ikimono-scan.app/ >/dev/null 2>&1; then
+            echo "ikimono-scan.app is no longer publicly available."
+            exit 0
+          fi
+          echo "ikimono-scan.app is still available; retrying (${attempt}/18)."
+          sleep 10
+        done
+        echo "ikimono-scan.app remained publicly available after unpublishing."
+        exit 1
+
   model:export:
     desc: Export a checkpoint into a locally staged ONNX bundle
     requires:
