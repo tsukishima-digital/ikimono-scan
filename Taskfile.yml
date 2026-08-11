@@ -15,6 +15,7 @@ tasks:
 
   dev:mobile:
     desc: Start the Access-protected HTTPS preview for mobile UI checks
+    deps: [ui:assets]
     vars:
       WEB_ROOT: '{{.WEB_ROOT | default "web"}}'
     env:
@@ -36,6 +37,14 @@ tasks:
     dir: web
     cmds:
       - npm test -- {{.CLI_ARGS}}
+
+  ui:assets:
+    desc: Check bundled specimen assets and their metadata
+    vars:
+      WEB_ROOT: '{{.WEB_ROOT | default "web"}}'
+    dir: "{{.WEB_ROOT}}"
+    cmds:
+      - npm test -- src/content/specimen-gallery.test.ts
 
   ui:lint:
     desc: Lint the web app

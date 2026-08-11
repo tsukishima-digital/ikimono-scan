@@ -4,6 +4,7 @@ import {
   hasCompletedOnboarding,
   rememberCompletedOnboarding,
 } from "./onboarding";
+import { contentPageIdFromPath } from "./content-page-routes";
 import { AboutPage } from "./pages/AboutPage";
 import { HowToPage } from "./pages/HowToPage";
 import { PreprocessFixturePage } from "./pages/PreprocessFixturePage";
@@ -46,12 +47,16 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: "auto" });
   }
 
-  if (pathname === "/about") return <AboutPage />;
-  if (pathname === "/how-to" || needsOnboarding) {
-    return <HowToPage onStartScanner={startScanner} />;
-  }
-  if (pathname === "/changelog" || pathname === "/updates") {
-    return <UpdatesPage />;
+  const contentPage = needsOnboarding
+    ? "how-to"
+    : contentPageIdFromPath(pathname);
+  switch (contentPage) {
+    case "about":
+      return <AboutPage onStartScanner={() => startScanner("camera")} />;
+    case "how-to":
+      return <HowToPage onStartScanner={startScanner} />;
+    case "changelog":
+      return <UpdatesPage onStartScanner={() => startScanner("camera")} />;
   }
   const resultFixturesEnabled =
     import.meta.env.DEV || import.meta.env.VITE_E2E_FIXTURES === "true";

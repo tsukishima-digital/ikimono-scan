@@ -1,11 +1,16 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
+import { contentPagePaths } from "../src/content-page-routes";
+
 const onboardingKey = "ikimono-scan:onboarding:v1";
 const specimenPath = fileURLToPath(
-  new URL("../public/specimens/aromia-bungii-712990656.jpg", import.meta.url),
+  new URL(
+    "../src/assets/specimens/aromia-bungii-712990656.jpg",
+    import.meta.url,
+  ),
 );
 const heicFixture = Buffer.from(
   readFileSync(
@@ -103,8 +108,170 @@ async function expectNoAutomaticAccessibilityViolations(page: Page) {
   expect(result.violations).toEqual([]);
 }
 
+async function contentFrameRects(page: Page) {
+  return page.getByTestId("content-page-frame").evaluateAll((elements) =>
+    elements.map((element) => {
+      const rect = element.getBoundingClientRect();
+      return { left: rect.left, right: rect.right, width: rect.width };
+    }),
+  );
+}
+
+async function expectDecodedImages(page: Page, images: Locator) {
+  const count = await images.count();
+  expect(count).toBeGreaterThan(0);
+
+  for (let index = 0; index < count; index += 1) {
+    const image = images.nth(index);
+    await image.scrollIntoViewIfNeeded();
+
+    const source = await image.getAttribute("src");
+    expect(source).toBeTruthy();
+    const response = await page.request.get(source!);
+    expect(response.ok()).toBe(true);
+    expect(response.headers()["content-type"]).toMatch(/^image\//);
+
+    await expect
+      .poll(() =>
+        image.evaluate(
+          (element: HTMLImageElement) =>
+            element.complete &&
+            element.naturalWidth > 0 &&
+            element.naturalHeight > 0,
+        ),
+      )
+      .toBe(true);
+  }
+}
+
 test.beforeEach(async ({ page }) => {
   await denyCamera(page);
+});
+
+for (const pathname of contentPagePaths) {
+  test(`${pathname} obeys the shared content-page layout`, async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto(pathname);
+
+    await expect(page.getByTestId("content-page-layout")).toBeVisible();
+    const desktopRects = await contentFrameRects(page);
+    expect(desktopRects).toHaveLength(3);
+    expect(new Set(desktopRects.map(({ left }) => left)).size).toBe(1);
+    expect(new Set(desktopRects.map(({ right }) => right)).size).toBe(1);
+    expect(desktopRects[0]?.width).toBe(1040);
+
+    await page.setViewportSize({ width: 320, height: 720 });
+    const mobileRects = await contentFrameRects(page);
+    expect(new Set(mobileRects.map(({ left }) => left)).size).toBe(1);
+    expect(new Set(mobileRects.map(({ right }) => right)).size).toBe(1);
+    expect(mobileRects[0]?.width).toBe(284);
+    expect(
+      await page.locator("body").evaluate((body) => body.scrollWidth),
+    ).toBe(320);
+  });
+}
+
+test("About keeps image credits out of specimen cards", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/about");
+
+  const names = await page
+    .getByTestId("specimen-common-name")
+    .evaluateAll((elements) =>
+      elements.map((element) => element.getBoundingClientRect().top),
+    );
+  expect(new Set(names).size).toBe(1);
+  await expect(page.getByTestId("specimen-license")).toHaveCount(0);
+  await expect(page.getByRole("note", { name: "写真クレジット" })).toBeVisible();
+});
+
+test("specimen examples load as decodable images", async ({ page }) => {
+  await page.goto("/about");
+  await expectDecodedImages(
+    page,
+    page.getByRole("img", { name: /の観察写真$/ }),
+  );
+
+  await page.goto("/how-to");
+  await expectDecodedImages(
+    page,
+    page.getByRole("img", { name: "判定しやすい写真の見本" }),
+  );
+});
+
+test("How to use guide and actions fit the minimum viewport", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 320, height: 720 });
+  await page.goto("/how-to");
+
+  const guideLayout = await page.evaluate(() => ({
+    exampleHeight: document.querySelector<HTMLElement>(
+      '[data-testid="model-crop-example"]',
+    )?.clientHeight,
+    exampleWidth: document.querySelector<HTMLElement>(
+      '[data-testid="model-crop-example"]',
+    )?.clientWidth,
+    imageTransform: getComputedStyle(
+      document.querySelector<HTMLElement>("#photo-guide img")!,
+    ).transform,
+    pageWidth: document.documentElement.scrollWidth,
+    tipWidths: Array.from(
+      document.querySelectorAll<HTMLElement>(
+        '[aria-label="判定しやすい写真のポイント"] li',
+      ),
+    ).map((element) => element.clientWidth),
+    viewportWidth: window.innerWidth,
+  }));
+
+  expect(guideLayout.exampleWidth).toBe(284);
+  expect(guideLayout.exampleHeight).toBe(284);
+  expect(guideLayout.imageTransform).toBe("matrix(1.15, 0, 0, 1.15, 0, 0)");
+  expect(guideLayout.tipWidths).toEqual([284, 284, 284, 284]);
+  expect(guideLayout.pageWidth).toBe(guideLayout.viewportWidth);
+
+  const actions = await page.getByTestId("how-to-action").evaluateAll(
+    (elements) =>
+      elements.map((element) => ({
+        clientHeight: element.clientHeight,
+        clientWidth: element.clientWidth,
+        scrollWidth: element.scrollWidth,
+        whiteSpace: getComputedStyle(element).whiteSpace,
+      })),
+  );
+
+  expect(actions).toHaveLength(2);
+  for (const action of actions) {
+    expect(action.clientHeight).toBe(56);
+    expect(action.clientWidth).toBe(284);
+    expect(action.scrollWidth).toBeLessThanOrEqual(action.clientWidth);
+    expect(action.whiteSpace).toBe("nowrap");
+  }
+});
+
+test("How to use example and tips share their desktop baseline", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/how-to");
+
+  const layout = await page.evaluate(() => {
+    const example = document
+      .querySelector<HTMLElement>('[data-testid="photo-guide-example"]')!
+      .getBoundingClientRect();
+    const tips = document
+      .querySelector<HTMLElement>('[data-testid="photo-guide-tips"]')!
+      .getBoundingClientRect();
+    return {
+      exampleTop: example.top,
+      exampleBottom: example.bottom,
+      tipsTop: tips.top,
+      tipsBottom: tips.bottom,
+    };
+  });
+
+  expect(layout.exampleTop).toBe(layout.tipsTop);
+  expect(layout.exampleBottom).toBe(layout.tipsBottom);
 });
 
 test("JPEG, PNG, and WebP keep portrait and landscape orientation while resizing", async ({

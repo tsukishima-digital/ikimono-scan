@@ -3,7 +3,10 @@ import { fileURLToPath } from "node:url";
 
 const onboardingKey = "ikimono-scan:onboarding:v1";
 const specimenPath = fileURLToPath(
-  new URL("../public/specimens/aromia-bungii-712990656.jpg", import.meta.url),
+  new URL(
+    "../src/assets/specimens/aromia-bungii-712990656.jpg",
+    import.meta.url,
+  ),
 );
 
 async function preparePhotoInput(page: Page) {

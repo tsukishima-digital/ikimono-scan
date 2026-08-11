@@ -1,5 +1,7 @@
 const IMAGENET_MEAN = [0.485, 0.456, 0.406] as const;
 const IMAGENET_STD = [0.229, 0.224, 0.225] as const;
+// Implementation: The released checkpoint was trained with this resize-before-center-crop ratio.
+export const MODEL_RESIZE_SCALE = 1.15;
 const SUPPORTED_IMAGE_TYPES = new Set([
   "image/jpeg",
   "image/png",
@@ -66,7 +68,7 @@ export async function imageFileToNchw(
     const height = image.naturalHeight;
     validateImageDimensions(width, height);
 
-    const resizeShortSide = Math.round(imageSize * 1.15);
+    const resizeShortSide = Math.round(imageSize * MODEL_RESIZE_SCALE);
     const scale = resizeShortSide / Math.min(width, height);
     const resizedWidth = Math.round(width * scale);
     const resizedHeight = Math.round(height * scale);
