@@ -208,7 +208,11 @@ describe("App", () => {
       "aria-selected",
       "true",
     );
-    expect(screen.getByLabelText("カメラ映像")).toBeInTheDocument();
+    expect(screen.getByLabelText("カメラ映像")).toHaveStyle({
+      transform: "scale(1.15)",
+    });
+    expect(screen.getByText("判定に使う正方形")).toBeInTheDocument();
+    expect(screen.getByText("虫全体を中央に収める")).toBeInTheDocument();
   });
 
   it("opens the header menu and routes to the English-labeled pages", async () => {
@@ -306,6 +310,10 @@ describe("App", () => {
 
     await waitFor(() => expect(mockedCreateClassifier).toHaveBeenCalledOnce());
     expect(await screen.findByText("判定結果")).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "判定する写真" })).toHaveStyle({
+      transform: "scale(1.15)",
+    });
+    expect(screen.getByText("判定に使う正方形")).toBeInTheDocument();
     expect(screen.getByText("クビアカツヤカミキリ")).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "選び直す" }),
@@ -550,6 +558,12 @@ describe("App", () => {
         screen.getByRole("list", { name: "判定しやすい写真のポイント" }),
       ).getAllByRole("listitem"),
     ).toHaveLength(4);
+    expect(
+      screen.getByText(/枠の半分から3分の2ほどを占める大きさ/),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId("model-crop-example")).toHaveClass(
+      "aspect-square",
+    );
     expect(screen.getByText("特定外来生物")).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: "iNaturalistで写真を見る" }),

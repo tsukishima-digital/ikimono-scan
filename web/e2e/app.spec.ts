@@ -99,10 +99,15 @@ test("How to use guide and actions fit the minimum viewport", async ({
   await page.goto("/how-to");
 
   const guideLayout = await page.evaluate(() => ({
-    imageHeight: document.querySelector<HTMLElement>("#photo-guide img")
-      ?.clientHeight,
-    imageWidth: document.querySelector<HTMLElement>("#photo-guide img")
-      ?.clientWidth,
+    exampleHeight: document.querySelector<HTMLElement>(
+      '[data-testid="model-crop-example"]',
+    )?.clientHeight,
+    exampleWidth: document.querySelector<HTMLElement>(
+      '[data-testid="model-crop-example"]',
+    )?.clientWidth,
+    imageTransform: getComputedStyle(
+      document.querySelector<HTMLElement>("#photo-guide img")!,
+    ).transform,
     pageWidth: document.documentElement.scrollWidth,
     tipWidths: Array.from(
       document.querySelectorAll<HTMLElement>(
@@ -112,8 +117,9 @@ test("How to use guide and actions fit the minimum viewport", async ({
     viewportWidth: window.innerWidth,
   }));
 
-  expect(guideLayout.imageWidth).toBe(284);
-  expect(guideLayout.imageHeight).toBe(213);
+  expect(guideLayout.exampleWidth).toBe(284);
+  expect(guideLayout.exampleHeight).toBe(284);
+  expect(guideLayout.imageTransform).toBe("matrix(1.15, 0, 0, 1.15, 0, 0)");
   expect(guideLayout.tipWidths).toEqual([284, 284, 284, 284]);
   expect(guideLayout.pageWidth).toBe(guideLayout.viewportWidth);
 

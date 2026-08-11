@@ -1,5 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 
+import { ModelCropFrame } from "../components/ModelCropFrame";
+import {
+  MODEL_CROP_MEDIA_CLASS,
+  MODEL_CROP_MEDIA_STYLE,
+} from "../components/modelCropPresentation";
 import { SiteHeader } from "../components/SiteHeader";
 import externalLinks from "../content/external-links.json";
 import { createClassifier } from "../inference/classifier";
@@ -233,15 +238,27 @@ export function ScannerPage({
 
         <div className="absolute inset-0 grid place-items-center overflow-hidden bg-[radial-gradient(circle_at_50%_42%,#23342a_0,#0c1510_56%,#070c09_100%)] after:pointer-events-none after:absolute after:inset-0 after:bg-[linear-gradient(to_bottom,rgb(0_0_0/28%),transparent_26%),linear-gradient(to_top,rgb(0_0_0/52%),transparent_32%)] after:content-['']">
           {previewUrl ? (
-            <img
-              className="size-full bg-[#070c09] object-cover"
-              src={previewUrl}
-              alt="判定する写真"
-            />
+            <ModelCropFrame
+              className="z-2 w-[min(640px,68vw,68dvh)] rounded-[28px] bg-[#070c09] shadow-[0_24px_80px_rgb(0_0_0/32%)] max-[720px]:w-[min(calc(100vw_-_36px),54dvh)]"
+              hint="虫全体を中央に収める"
+              testId="scanner-crop-preview"
+            >
+              <img
+                className={`${MODEL_CROP_MEDIA_CLASS} bg-[#070c09]`}
+                style={MODEL_CROP_MEDIA_STYLE}
+                src={previewUrl}
+                alt="判定する写真"
+              />
+            </ModelCropFrame>
           ) : sourceMode === "camera" ? (
-            <>
+            <ModelCropFrame
+              className="z-2 w-[min(640px,68vw,68dvh)] rounded-[28px] bg-[#070c09] shadow-[0_24px_80px_rgb(0_0_0/32%)] max-[720px]:w-[min(calc(100vw_-_36px),54dvh)]"
+              hint="虫全体を中央に収める"
+              testId="scanner-crop-preview"
+            >
               <video
-                className="size-full object-cover"
+                className={MODEL_CROP_MEDIA_CLASS}
+                style={MODEL_CROP_MEDIA_STYLE}
                 ref={videoRef}
                 aria-label="カメラ映像"
                 autoPlay
@@ -260,7 +277,7 @@ export function ScannerPage({
                   <strong>カメラを準備しています</strong>
                 </div>
               )}
-            </>
+            </ModelCropFrame>
           ) : (
             <label className="relative z-2 grid min-h-[300px] w-[min(460px,calc(100%_-_40px))] cursor-pointer content-center justify-items-center gap-2.5 rounded-[28px] border border-dashed border-white/34 bg-white/7 text-white transition-[background,border-color,transform] duration-150 ease-out hover:border-lime hover:bg-white/11 active:scale-[0.97] focus-within:outline-3 focus-within:outline-offset-4 focus-within:outline-lime max-[720px]:min-h-[260px]">
               <input
@@ -293,7 +310,7 @@ export function ScannerPage({
           {!previewUrl && sourceMode === "camera" && (
             <div className="absolute right-0 bottom-[calc(24px+env(safe-area-inset-bottom))] left-0 z-4 grid grid-cols-[1fr_auto_1fr] items-end px-[max(30px,env(safe-area-inset-left))] max-[720px]:px-[18px]">
               <p className="m-0 max-w-[260px] text-[13px] leading-[1.6] text-white/76 max-[720px]:hidden">
-                虫が大きく、明るく写るように近づけてください
+                近づきすぎず、虫全体を正方形の中央に収めてください
               </p>
               <button
                 className="grid size-[78px] cursor-pointer place-items-center rounded-full border-3 border-white bg-white/18 p-[5px] transition-[opacity,transform] duration-150 ease-out active:scale-[0.97] focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-lime disabled:cursor-wait disabled:opacity-36 max-[720px]:col-start-2 max-[720px]:size-[72px]"

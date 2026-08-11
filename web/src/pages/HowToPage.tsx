@@ -1,13 +1,19 @@
 import { useEffect } from "react";
 
 import { ContentPageLayout } from "../components/ContentPageLayout";
+import { ModelCropFrame } from "../components/ModelCropFrame";
+import {
+  MODEL_CROP_MEDIA_CLASS,
+  MODEL_CROP_MEDIA_STYLE,
+} from "../components/modelCropPresentation";
 import { featuredSpecimenPhoto } from "../content/specimen-gallery";
 import type { SourceMode } from "./ScannerPage";
 
 const photoTips = [
   {
-    title: "虫を中央に大きく",
-    description: "中央の正方形に虫の全体が収まるように近づきます。",
+    title: "近づきすぎず、中央に",
+    description:
+      "虫全体が枠の半分から3分の2ほどを占める大きさを目安に、触角や脚まで収めます。",
   },
   {
     title: "明るく鮮明に",
@@ -60,20 +66,25 @@ export function HowToPage({
         <p className="mt-6 mb-0 max-w-[780px] text-[15px] leading-[1.9] text-muted">
           このモデルは、日本国内のiNaturalistに投稿された研究用グレードの観察写真を中心に学習しています。
           撮影する場合も保存済みの写真を選ぶ場合も、見本のように虫の特徴がよく見える1枚を用意すると判定しやすくなります。
+          見本は、実際に判定へ使う中央部分を正方形に切り出した後の見え方です。
         </p>
 
         <div className="mt-10 grid grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] items-start gap-12 max-[760px]:grid-cols-1 max-[760px]:gap-9">
           <figure className="m-0 overflow-hidden rounded-[24px] bg-card shadow-[0_12px_36px_rgb(20_38_26/8%)]">
-            <div className="relative">
+            <ModelCropFrame
+              className="w-full bg-[#dfe5d8]"
+              testId="model-crop-example"
+            >
               <img
-                className="aspect-[4/3] w-full bg-[#dfe5d8] object-cover"
+                className={MODEL_CROP_MEDIA_CLASS}
+                style={MODEL_CROP_MEDIA_STYLE}
                 src={featuredSpecimenPhoto.photoUrl}
                 alt={`判定しやすい写真の見本: ${featuredSpecimenPhoto.commonName}`}
               />
-              <span className="absolute top-4 left-4 rounded-full bg-danger px-3 py-1.5 text-[10px] font-extrabold tracking-[0.08em] text-white">
+              <span className="absolute top-4 left-4 z-4 rounded-full bg-danger px-3 py-1.5 text-[10px] font-extrabold tracking-[0.08em] text-white">
                 {featuredSpecimenPhoto.designation}
               </span>
-            </div>
+            </ModelCropFrame>
             <figcaption className="p-5">
               <strong className="block text-[17px]">
                 {featuredSpecimenPhoto.commonName}
