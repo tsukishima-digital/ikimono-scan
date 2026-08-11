@@ -1,3 +1,7 @@
+default_install_hook_types:
+  - pre-commit
+  - pre-push
+
 repos:
   - repo: local
     hooks:
@@ -6,13 +10,57 @@ repos:
         entry: gitleaks git --pre-commit --no-banner --redact
         language: system
         pass_filenames: false
+        stages: [pre-commit]
       - id: ruff-check
         name: ruff check
         entry: uv run ruff check --fix
         language: system
         types: [python]
+        stages: [pre-commit]
       - id: ruff-format
         name: ruff format
         entry: uv run ruff format
         language: system
         types: [python]
+        stages: [pre-commit]
+      - id: web-eslint
+        name: web eslint
+        entry: npm --prefix web run lint
+        language: system
+        files: ^web/.*\.[cm]?[jt]sx?$
+        pass_filenames: false
+        stages: [pre-commit]
+      - id: terraform-fmt
+        name: terraform fmt
+        entry: terraform fmt
+        language: system
+        files: ^infra/.*\.tf(?:vars)?$
+        stages: [pre-commit]
+      - id: terraform-validate
+        name: terraform validate
+        entry: task infra:validate:config
+        language: system
+        files: ^infra/.*(?:\.tf(?:vars)?|\.terraform\.lock\.hcl)$
+        pass_filenames: false
+        stages: [pre-commit]
+      - id: python-checks
+        name: python tests, lint, and formatting
+        entry: task python
+        language: system
+        files: ^(?:ml/|scripts/|pyproject\.toml$|uv\.lock$|\.pre-commit-config\.yaml$)
+        pass_filenames: false
+        stages: [pre-push]
+      - id: web-checks
+        name: web tests, lint, and type-checking
+        entry: task ui
+        language: system
+        files: ^(?:web/|\.github/workflows/ci\.yml$)
+        pass_filenames: false
+        stages: [pre-push]
+      - id: infrastructure-checks
+        name: infrastructure formatting, validation, and web build
+        entry: task infra:validate
+        language: system
+        files: ^(?:infra/|Taskfile\.yml$|\.github/workflows/(?:ci|deploy|terraform-plan)\.yml$)
+        pass_filenames: false
+        stages: [pre-push]
