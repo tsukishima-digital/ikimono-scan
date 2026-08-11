@@ -10,7 +10,7 @@ import time
 from pathlib import Path
 
 REPOSITORY_ROOT = Path(__file__).parents[1]
-WEB_ROOT = REPOSITORY_ROOT / "web"
+DEFAULT_WEB_ROOT = REPOSITORY_ROOT / "web"
 PREVIEW_HOSTNAME = "dev.ikimono-scan.app"
 PREVIEW_URL = f"https://{PREVIEW_HOSTNAME}"
 TUNNEL_NAME = "ikimono-scan-preview"
@@ -36,6 +36,24 @@ def tunnel_command() -> list[str]:
     return ["npm", "exec", "--", "wrangler", "tunnel", "run", TUNNEL_NAME]
 
 
+def resolve_web_root(configured_root: str | None) -> Path:
+    """Resolve a web package used as the preview UI and reject invalid directories."""
+    root = Path(configured_root) if configured_root else DEFAULT_WEB_ROOT
+    if not root.is_absolute():
+        root = REPOSITORY_ROOT / root
+    root = root.resolve()
+    if not (root / "package.json").is_file():
+        raise ValueError(f"preview UI root must contain package.json: {root}")
+    return root
+
+
+def preview_environment(base: dict[str, str]) -> dict[str, str]:
+    """Return the Vite environment accepted by the preview tunnel hostname."""
+    environment = base.copy()
+    environment["__VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS"] = PREVIEW_HOSTNAME
+    return environment
+
+
 def stop_process(process: subprocess.Popen[bytes] | None) -> None:
     """Stop a child process group and wait for it to exit."""
     if process is None or process.poll() is not None:
@@ -50,10 +68,11 @@ def stop_process(process: subprocess.Popen[bytes] | None) -> None:
 
 def run_preview() -> None:
     """Run Vite and Cloudflare Tunnel together until interrupted."""
-    environment = os.environ.copy()
-    environment["__VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS"] = PREVIEW_HOSTNAME
+    web_root = resolve_web_root(os.environ.get("IKIMONO_SCAN_WEB_ROOT"))
+    environment = preview_environment(os.environ.copy())
 
     print(f"スマホで開く: {PREVIEW_URL}", flush=True)
+    print(f"UI: {web_root}", flush=True)
     print("Cloudflare Accessでログインしてください。", flush=True)
     print("終了するには Ctrl+C を押してください。", flush=True)
 
@@ -62,13 +81,13 @@ def run_preview() -> None:
     try:
         vite = subprocess.Popen(
             vite_command(),
-            cwd=WEB_ROOT,
+            cwd=web_root,
             env=environment,
             start_new_session=True,
         )
         tunnel = subprocess.Popen(
             tunnel_command(),
-            cwd=WEB_ROOT,
+            cwd=DEFAULT_WEB_ROOT,
             env=environment,
             start_new_session=True,
         )
@@ -90,7 +109,7 @@ def run_preview() -> None:
 def main() -> int:
     try:
         run_preview()
-    except (OSError, RuntimeError, subprocess.SubprocessError) as error:
+    except (OSError, RuntimeError, ValueError, subprocess.SubprocessError) as error:
         print(f"エラー: {error}", file=sys.stderr)
         return 1
     return 0
