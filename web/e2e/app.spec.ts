@@ -423,7 +423,27 @@ test("Species photo preview keeps its image and information positions across asp
     const dialog = page.getByRole("dialog", { name });
     const image = dialog.getByRole("img", { name: `${name}の写真` });
     await expect(image).toBeVisible();
-    await page.waitForTimeout(300);
+    await page.evaluate(
+      () =>
+        new Promise<void>((resolve) =>
+          requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+        ),
+    );
+    await dialog.evaluate(async (element) => {
+      await Promise.all(
+        element
+          .getAnimations()
+          .map((animation) => animation.finished.catch(() => undefined)),
+      );
+    });
+    await expect
+      .poll(() =>
+        dialog.evaluate(
+          (element) =>
+            Math.abs(element.getBoundingClientRect().bottom - innerHeight) < 1,
+        ),
+      )
+      .toBe(true);
     return dialog.evaluate((element) => {
       const imageStage = element.querySelector<HTMLElement>(
         '[data-testid="species-photo-stage"]',
@@ -454,6 +474,7 @@ test("Species photo preview keeps its image and information positions across asp
 
   const portrait = await openPreview("クロツヤキマワリ");
   await page.getByRole("button", { name: "閉じる" }).click();
+  await expect(page.getByRole("dialog")).toBeHidden();
   const landscape = await openPreview("ノコギリクワガタ");
 
   expect(portrait.dialogTop).toBeCloseTo(landscape.dialogTop, 0);
@@ -470,6 +491,108 @@ test("Species photo preview keeps its image and information positions across asp
   expect(landscape.objectFit).toBe("contain");
   expect(portrait.objectPosition).toBe("50% 50%");
   expect(landscape.objectPosition).toBe("50% 50%");
+});
+
+test("Mobile species photo sheet follows a downward drag, restores, and dismisses", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/supported-species");
+  const trigger = page
+    .getByRole("list", { name: "判定できる生き物の一覧" })
+    .getByRole("button")
+    .first();
+  await trigger.click();
+
+  const dialog = page.getByRole("dialog");
+  const stage = dialog.getByTestId("species-photo-stage");
+  const scrim = page.getByTestId("species-photo-scrim");
+  await expect
+    .poll(() =>
+      dialog.evaluate((element) =>
+        element.getAnimations().every(({ playState }) =>
+          ["finished", "idle"].includes(playState),
+        ),
+      ),
+    )
+    .toBe(true);
+  const stageBox = await stage.boundingBox();
+  expect(stageBox).not.toBeNull();
+  const startX = stageBox!.x + stageBox!.width / 2;
+  const startY = stageBox!.y + Math.min(160, stageBox!.height / 2);
+
+  await page.mouse.move(startX, startY);
+  await page.mouse.down();
+  await page.mouse.move(startX, startY + 110, { steps: 4 });
+  await expect
+    .poll(() =>
+      dialog.evaluate((element) =>
+        new DOMMatrixReadOnly(getComputedStyle(element).transform).m42,
+      ),
+    )
+    .toBeGreaterThan(90);
+  await expect
+    .poll(() =>
+      scrim.evaluate((element) => Number(getComputedStyle(element).opacity)),
+    )
+    .toBeLessThan(0.9);
+  await page.waitForTimeout(250);
+  await page.mouse.up();
+
+  await expect(dialog).toBeVisible();
+  await expect
+    .poll(() =>
+      dialog.evaluate((element) =>
+        new DOMMatrixReadOnly(getComputedStyle(element).transform).m42,
+      ),
+    )
+    .toBeLessThan(1);
+
+  const restoredStageBox = await stage.boundingBox();
+  expect(restoredStageBox).not.toBeNull();
+  await page.mouse.move(
+    restoredStageBox!.x + restoredStageBox!.width / 2,
+    restoredStageBox!.y + Math.min(160, restoredStageBox!.height / 2),
+  );
+  await page.mouse.down();
+  await page.mouse.move(startX, startY + 360, { steps: 6 });
+  await page.waitForTimeout(250);
+  await page.mouse.up();
+
+  await expect(dialog).toBeHidden();
+  await expect(trigger).toBeFocused();
+});
+
+test("Desktop species photo lightbox does not become draggable", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1000, height: 800 });
+  await page.goto("/supported-species");
+  await page
+    .getByRole("list", { name: "判定できる生き物の一覧" })
+    .getByRole("button")
+    .first()
+    .click();
+
+  const dialog = page.getByRole("dialog");
+  const stage = dialog.getByTestId("species-photo-stage");
+  const stageBox = await stage.boundingBox();
+  expect(stageBox).not.toBeNull();
+  const startX = stageBox!.x + stageBox!.width / 2;
+  const startY = stageBox!.y + stageBox!.height / 2;
+  await page.mouse.move(startX, startY);
+  await page.mouse.down();
+  await page.mouse.move(startX, startY + 200, { steps: 4 });
+  await page.mouse.up();
+
+  await expect(dialog).toBeVisible();
+  await expect
+    .poll(() =>
+      dialog.evaluate((element) =>
+        new DOMMatrixReadOnly(getComputedStyle(element).transform).m42,
+      ),
+    )
+    .toBeLessThan(1);
 });
 
 test("specimen examples load as decodable images", async ({ page }) => {

@@ -106,6 +106,28 @@
   }
 }
 
+@keyframes photo-sheet-enter {
+  from {
+    transform: translate3d(0, 100%, 0);
+  }
+}
+
+@media (width <= 620px) {
+  .photo-lightbox-sheet {
+    animation: photo-sheet-enter 340ms cubic-bezier(0.2, 0.82, 0.25, 1);
+    will-change: transform;
+  }
+
+  .photo-lightbox-drag-surface {
+    cursor: grab;
+    touch-action: none;
+  }
+
+  .photo-lightbox-drag-surface:active {
+    cursor: grabbing;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
