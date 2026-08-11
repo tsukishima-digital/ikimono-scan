@@ -4,6 +4,8 @@ export interface SpecimenPhoto {
   commonName: string;
   scientificName: string;
   photoUrl: string;
+  photoId: number;
+  sourcePhotoUrl: string;
   observationId: number;
   attribution: string;
   license: string;
@@ -15,7 +17,9 @@ export const specimenPhotos: SpecimenPhoto[] = [
   {
     commonName: "クビアカツヤカミキリ",
     scientificName: "Aromia bungii",
-    photoUrl: externalLinks.specimenAromiaPhoto,
+    photoUrl: "/specimens/aromia-bungii-712990656.jpg",
+    photoId: 712990656,
+    sourcePhotoUrl: externalLinks.specimenAromiaPhoto,
     observationId: 389254258,
     attribution: "renshuchu",
     license: "CC0",
@@ -25,7 +29,9 @@ export const specimenPhotos: SpecimenPhoto[] = [
   {
     commonName: "ナミテントウ",
     scientificName: "Harmonia axyridis",
-    photoUrl: externalLinks.specimenHarmoniaPhoto,
+    photoUrl: "/specimens/harmonia-axyridis-711179139.jpg",
+    photoId: 711179139,
+    sourcePhotoUrl: externalLinks.specimenHarmoniaPhoto,
     observationId: 388316828,
     attribution: "りなべる",
     license: "CC BY",
@@ -34,7 +40,9 @@ export const specimenPhotos: SpecimenPhoto[] = [
   {
     commonName: "ルリボシカミキリ",
     scientificName: "Rosalia batesi",
-    photoUrl: externalLinks.specimenRosaliaPhoto,
+    photoUrl: "/specimens/rosalia-batesi-691864486.jpg",
+    photoId: 691864486,
+    sourcePhotoUrl: externalLinks.specimenRosaliaPhoto,
     observationId: 378294423,
     attribution: "Jie-Hao Ou",
     license: "CC BY",
