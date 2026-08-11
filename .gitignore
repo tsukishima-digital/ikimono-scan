@@ -21,7 +21,7 @@ ml/experiments/*/reports/
 *.pth
 *.safetensors
 web/public/models/*
-!web/public/models/README.md
+!web/public/models/*.md
 !web/public/models/manifest.json
 artifacts/
 

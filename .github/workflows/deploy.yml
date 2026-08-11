@@ -88,3 +88,5 @@ jobs:
         run: python scripts/terraform_backend.py backup production post-apply
       - name: Smoke test
         run: task deploy:smoke
+      - name: Verify public model
+        run: task model:smoke

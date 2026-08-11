@@ -1,0 +1,2120 @@
+{
+  "version": "0.1.0",
+  "modelUrl": "/models/beetles-v0.1.0.onnx",
+  "sha256": "91f2da381a0528e464f75317a0eda94d81519ce40a103ce71698a85a210a97ee",
+  "license": "CC-BY-NC-4.0",
+  "source": "/models/v0.1.0.md",
+  "imageSize": 320,
+  "inputName": "input",
+  "outputName": "logits",
+  "minimumConfidence": 0.6,
+  "classes": [
+    {
+      "id": "1008176",
+      "scientificName": "Agelasta yonaguni",
+      "commonName": "ヨナグニゴマフカミキリ"
+    },
+    {
+      "id": "1036702",
+      "scientificName": "Bolbocerodema nigroplagiatum",
+      "commonName": "ムネアカセンチコガネ"
+    },
+    {
+      "id": "1039815",
+      "scientificName": "Peltodytes intermedius",
+      "commonName": "コガシラミズムシ"
+    },
+    {
+      "id": "1040550",
+      "scientificName": "Epiclytus yokoyamai",
+      "commonName": "ヨコヤマトラカミキリ"
+    },
+    {
+      "id": "1043038",
+      "scientificName": "Niphona yanoi",
+      "commonName": "ヤノヤハズカミキリ"
+    },
+    {
+      "id": "1064813",
+      "scientificName": "Pterolophia zonata",
+      "commonName": "アトジロサビカミキリ"
+    },
+    {
+      "id": "1065055",
+      "scientificName": "Apterodela ovipennis",
+      "commonName": "マガタマハンミョウ"
+    },
+    {
+      "id": "1076024",
+      "scientificName": "Anaglyptus niponensis",
+      "commonName": "トガリバアカネトラカミキリ"
+    },
+    {
+      "id": "1076030",
+      "scientificName": "Agrilus imitans",
+      "commonName": "ムネアカナガタマムシ"
+    },
+    {
+      "id": "1077625",
+      "scientificName": "Selatosomus onerosus",
+      "commonName": "トラフコメツキ"
+    },
+    {
+      "id": "1078545",
+      "scientificName": "Coraebus quadriundulatus",
+      "commonName": "シロオビナカボソタマムシ"
+    },
+    {
+      "id": "1078575",
+      "scientificName": "Trachys broussonetiae",
+      "commonName": "コウゾチビタマムシ"
+    },
+    {
+      "id": "1079051",
+      "scientificName": "Lemula decipiens",
+      "commonName": "キバネニセハムシハナカミキリ"
+    },
+    {
+      "id": "1089587",
+      "scientificName": "Nothomyllocerus illitus",
+      "commonName": "ハリゲカシワクチブトゾウムシ"
+    },
+    {
+      "id": "1092813",
+      "scientificName": "Paridea oculata",
+      "commonName": "ヨツボシハムシ"
+    },
+    {
+      "id": "1094143",
+      "scientificName": "Holotrichia picea",
+      "commonName": "コクロコガネ"
+    },
+    {
+      "id": "1095202",
+      "scientificName": "Schwarzerium quadricollis",
+      "commonName": "アオカミキリ"
+    },
+    {
+      "id": "1096667",
+      "scientificName": "Xylinada striatifrons",
+      "commonName": "ナガフトヒゲナガゾウムシ"
+    },
+    {
+      "id": "1098655",
+      "scientificName": "Platymetopus flavilabris",
+      "commonName": "カラカネゴモクムシ"
+    },
+    {
+      "id": "1098827",
+      "scientificName": "Platypus quercivorus",
+      "commonName": "カシノナガキクイムシ"
+    },
+    {
+      "id": "1105942",
+      "scientificName": "Gasterocercus longipes",
+      "commonName": "アシナガオニゾウムシ"
+    },
+    {
+      "id": "1112553",
+      "scientificName": "Intybia histrio",
+      "commonName": "ヒロオビジョウカイモドキ"
+    },
+    {
+      "id": "1115452",
+      "scientificName": "Plesiophthalmus spectabilis",
+      "commonName": "クロツヤキマワリ"
+    },
+    {
+      "id": "1117895",
+      "scientificName": "Episcapha fortunii",
+      "commonName": "ヒメオビオオキノコ"
+    },
+    {
+      "id": "1131090",
+      "scientificName": "Nebria lewisi",
+      "commonName": "カワチマルクビゴミムシ"
+    },
+    {
+      "id": "1133835",
+      "scientificName": "Fidia atra",
+      "commonName": "コフキサルハムシ"
+    },
+    {
+      "id": "1151596",
+      "scientificName": "Cucujus coccinatus",
+      "commonName": "ベニヒラタムシ"
+    },
+    {
+      "id": "1151597",
+      "scientificName": "Simulatacalles simulator",
+      "commonName": "ヒサゴクチカクシゾウムシ"
+    },
+    {
+      "id": "1155998",
+      "scientificName": "Atimura japonica",
+      "commonName": "コブスジサビカミキリ"
+    },
+    {
+      "id": "1156644",
+      "scientificName": "Amara gigantea",
+      "commonName": "オオマルガタゴミムシ"
+    },
+    {
+      "id": "1166684",
+      "scientificName": "Sticholotis punctata",
+      "commonName": "ムツボシテントウ"
+    },
+    {
+      "id": "118967",
+      "scientificName": "Psyllobora vigintimaculata",
+      "commonName": "クモガタテントウ"
+    },
+    {
+      "id": "1195217",
+      "scientificName": "Gempylodes ornamentalis",
+      "commonName": "ルイスホソカタムシ"
+    },
+    {
+      "id": "120113",
+      "scientificName": "Anthrenus verbasci",
+      "commonName": "ヒメマルカツオブシムシ"
+    },
+    {
+      "id": "1226356",
+      "scientificName": "Lamprodila vivata",
+      "commonName": "マスダクロホシタマムシ"
+    },
+    {
+      "id": "1231130",
+      "scientificName": "Pterolophia jugosa",
+      "commonName": "ナカジロサビカミキリ"
+    },
+    {
+      "id": "1231207",
+      "scientificName": "Ectatorhinus adamsii",
+      "commonName": "マダラアシゾウムシ"
+    },
+    {
+      "id": "123519",
+      "scientificName": "Protaetia orientalis",
+      "commonName": "シロテンハナムグリ"
+    },
+    {
+      "id": "123580",
+      "scientificName": "Chrysomela vigintipunctata",
+      "commonName": "ヤナギハムシ"
+    },
+    {
+      "id": "1239243",
+      "scientificName": "Platambus pictipennis",
+      "commonName": "モンキマメゲンゴロウ"
+    },
+    {
+      "id": "1239247",
+      "scientificName": "Hydroglyphus japonicus",
+      "commonName": "チビゲンゴロウ"
+    },
+    {
+      "id": "1240214",
+      "scientificName": "Pareutetrapha eximia",
+      "commonName": "フチグロヤツボシカミキリ"
+    },
+    {
+      "id": "1243073",
+      "scientificName": "Egesina bifasciana",
+      "commonName": "ニイジマチビカミキリ"
+    },
+    {
+      "id": "1243210",
+      "scientificName": "Hispellinus moerens",
+      "commonName": "クロトゲハムシ"
+    },
+    {
+      "id": "1243561",
+      "scientificName": "Gonioctena nigroplagiata",
+      "commonName": "ヤツボシハムシ"
+    },
+    {
+      "id": "1246700",
+      "scientificName": "Nigrotrichia kiotonensis",
+      "commonName": "クロコガネ"
+    },
+    {
+      "id": "1253401",
+      "scientificName": "Rhodopina lewisii",
+      "commonName": "セミスジコブヒゲカミキリ"
+    },
+    {
+      "id": "1260497",
+      "scientificName": "Maladera formosae",
+      "commonName": "アカビロウドコガネ"
+    },
+    {
+      "id": "126320",
+      "scientificName": "Cassida circumdata",
+      "commonName": "タテスジヒメジンガサハムシ"
+    },
+    {
+      "id": "1274620",
+      "scientificName": "Menesia flavotecta",
+      "commonName": "オニグルミノキモンカミキリ"
+    },
+    {
+      "id": "1276076",
+      "scientificName": "Pareutetrapha simulans",
+      "commonName": "ニセシラホシカミキリ"
+    },
+    {
+      "id": "1278406",
+      "scientificName": "Falsomesosella gracilior",
+      "commonName": "シロオビゴマフカミキリ"
+    },
+    {
+      "id": "128525",
+      "scientificName": "Anoplophora glabripennis",
+      "commonName": "ツヤハダゴマダラカミキリ"
+    },
+    {
+      "id": "1299909",
+      "scientificName": "Semanotus japonicus",
+      "commonName": "スギカミキリ"
+    },
+    {
+      "id": "1325072",
+      "scientificName": "Platambus fimbriatus",
+      "commonName": "キベリマメゲンゴロウ"
+    },
+    {
+      "id": "1329509",
+      "scientificName": "Aulacocheilus sibiricus",
+      "commonName": "ルリオオキノコ"
+    },
+    {
+      "id": "1352445",
+      "scientificName": "Cosmodela batesi",
+      "commonName": "タイワンヤツボシハンミョウ"
+    },
+    {
+      "id": "1364661",
+      "scientificName": "Cybister brevis",
+      "commonName": "クロゲンゴロウ"
+    },
+    {
+      "id": "1374302",
+      "scientificName": "Hydrocassis lacustris",
+      "commonName": "マルガムシ"
+    },
+    {
+      "id": "1391674",
+      "scientificName": "Anaglyptus matsushitai",
+      "commonName": "マツシタトラカミキリ"
+    },
+    {
+      "id": "1393473",
+      "scientificName": "Clytus auripilis",
+      "commonName": "キンケトラカミキリ"
+    },
+    {
+      "id": "1437975",
+      "scientificName": "Nipponoluciola cruciata",
+      "commonName": "ゲンジボタル"
+    },
+    {
+      "id": "1444800",
+      "scientificName": "Exocentrus galloisi",
+      "commonName": "ガロアケシカミキリ"
+    },
+    {
+      "id": "1444841",
+      "scientificName": "Coptodera subapicalis",
+      "commonName": "ハギキノコゴミムシ"
+    },
+    {
+      "id": "1451702",
+      "scientificName": "Scepticus insularis",
+      "commonName": "サビヒョウタンゾウムシ"
+    },
+    {
+      "id": "1463639",
+      "scientificName": "Agrilus tempestivus",
+      "commonName": "ウグイスナガタマムシ"
+    },
+    {
+      "id": "1465236",
+      "scientificName": "Pollaplonyx flavidus",
+      "commonName": "オオキイロコガネ"
+    },
+    {
+      "id": "1472015",
+      "scientificName": "Agrilus cyaneoniger",
+      "commonName": "クロナガタマムシ"
+    },
+    {
+      "id": "1506521",
+      "scientificName": "Heteraspis lewisii",
+      "commonName": "ドウガネサルハムシ"
+    },
+    {
+      "id": "1509389",
+      "scientificName": "Pidonia amentata",
+      "commonName": "セスジヒメハナカミキリ"
+    },
+    {
+      "id": "1537231",
+      "scientificName": "Olenecamptus taiwanus",
+      "commonName": "ムツボシシロカミキリ"
+    },
+    {
+      "id": "1556970",
+      "scientificName": "Rhabdoscelus similis",
+      "commonName": "シロスジオサゾウムシ"
+    },
+    {
+      "id": "1583643",
+      "scientificName": "Hirtaeschopalaea nubila",
+      "commonName": "エゾナガヒゲカミキリ"
+    },
+    {
+      "id": "1616348",
+      "scientificName": "Pyrrhalta lineatipes",
+      "commonName": "サンゴジュハムシ"
+    },
+    {
+      "id": "1661873",
+      "scientificName": "Sophiodela okinawana",
+      "commonName": "オキナワハンミョウ"
+    },
+    {
+      "id": "1661875",
+      "scientificName": "Sophiodela japonica",
+      "commonName": "ハンミョウ"
+    },
+    {
+      "id": "177443",
+      "scientificName": "Necrodes littoralis",
+      "commonName": "オオモモブトシデムシ"
+    },
+    {
+      "id": "177491",
+      "scientificName": "Leptura aethiops",
+      "commonName": "クロハナカミキリ"
+    },
+    {
+      "id": "196616",
+      "scientificName": "Hypera postica",
+      "commonName": "アルファルファタコゾウムシ"
+    },
+    {
+      "id": "199326",
+      "scientificName": "Anoplophora chinensis",
+      "commonName": "ゴマダラカミキリ"
+    },
+    {
+      "id": "209674",
+      "scientificName": "Monochamus alternatus",
+      "commonName": "マツノマダラカミキリ"
+    },
+    {
+      "id": "209757",
+      "scientificName": "Sagra femorata",
+      "commonName": "フェモラータオオモモブトハムシ"
+    },
+    {
+      "id": "210295",
+      "scientificName": "Chlorophorus annularis",
+      "commonName": "タケトラカミキリ"
+    },
+    {
+      "id": "216166",
+      "scientificName": "Cassida rubiginosa",
+      "commonName": "アオカメノコハムシ"
+    },
+    {
+      "id": "221381",
+      "scientificName": "Hippodamia tredecimpunctata",
+      "commonName": "ジュウサンホシテントウ"
+    },
+    {
+      "id": "226508",
+      "scientificName": "Ophraella communa",
+      "commonName": "ブタクサハムシ"
+    },
+    {
+      "id": "303940",
+      "scientificName": "Listroderes costirostris",
+      "commonName": "ヤサイゾウムシ"
+    },
+    {
+      "id": "309850",
+      "scientificName": "Disonycha politula",
+      "commonName": "メリケントビハムシ"
+    },
+    {
+      "id": "311298",
+      "scientificName": "Olenecamptus bilobus"
+    },
+    {
+      "id": "313246",
+      "scientificName": "Olla v-nigrum",
+      "commonName": "ハイイロテントウ"
+    },
+    {
+      "id": "319337",
+      "scientificName": "Chilocorus kuwanae",
+      "commonName": "ヒメアカホシテントウ"
+    },
+    {
+      "id": "319910",
+      "scientificName": "Cheilomenes sexmaculata",
+      "commonName": "ダンダラテントウ"
+    },
+    {
+      "id": "320058",
+      "scientificName": "Oryctes rhinoceros",
+      "commonName": "サイカブト"
+    },
+    {
+      "id": "321899",
+      "scientificName": "Gastrophysa atrocyanea",
+      "commonName": "コガタルリハムシ"
+    },
+    {
+      "id": "324686",
+      "scientificName": "Prosopocoilus inclinatus",
+      "commonName": "ノコギリクワガタ"
+    },
+    {
+      "id": "324733",
+      "scientificName": "Trypoxylus dichotomus",
+      "commonName": "カブトムシ"
+    },
+    {
+      "id": "324769",
+      "scientificName": "Plesiophthalmus nigrocyaneus",
+      "commonName": "キマワリ"
+    },
+    {
+      "id": "324772",
+      "scientificName": "Lema decempunctata",
+      "commonName": "トホシクビボソハムシ"
+    },
+    {
+      "id": "325365",
+      "scientificName": "Batocera lineolata",
+      "commonName": "シロスジカミキリ"
+    },
+    {
+      "id": "326207",
+      "scientificName": "Calvia decemguttata",
+      "commonName": "シロトホシテントウ"
+    },
+    {
+      "id": "326424",
+      "scientificName": "Coccinula crotchi",
+      "commonName": "マクガタテントウ"
+    },
+    {
+      "id": "333069",
+      "scientificName": "Pheropsophus jessoensis",
+      "commonName": "ミイデラゴミムシ"
+    },
+    {
+      "id": "333766",
+      "scientificName": "Spondylis buprestoides",
+      "commonName": "クロカミキリ"
+    },
+    {
+      "id": "333768",
+      "scientificName": "Distenia gracilis",
+      "commonName": "ホソカミキリ"
+    },
+    {
+      "id": "337092",
+      "scientificName": "Rosalia batesi",
+      "commonName": "ルリボシカミキリ"
+    },
+    {
+      "id": "338213",
+      "scientificName": "Plateumaris sericea"
+    },
+    {
+      "id": "338693",
+      "scientificName": "Protaetia pryeri",
+      "commonName": "リュウキュウツヤハナムグリ"
+    },
+    {
+      "id": "340837",
+      "scientificName": "Chilocorus rubidus",
+      "commonName": "アカホシテントウ"
+    },
+    {
+      "id": "341622",
+      "scientificName": "Xystrocera globosa",
+      "commonName": "アオスジカミキリ"
+    },
+    {
+      "id": "342213",
+      "scientificName": "Rhantus suturalis",
+      "commonName": "ヒメゲンゴロウ"
+    },
+    {
+      "id": "342313",
+      "scientificName": "Aulacophora indica",
+      "commonName": "ウリハムシ"
+    },
+    {
+      "id": "342434",
+      "scientificName": "Tenomerga mucida",
+      "commonName": "ナガヒラタムシ"
+    },
+    {
+      "id": "348636",
+      "scientificName": "Gallerucida bifasciata",
+      "commonName": "イタドリハムシ"
+    },
+    {
+      "id": "348672",
+      "scientificName": "Aulacophora nigripennis",
+      "commonName": "クロウリハムシ"
+    },
+    {
+      "id": "349356",
+      "scientificName": "Cyphonocerus ruficollis",
+      "commonName": "ムネクリイロボタル"
+    },
+    {
+      "id": "354799",
+      "scientificName": "Henosepilachna vigintioctopunctata",
+      "commonName": "ニジュウヤホシテントウ"
+    },
+    {
+      "id": "355545",
+      "scientificName": "Paederus fuscipes",
+      "commonName": "アオバアリガタハネカクシ"
+    },
+    {
+      "id": "355778",
+      "scientificName": "Cicindela japana",
+      "commonName": "ニワハンミョウ"
+    },
+    {
+      "id": "355999",
+      "scientificName": "Chlorophorus quinquefasciatus",
+      "commonName": "ヨツスジトラカミキリ"
+    },
+    {
+      "id": "356001",
+      "scientificName": "Phelotrupes laevistriatus",
+      "commonName": "センチコガネ"
+    },
+    {
+      "id": "356284",
+      "scientificName": "Purpuricenus temminckii",
+      "commonName": "ベニカミキリ"
+    },
+    {
+      "id": "356285",
+      "scientificName": "Chloridolum viride",
+      "commonName": "ミドリカミキリ"
+    },
+    {
+      "id": "357332",
+      "scientificName": "Gametis jucunda",
+      "commonName": "コアオハナムグリ"
+    },
+    {
+      "id": "357342",
+      "scientificName": "Nipponobuprestis amabilis",
+      "commonName": "アオマダラタマムシ"
+    },
+    {
+      "id": "357525",
+      "scientificName": "Aiolocaria hexaspilota",
+      "commonName": "カメノコテントウ"
+    },
+    {
+      "id": "357706",
+      "scientificName": "Pectocera fortunei",
+      "commonName": "ヒゲコメツキ"
+    },
+    {
+      "id": "357784",
+      "scientificName": "Mesosa longipennis",
+      "commonName": "ナガゴマフカミキリ"
+    },
+    {
+      "id": "357896",
+      "scientificName": "Cassida nebulosa",
+      "commonName": "ナミカメノコハムシ"
+    },
+    {
+      "id": "357897",
+      "scientificName": "Thlaspida biramosa",
+      "commonName": "イチモンジカメノコハムシ"
+    },
+    {
+      "id": "358191",
+      "scientificName": "Gastrolina depressa",
+      "commonName": "クルミハムシ"
+    },
+    {
+      "id": "358230",
+      "scientificName": "Lucidina biplagiata",
+      "commonName": "オバボタル"
+    },
+    {
+      "id": "358246",
+      "scientificName": "Drilaster axillaris",
+      "commonName": "カタモンミナミボタル"
+    },
+    {
+      "id": "358300",
+      "scientificName": "Luciola parvula",
+      "commonName": "ヒメボタル"
+    },
+    {
+      "id": "358304",
+      "scientificName": "Pyrocoelia atripennis",
+      "commonName": "ヤエヤママドボタル"
+    },
+    {
+      "id": "359246",
+      "scientificName": "Dermatoxenus caesicollis",
+      "commonName": "ヒメシロコブゾウムシ"
+    },
+    {
+      "id": "359401",
+      "scientificName": "Exomala orientalis",
+      "commonName": "セマダラコガネ"
+    },
+    {
+      "id": "359495",
+      "scientificName": "Calosoma maximowiczi",
+      "commonName": "クロカタビロオサムシ"
+    },
+    {
+      "id": "359528",
+      "scientificName": "Helota gemmata",
+      "commonName": "ヨツボシオオキスイ"
+    },
+    {
+      "id": "359530",
+      "scientificName": "Tetrigus lewisi",
+      "commonName": "オオクシヒゲコメツキ"
+    },
+    {
+      "id": "359934",
+      "scientificName": "Pseudotorynorrhina japonica",
+      "commonName": "カナブン"
+    },
+    {
+      "id": "360062",
+      "scientificName": "Chrysochroa fulgidissima",
+      "commonName": "タマムシ"
+    },
+    {
+      "id": "360080",
+      "scientificName": "Leptura mimica",
+      "commonName": "ヤツボシハナカミキリ"
+    },
+    {
+      "id": "360299",
+      "scientificName": "Anomala albopilosa",
+      "commonName": "アオドウガネ"
+    },
+    {
+      "id": "360370",
+      "scientificName": "Themus episcopalis",
+      "commonName": "キンイロジョウカイ"
+    },
+    {
+      "id": "360371",
+      "scientificName": "Lycocerus suturellus",
+      "commonName": "ジョウカイボン"
+    },
+    {
+      "id": "361151",
+      "scientificName": "Themus cyanipennis",
+      "commonName": "アオジョウカイ"
+    },
+    {
+      "id": "361722",
+      "scientificName": "Mimela splendens",
+      "commonName": "コガネムシ"
+    },
+    {
+      "id": "363805",
+      "scientificName": "Chlaenius tetragonoderus",
+      "commonName": "ムナビロアトボシアオゴミムシ"
+    },
+    {
+      "id": "363885",
+      "scientificName": "Prionus insularis",
+      "commonName": "ノコギリカミキリ"
+    },
+    {
+      "id": "364065",
+      "scientificName": "Anomala rufocuprea",
+      "commonName": "ヒメコガネ"
+    },
+    {
+      "id": "364070",
+      "scientificName": "Agelasa nigriceps",
+      "commonName": "キクビアオハムシ"
+    },
+    {
+      "id": "366804",
+      "scientificName": "Acalolepta luxuriosa",
+      "commonName": "センノキカミキリ"
+    },
+    {
+      "id": "367783",
+      "scientificName": "Agelastica coerulea",
+      "commonName": "ハンノキハムシ"
+    },
+    {
+      "id": "415503",
+      "scientificName": "Eretes griseus",
+      "commonName": "ハイイロゲンゴロウ"
+    },
+    {
+      "id": "416809",
+      "scientificName": "Chrysomela populi",
+      "commonName": "ドロノキハムシ"
+    },
+    {
+      "id": "417887",
+      "scientificName": "Chrysolina aurichalcea",
+      "commonName": "ヨモギハムシ"
+    },
+    {
+      "id": "429587",
+      "scientificName": "Micraspis discolor",
+      "commonName": "チャイロテントウ"
+    },
+    {
+      "id": "429923",
+      "scientificName": "Vibidia duodecimguttata",
+      "commonName": "シロホシテントウ"
+    },
+    {
+      "id": "447560",
+      "scientificName": "Callidiellum rufipenne",
+      "commonName": "ヒメスギカミキリ"
+    },
+    {
+      "id": "455794",
+      "scientificName": "Brachypera zoilus",
+      "commonName": "オオタコゾウムシ"
+    },
+    {
+      "id": "460681",
+      "scientificName": "Paratrachelophorus longicornis",
+      "commonName": "ヒゲナガオトシブミ"
+    },
+    {
+      "id": "465624",
+      "scientificName": "Cryptocephalus perelegans",
+      "commonName": "キボシツツハムシ"
+    },
+    {
+      "id": "466584",
+      "scientificName": "Eupromus ruber",
+      "commonName": "ホシベニカミキリ"
+    },
+    {
+      "id": "466980",
+      "scientificName": "Morphosphaera japonica",
+      "commonName": "イチモンジハムシ"
+    },
+    {
+      "id": "467844",
+      "scientificName": "Pyrestes nipponicus",
+      "commonName": "クスベニカミキリ"
+    },
+    {
+      "id": "468367",
+      "scientificName": "Gonioctena rubripennis",
+      "commonName": "フジハムシ"
+    },
+    {
+      "id": "468563",
+      "scientificName": "Smaragdina nipponensis",
+      "commonName": "キイロナガツツハムシ"
+    },
+    {
+      "id": "468676",
+      "scientificName": "Dendroxena sexcarinata",
+      "commonName": "ヨツボシヒラタシデムシ"
+    },
+    {
+      "id": "469044",
+      "scientificName": "Lilioceris rugata",
+      "commonName": "キイロクビナガハムシ"
+    },
+    {
+      "id": "469796",
+      "scientificName": "Hydrochara affinis",
+      "commonName": "コガムシ"
+    },
+    {
+      "id": "469976",
+      "scientificName": "Lema concinnipennis",
+      "commonName": "キバラルリクビボソハムシ"
+    },
+    {
+      "id": "469977",
+      "scientificName": "Lema honorata",
+      "commonName": "ヤマイモハムシ"
+    },
+    {
+      "id": "470406",
+      "scientificName": "Figulus binodulus",
+      "commonName": "チビクワガタ"
+    },
+    {
+      "id": "470752",
+      "scientificName": "Melolontha japonica",
+      "commonName": "コフキコガネ"
+    },
+    {
+      "id": "471141",
+      "scientificName": "Onthophagus lenzii",
+      "commonName": "カドマルエンマコガネ"
+    },
+    {
+      "id": "471149",
+      "scientificName": "Mimela costata",
+      "commonName": "オオスジコガネ"
+    },
+    {
+      "id": "471154",
+      "scientificName": "Anomala cuprea",
+      "commonName": "ドウガネブイブイ"
+    },
+    {
+      "id": "471159",
+      "scientificName": "Melolontha frater",
+      "commonName": "オオコフキコガネ"
+    },
+    {
+      "id": "471160",
+      "scientificName": "Holotrichia parallela",
+      "commonName": "オオクロコガネ"
+    },
+    {
+      "id": "471163",
+      "scientificName": "Polyphylla albolineata",
+      "commonName": "シロスジコガネ"
+    },
+    {
+      "id": "471164",
+      "scientificName": "Nipponovalgus angusticollis",
+      "commonName": "ヒラタハナムグリ"
+    },
+    {
+      "id": "471165",
+      "scientificName": "Lasiotrichius succinctus",
+      "commonName": "ヒメトラハナムグリ"
+    },
+    {
+      "id": "471167",
+      "scientificName": "Glycyphana fulvistemma",
+      "commonName": "クロハナムグリ"
+    },
+    {
+      "id": "471169",
+      "scientificName": "Protaetia brevitarsis",
+      "commonName": "シラホシハナムグリ"
+    },
+    {
+      "id": "472098",
+      "scientificName": "Adoretus tenuimaculatus",
+      "commonName": "コイチャコガネ"
+    },
+    {
+      "id": "472106",
+      "scientificName": "Phyllopertha diversa",
+      "commonName": "ウスチャコガネ"
+    },
+    {
+      "id": "472107",
+      "scientificName": "Phyllopertha irregularis",
+      "commonName": "キスジコガネ"
+    },
+    {
+      "id": "472306",
+      "scientificName": "Cylindera kaleea",
+      "commonName": "トウキョウヒメハンミョウ"
+    },
+    {
+      "id": "472721",
+      "scientificName": "Leptura ochraceofasciata",
+      "commonName": "ヨツスジハナカミキリ"
+    },
+    {
+      "id": "473065",
+      "scientificName": "Phelotrupes auratus",
+      "commonName": "オオセンチコガネ"
+    },
+    {
+      "id": "474128",
+      "scientificName": "Sipalinus gigas",
+      "commonName": "オオゾウムシ"
+    },
+    {
+      "id": "474263",
+      "scientificName": "Medythia nigrobilineata",
+      "commonName": "フタスジヒメハムシ"
+    },
+    {
+      "id": "474853",
+      "scientificName": "Pseudocneorhinus bifasciatus",
+      "commonName": "スグリゾウムシ"
+    },
+    {
+      "id": "480331",
+      "scientificName": "Popillia lewisi",
+      "commonName": "オキナワマメコガネ"
+    },
+    {
+      "id": "483535",
+      "scientificName": "Hydaticus grammicus",
+      "commonName": "コシマゲンゴロウ"
+    },
+    {
+      "id": "483664",
+      "scientificName": "Moechotypa diphysis",
+      "commonName": "ハラアカコブカミキリ"
+    },
+    {
+      "id": "484607",
+      "scientificName": "Chlorophorus japonicus",
+      "commonName": "エグリトラカミキリ"
+    },
+    {
+      "id": "48484",
+      "scientificName": "Harmonia axyridis",
+      "commonName": "ナミテントウ"
+    },
+    {
+      "id": "490838",
+      "scientificName": "Euops splendidus",
+      "commonName": "カシルリオトシブミ"
+    },
+    {
+      "id": "491911",
+      "scientificName": "Ancylopus pictus",
+      "commonName": "ヨツボシテントウダマシ"
+    },
+    {
+      "id": "493501",
+      "scientificName": "Mesosa myops"
+    },
+    {
+      "id": "494017",
+      "scientificName": "Aegosoma sinicum",
+      "commonName": "ウスバカミキリ"
+    },
+    {
+      "id": "494224",
+      "scientificName": "Dere thoracica",
+      "commonName": "ホタルカミキリ"
+    },
+    {
+      "id": "494519",
+      "scientificName": "Aromia bungii",
+      "commonName": "クビアカツヤカミキリ"
+    },
+    {
+      "id": "496222",
+      "scientificName": "Asaperda agapanthina",
+      "commonName": "シナノクロフカミキリ"
+    },
+    {
+      "id": "498007",
+      "scientificName": "Psacothea hilaris",
+      "commonName": "キボシカミキリ"
+    },
+    {
+      "id": "498045",
+      "scientificName": "Phytoecia rufiventris",
+      "commonName": "キクスイカミキリ"
+    },
+    {
+      "id": "498267",
+      "scientificName": "Illeis koebelei",
+      "commonName": "キイロテントウ"
+    },
+    {
+      "id": "498470",
+      "scientificName": "Pidonia puziloi",
+      "commonName": "フタオビチビハナカミキリ"
+    },
+    {
+      "id": "499063",
+      "scientificName": "Xylotrechus cuneipennis",
+      "commonName": "ウスイロトラカミキリ"
+    },
+    {
+      "id": "499075",
+      "scientificName": "Enochrus simulans",
+      "commonName": "キイロヒラタガムシ"
+    },
+    {
+      "id": "499097",
+      "scientificName": "Microlera ptinoides",
+      "commonName": "ヒシカミキリ"
+    },
+    {
+      "id": "499104",
+      "scientificName": "Exocentrus lineatus",
+      "commonName": "アトモンマルケシカミキリ"
+    },
+    {
+      "id": "499137",
+      "scientificName": "Xylotrechus rufilius",
+      "commonName": "クビアカトラカミキリ"
+    },
+    {
+      "id": "499267",
+      "scientificName": "Hydrophilus acuminatus",
+      "commonName": "ガムシ"
+    },
+    {
+      "id": "499269",
+      "scientificName": "Hydaticus bowringii",
+      "commonName": "シマゲンゴロウ"
+    },
+    {
+      "id": "499564",
+      "scientificName": "Plagiosterna aenea",
+      "commonName": "ルリハムシ"
+    },
+    {
+      "id": "500400",
+      "scientificName": "Pterolophia annulata",
+      "commonName": "ワモンサビカミキリ"
+    },
+    {
+      "id": "500922",
+      "scientificName": "Dolichus halensis",
+      "commonName": "セアカヒラタゴミムシ"
+    },
+    {
+      "id": "501512",
+      "scientificName": "Colasposoma viridicoeruleum",
+      "commonName": "オキナワイモサルハムシ"
+    },
+    {
+      "id": "501563",
+      "scientificName": "Colasposoma dauricum",
+      "commonName": "イモサルハムシ"
+    },
+    {
+      "id": "502795",
+      "scientificName": "Chlorophorus muscosus",
+      "commonName": "フタオビミドリトラカミキリ"
+    },
+    {
+      "id": "503861",
+      "scientificName": "Eusilpha japonica",
+      "commonName": "オオヒラタシデムシ"
+    },
+    {
+      "id": "504463",
+      "scientificName": "Gastrolina peltoidea",
+      "commonName": "ミヤマヒラタハムシ"
+    },
+    {
+      "id": "508639",
+      "scientificName": "Psephactus remiger",
+      "commonName": "コバネカミキリ"
+    },
+    {
+      "id": "508642",
+      "scientificName": "Eurypoda batesi",
+      "commonName": "ベーツヒラタカミキリ"
+    },
+    {
+      "id": "508668",
+      "scientificName": "Dinoptera minuta",
+      "commonName": "ヒナルリハナカミキリ"
+    },
+    {
+      "id": "508716",
+      "scientificName": "Anastrangalia scotodes",
+      "commonName": "ツヤケシハナカミキリ"
+    },
+    {
+      "id": "508718",
+      "scientificName": "Macroleptura regalis",
+      "commonName": "オオヨツスジハナカミキリ"
+    },
+    {
+      "id": "508733",
+      "scientificName": "Margites fulvidus",
+      "commonName": "キイロミヤマカミキリ"
+    },
+    {
+      "id": "508738",
+      "scientificName": "Allotraeus sphaerioninus",
+      "commonName": "トビイロカミキリ"
+    },
+    {
+      "id": "508740",
+      "scientificName": "Allotraeus rufescens",
+      "commonName": "トゲヒゲトビイロカミキリ"
+    },
+    {
+      "id": "509793",
+      "scientificName": "Lema diversa",
+      "commonName": "アカクビボソハムシ"
+    },
+    {
+      "id": "516704",
+      "scientificName": "Diaperis lewisi",
+      "commonName": "モンキゴミムシダマシ"
+    },
+    {
+      "id": "51702",
+      "scientificName": "Coccinella septempunctata",
+      "commonName": "ナナホシテントウ"
+    },
+    {
+      "id": "533769",
+      "scientificName": "Pseudoedophrys hilleri",
+      "commonName": "ヒレルクチブトゾウムシ"
+    },
+    {
+      "id": "542486",
+      "scientificName": "Ceresium sinicum",
+      "commonName": "テツイロヒメカミキリ"
+    },
+    {
+      "id": "542760",
+      "scientificName": "Stenhomalus taiwanus",
+      "commonName": "タイワンメダカカミキリ"
+    },
+    {
+      "id": "543529",
+      "scientificName": "Oedemera lucidicollis",
+      "commonName": "モモブトカミキリモドキ"
+    },
+    {
+      "id": "543606",
+      "scientificName": "Myriochila specularis",
+      "commonName": "コハンミョウ"
+    },
+    {
+      "id": "544704",
+      "scientificName": "Purpuricenus spectabilis",
+      "commonName": "ヘリグロベニカミキリ"
+    },
+    {
+      "id": "544829",
+      "scientificName": "Abirus fortunei",
+      "commonName": "ツツサルハムシ"
+    },
+    {
+      "id": "545769",
+      "scientificName": "Lixus impressiventris",
+      "commonName": "カツオゾウムシ"
+    },
+    {
+      "id": "545778",
+      "scientificName": "Blindus strigosus",
+      "commonName": "ゴモクムシダマシ"
+    },
+    {
+      "id": "545810",
+      "scientificName": "Heterotarsus carinula",
+      "commonName": "スジコガシラゴミムシダマシ"
+    },
+    {
+      "id": "545887",
+      "scientificName": "Nicrophorus quadripunctatus",
+      "commonName": "ヨツボシモンシデムシ"
+    },
+    {
+      "id": "545908",
+      "scientificName": "Lixus acutipennis",
+      "commonName": "ハスジカツオゾウムシ"
+    },
+    {
+      "id": "545966",
+      "scientificName": "Harmonia yedoensis",
+      "commonName": "クリサキテントウ"
+    },
+    {
+      "id": "546099",
+      "scientificName": "Basilepta fulvipes",
+      "commonName": "アオバネサルハムシ"
+    },
+    {
+      "id": "546115",
+      "scientificName": "Acrothinium gaschkevitchii",
+      "commonName": "アカガネサルハムシ"
+    },
+    {
+      "id": "546349",
+      "scientificName": "Lycocerus vitellinus",
+      "commonName": "セボシジョウカイ"
+    },
+    {
+      "id": "547229",
+      "scientificName": "Malachius prolongatus",
+      "commonName": "ツマキアオジョウカイモドキ"
+    },
+    {
+      "id": "547550",
+      "scientificName": "Mesosa hirsuta",
+      "commonName": "カタシロゴマフカミキリ"
+    },
+    {
+      "id": "547559",
+      "scientificName": "Scarites sulcatus",
+      "commonName": "オオヒョウタンゴミムシ"
+    },
+    {
+      "id": "547996",
+      "scientificName": "Cyllorhynchites ursulus",
+      "commonName": "ハイイロチョッキリ"
+    },
+    {
+      "id": "548764",
+      "scientificName": "Calvia muiri",
+      "commonName": "ムーアシロホシテントウ"
+    },
+    {
+      "id": "549096",
+      "scientificName": "Eugnathus distinctus",
+      "commonName": "コフキゾウムシ"
+    },
+    {
+      "id": "549155",
+      "scientificName": "Trachys variolaris",
+      "commonName": "ダンダラチビタマムシ"
+    },
+    {
+      "id": "549189",
+      "scientificName": "Mataeopsephus japonicus",
+      "commonName": "ヒラタドロムシ"
+    },
+    {
+      "id": "549503",
+      "scientificName": "Dactylispa angulosa",
+      "commonName": "キベリトゲハムシ"
+    },
+    {
+      "id": "549716",
+      "scientificName": "Carabus blaptoides",
+      "commonName": "マイマイカブリ"
+    },
+    {
+      "id": "549952",
+      "scientificName": "Derosphaerus subviolaceus",
+      "commonName": "ルリゴミムシダマシ"
+    },
+    {
+      "id": "549954",
+      "scientificName": "Glischrochilus ipsoides",
+      "commonName": "コヨツボシケシキスイ"
+    },
+    {
+      "id": "550009",
+      "scientificName": "Fleutiauxia armata",
+      "commonName": "クワハムシ"
+    },
+    {
+      "id": "550074",
+      "scientificName": "Phygasia fulvipennis",
+      "commonName": "チャバネツヤハムシ"
+    },
+    {
+      "id": "550105",
+      "scientificName": "Calosoma chinense",
+      "commonName": "エゾカタビロオサムシ"
+    },
+    {
+      "id": "550226",
+      "scientificName": "Paratrichius doenitzi",
+      "commonName": "オオトラフハナムグリ"
+    },
+    {
+      "id": "550328",
+      "scientificName": "Epiglenea comes",
+      "commonName": "ヨツキボシカミキリ"
+    },
+    {
+      "id": "550373",
+      "scientificName": "Sternuchopsis trifida",
+      "commonName": "オジロアシナガゾウムシ"
+    },
+    {
+      "id": "550376",
+      "scientificName": "Trachys yanoi",
+      "commonName": "ヤノナミガタチビタマムシ"
+    },
+    {
+      "id": "550587",
+      "scientificName": "Heptophylla picea",
+      "commonName": "ナガチャコガネ"
+    },
+    {
+      "id": "550970",
+      "scientificName": "Argopus clypeatus",
+      "commonName": "オオアカマルノミハムシ"
+    },
+    {
+      "id": "551094",
+      "scientificName": "Aclees hirayamai",
+      "commonName": "ヒラヤマメナガゾウムシ"
+    },
+    {
+      "id": "551328",
+      "scientificName": "Luprops orientalis",
+      "commonName": "ヒゲブトゴミムシダマシ"
+    },
+    {
+      "id": "551338",
+      "scientificName": "Ozotomerus japonicus",
+      "commonName": "ウスモンツツヒゲナガゾウムシ"
+    },
+    {
+      "id": "551382",
+      "scientificName": "Cryptalaus berus",
+      "commonName": "ウバタマコメツキ"
+    },
+    {
+      "id": "551388",
+      "scientificName": "Galerucella nipponensis",
+      "commonName": "ジュンサイハムシ"
+    },
+    {
+      "id": "551666",
+      "scientificName": "Nacerdes waterhousei",
+      "commonName": "アオカミキリモドキ"
+    },
+    {
+      "id": "551898",
+      "scientificName": "Demotina fasciculata",
+      "commonName": "マダラアラゲサルハムシ"
+    },
+    {
+      "id": "552257",
+      "scientificName": "Craspedonotus tibialis",
+      "commonName": "オサムシモドキ"
+    },
+    {
+      "id": "553189",
+      "scientificName": "Lachnolebia cribricollis",
+      "commonName": "キクビアオアトキリゴミムシ"
+    },
+    {
+      "id": "554407",
+      "scientificName": "Anatis halonis",
+      "commonName": "ウンモンテントウ"
+    },
+    {
+      "id": "555351",
+      "scientificName": "Chlaenius pallipes",
+      "commonName": "アオゴミムシ"
+    },
+    {
+      "id": "556565",
+      "scientificName": "Episomus turritus",
+      "commonName": "シロコブゾウムシ"
+    },
+    {
+      "id": "556587",
+      "scientificName": "Asaphidion semilucidum",
+      "commonName": "メダカチビカワゴミムシ"
+    },
+    {
+      "id": "557001",
+      "scientificName": "Monochamus subfasciatus",
+      "commonName": "ヒメヒゲナガカミキリ"
+    },
+    {
+      "id": "558231",
+      "scientificName": "Xylotrechus chinensis",
+      "commonName": "トラフカミキリ"
+    },
+    {
+      "id": "559764",
+      "scientificName": "Nonarthra cyanea",
+      "commonName": "ルリマルノミハムシ"
+    },
+    {
+      "id": "560236",
+      "scientificName": "Byctiscus congener",
+      "commonName": "ドロハマキチョッキリ"
+    },
+    {
+      "id": "560574",
+      "scientificName": "Agrypnus binodulus",
+      "commonName": "サビキコリ"
+    },
+    {
+      "id": "560616",
+      "scientificName": "Chlaenius virgulifer",
+      "commonName": "アトワアオゴミムシ"
+    },
+    {
+      "id": "560733",
+      "scientificName": "Cycnotrachelodes roelofsi",
+      "commonName": "エゴツルクビオトシブミ"
+    },
+    {
+      "id": "560737",
+      "scientificName": "Cassida versicolor",
+      "commonName": "セモンジンガサハムシ"
+    },
+    {
+      "id": "601841",
+      "scientificName": "Laccoptera nepalensis",
+      "commonName": "ヨツモンカメノコハムシ"
+    },
+    {
+      "id": "603919",
+      "scientificName": "Cryptalaus larvatus",
+      "commonName": "オオフタモンウバタマコメツキ"
+    },
+    {
+      "id": "61530",
+      "scientificName": "Propylea japonica",
+      "commonName": "ヒメカメノコテントウ"
+    },
+    {
+      "id": "624868",
+      "scientificName": "Carabus insulicola",
+      "commonName": "アオオサムシ"
+    },
+    {
+      "id": "624871",
+      "scientificName": "Paralichas pectinatus",
+      "commonName": "ヒゲナガハナノミ"
+    },
+    {
+      "id": "628294",
+      "scientificName": "Lamprodila virgata",
+      "commonName": "クロホシタマムシ"
+    },
+    {
+      "id": "628338",
+      "scientificName": "Agrilus discalis",
+      "commonName": "ヒシモンナガタマムシ"
+    },
+    {
+      "id": "628339",
+      "scientificName": "Chrysobothris succedanea",
+      "commonName": "ムツボシタマムシ"
+    },
+    {
+      "id": "630722",
+      "scientificName": "Platystomos sellatus",
+      "commonName": "シロヒゲナガゾウムシ"
+    },
+    {
+      "id": "630754",
+      "scientificName": "Sphinctotropis laxa",
+      "commonName": "カオジロヒゲナガゾウムシ"
+    },
+    {
+      "id": "632547",
+      "scientificName": "Paridea angulicollis",
+      "commonName": "アトボシハムシ"
+    },
+    {
+      "id": "632550",
+      "scientificName": "Rhaphuma diminuta",
+      "commonName": "ヒメクロトラカミキリ"
+    },
+    {
+      "id": "632604",
+      "scientificName": "Uraecha bimaculata",
+      "commonName": "ヤハズカミキリ"
+    },
+    {
+      "id": "632608",
+      "scientificName": "Pterolophia granulata",
+      "commonName": "アトモンサビカミキリ"
+    },
+    {
+      "id": "632610",
+      "scientificName": "Pterolophia caudata",
+      "commonName": "トガリシロオビサビカミキリ"
+    },
+    {
+      "id": "633223",
+      "scientificName": "Aquatica lateralis",
+      "commonName": "ヘイケボタル"
+    },
+    {
+      "id": "634944",
+      "scientificName": "Paraclytus excultus",
+      "commonName": "シロトラカミキリ"
+    },
+    {
+      "id": "67760",
+      "scientificName": "Popillia japonica",
+      "commonName": "マメコガネ"
+    },
+    {
+      "id": "69203",
+      "scientificName": "Calvia quatuordecimguttata",
+      "commonName": "シロジュウシホシテントウ"
+    },
+    {
+      "id": "700360",
+      "scientificName": "Morphosphaera caerulea",
+      "commonName": "オキナワイチモンジハムシ"
+    },
+    {
+      "id": "703022",
+      "scientificName": "Lioptera erotyloides",
+      "commonName": "キノコゴミムシ"
+    },
+    {
+      "id": "703402",
+      "scientificName": "Rhomborhina polita",
+      "commonName": "クロカナブン"
+    },
+    {
+      "id": "704411",
+      "scientificName": "Smaragdina semiaurantiaca",
+      "commonName": "ムナキルリハムシ"
+    },
+    {
+      "id": "705623",
+      "scientificName": "Pseudaeolesthes chrysothrix",
+      "commonName": "キマダラカミキリ"
+    },
+    {
+      "id": "706668",
+      "scientificName": "Nicrophorus concolor",
+      "commonName": "クロシデムシ"
+    },
+    {
+      "id": "708034",
+      "scientificName": "Trachys auricollis",
+      "commonName": "クズノチビタマムシ"
+    },
+    {
+      "id": "708667",
+      "scientificName": "Promethis valgipes",
+      "commonName": "サトユミアシゴミムシダマシ"
+    },
+    {
+      "id": "708733",
+      "scientificName": "Idisia ornata",
+      "commonName": "ハマヒョウタンゴミムシダマシ"
+    },
+    {
+      "id": "709920",
+      "scientificName": "Cyrtoclytus caproides",
+      "commonName": "キスジトラカミキリ"
+    },
+    {
+      "id": "710262",
+      "scientificName": "Chlaenius micans",
+      "commonName": "オオアトボシアオゴミムシ"
+    },
+    {
+      "id": "710265",
+      "scientificName": "Cteniopinus hypocrita",
+      "commonName": "キイロクチキムシ"
+    },
+    {
+      "id": "710271",
+      "scientificName": "Hoplia communis",
+      "commonName": "アシナガコガネ"
+    },
+    {
+      "id": "710684",
+      "scientificName": "Demonax notabilis",
+      "commonName": "キイロトラカミキリ"
+    },
+    {
+      "id": "711394",
+      "scientificName": "Sphenocorynes ocellatus",
+      "commonName": "ヨツメオサゾウムシ"
+    },
+    {
+      "id": "711774",
+      "scientificName": "Necrophila brunnicollis",
+      "commonName": "ベッコウヒラタシデムシ"
+    },
+    {
+      "id": "711876",
+      "scientificName": "Cybister chinensis",
+      "commonName": "ゲンゴロウ"
+    },
+    {
+      "id": "711995",
+      "scientificName": "Apriona rugicollis",
+      "commonName": "クワカミキリ"
+    },
+    {
+      "id": "713463",
+      "scientificName": "Xanthogaleruca maculicollis",
+      "commonName": "ニレハムシ"
+    },
+    {
+      "id": "713655",
+      "scientificName": "Platynaspis maculosa",
+      "commonName": "モンクチビルテントウ"
+    },
+    {
+      "id": "714145",
+      "scientificName": "Anoplophora macularia",
+      "commonName": "タイワンゴマダラカミキリ"
+    },
+    {
+      "id": "714213",
+      "scientificName": "Paraglenea fortunei",
+      "commonName": "ラミーカミキリ"
+    },
+    {
+      "id": "715013",
+      "scientificName": "Leptura modicenotata",
+      "commonName": "ツマグロハナカミキリ"
+    },
+    {
+      "id": "716831",
+      "scientificName": "Merus erro",
+      "commonName": "ホホジロアシナガゾウムシ"
+    },
+    {
+      "id": "717834",
+      "scientificName": "Cryptocephalus nobilis",
+      "commonName": "ヨツモンクロツツハムシ"
+    },
+    {
+      "id": "717922",
+      "scientificName": "Sangariola punctatostriata",
+      "commonName": "カタクリハムシ"
+    },
+    {
+      "id": "732788",
+      "scientificName": "Trichochrysea japana",
+      "commonName": "トビサルハムシ"
+    },
+    {
+      "id": "732970",
+      "scientificName": "Rondibilis saperdina",
+      "commonName": "トゲバカミキリ"
+    },
+    {
+      "id": "732986",
+      "scientificName": "Arthrotus niger",
+      "commonName": "ムナグロツヤハムシ"
+    },
+    {
+      "id": "733210",
+      "scientificName": "Desmidophorus crassus",
+      "commonName": "ハスオビコブゾウムシ"
+    },
+    {
+      "id": "735392",
+      "scientificName": "Rhopaloscelis unifasciatus",
+      "commonName": "ヒトオビアラゲカミキリ"
+    },
+    {
+      "id": "735524",
+      "scientificName": "Glischrochilus japonius",
+      "commonName": "ヨツボシケシキスイ"
+    },
+    {
+      "id": "738283",
+      "scientificName": "Abryna obscura",
+      "commonName": "サビアヤカミキリ"
+    },
+    {
+      "id": "739857",
+      "scientificName": "Eutetrapha chrysochloris",
+      "commonName": "ハンノアオカミキリ"
+    },
+    {
+      "id": "741701",
+      "scientificName": "Glenea lineata",
+      "commonName": "スジシロカミキリ"
+    },
+    {
+      "id": "741998",
+      "scientificName": "Saperda ocelota",
+      "commonName": "ヤツメカミキリ"
+    },
+    {
+      "id": "746193",
+      "scientificName": "Niphona furcata",
+      "commonName": "ハイイロヤハズカミキリ"
+    },
+    {
+      "id": "748712",
+      "scientificName": "Coraebus hastanus",
+      "commonName": "ミドリナカボソタマムシ"
+    },
+    {
+      "id": "752171",
+      "scientificName": "Chrysodema dalmanni",
+      "commonName": "アオムネスジタマムシ"
+    },
+    {
+      "id": "771620",
+      "scientificName": "Monochamus grandis",
+      "commonName": "ヒゲナガカミキリ"
+    },
+    {
+      "id": "773672",
+      "scientificName": "Cetonia roelofsi",
+      "commonName": "アオハナムグリ"
+    },
+    {
+      "id": "774151",
+      "scientificName": "Copris acutidens",
+      "commonName": "ゴホンダイコクコガネ"
+    },
+    {
+      "id": "775033",
+      "scientificName": "Diekeana admirabilis",
+      "commonName": "トホシテントウ"
+    },
+    {
+      "id": "776401",
+      "scientificName": "Judolia cometes",
+      "commonName": "マルガタハナカミキリ"
+    },
+    {
+      "id": "785461",
+      "scientificName": "Exocentrus guttulatus",
+      "commonName": "シラオビゴマフケシカミキリ"
+    },
+    {
+      "id": "787085",
+      "scientificName": "Cassida japana",
+      "commonName": "イノコヅチカメノコハムシ"
+    },
+    {
+      "id": "787915",
+      "scientificName": "Lema diversipes",
+      "commonName": "クズクビボソハムシ"
+    },
+    {
+      "id": "790163",
+      "scientificName": "Synona consanguinea",
+      "commonName": "ムネアカオオクロテントウ"
+    },
+    {
+      "id": "795088",
+      "scientificName": "Acalolepta fraudatrix",
+      "commonName": "ビロウドカミキリ"
+    },
+    {
+      "id": "795150",
+      "scientificName": "Aulacophora bicolor",
+      "commonName": "フタイロウリハムシ"
+    },
+    {
+      "id": "805227",
+      "scientificName": "Sternolophus rufipes",
+      "commonName": "ヒメガムシ"
+    },
+    {
+      "id": "812278",
+      "scientificName": "Episomus mori",
+      "commonName": "オキナワクワゾウムシ"
+    },
+    {
+      "id": "83839",
+      "scientificName": "Plagiodera versicolora",
+      "commonName": "ヤナギルリハムシ"
+    },
+    {
+      "id": "850024",
+      "scientificName": "Sybra ordinata",
+      "commonName": "アヤモンチビカミキリ"
+    },
+    {
+      "id": "855327",
+      "scientificName": "Lesticus magnus",
+      "commonName": "オオゴミムシ"
+    },
+    {
+      "id": "856884",
+      "scientificName": "Chlaenius nigricans",
+      "commonName": "オオキベリアオゴミムシ"
+    },
+    {
+      "id": "865911",
+      "scientificName": "Neocerambyx raddei",
+      "commonName": "ミヤマカミキリ"
+    },
+    {
+      "id": "874707",
+      "scientificName": "Anomala octiescostata",
+      "commonName": "ヒラタアオコガネ"
+    },
+    {
+      "id": "878518",
+      "scientificName": "Palimna liturata",
+      "commonName": "ヒゲナガゴマフカミキリ"
+    },
+    {
+      "id": "884451",
+      "scientificName": "Phialodes rufipennis",
+      "commonName": "アシナガオトシブミ"
+    },
+    {
+      "id": "884856",
+      "scientificName": "Stenodryas clavigera",
+      "commonName": "アメイロカミキリ"
+    },
+    {
+      "id": "885996",
+      "scientificName": "Plagiosterna formosana",
+      "commonName": "タイワンハムシ"
+    },
+    {
+      "id": "886227",
+      "scientificName": "Anoplophora oshimana",
+      "commonName": "オオシマゴマダラカミキリ"
+    },
+    {
+      "id": "889078",
+      "scientificName": "Lema adamsii",
+      "commonName": "キベリクビボソハムシ"
+    },
+    {
+      "id": "889793",
+      "scientificName": "Exomala conspurcata",
+      "commonName": "カタモンコガネ"
+    },
+    {
+      "id": "890907",
+      "scientificName": "Phaeochrous emarginatus",
+      "commonName": "フチトリアツバコガネ"
+    },
+    {
+      "id": "895207",
+      "scientificName": "Diplocheila zeelandica",
+      "commonName": "オオスナハラゴミムシ"
+    },
+    {
+      "id": "895927",
+      "scientificName": "Galerita orientalis",
+      "commonName": "クビボソゴミムシ"
+    },
+    {
+      "id": "899397",
+      "scientificName": "Neotriplax lewisii",
+      "commonName": "アカハバビロオオキノコ"
+    },
+    {
+      "id": "900695",
+      "scientificName": "Callicaria superba",
+      "commonName": "ハラグロオオテントウ"
+    },
+    {
+      "id": "901359",
+      "scientificName": "Parastrangalis nymphula",
+      "commonName": "ニンフハナカミキリ"
+    },
+    {
+      "id": "903101",
+      "scientificName": "Compsapoderus erythrogaster",
+      "commonName": "ヒメクロオトシブミ"
+    },
+    {
+      "id": "904418",
+      "scientificName": "Glenea relicta",
+      "commonName": "シラホシカミキリ"
+    },
+    {
+      "id": "904491",
+      "scientificName": "Japanocorus caeruleipennis",
+      "commonName": "フタコブルリハナカミキリ"
+    },
+    {
+      "id": "907610",
+      "scientificName": "Gaurotes doris",
+      "commonName": "カラカネハナカミキリ"
+    },
+    {
+      "id": "907624",
+      "scientificName": "Epicauta gorhami",
+      "commonName": "マメハンミョウ"
+    },
+    {
+      "id": "907708",
+      "scientificName": "Scarites aterrimus",
+      "commonName": "ヒョウタンゴミムシ"
+    },
+    {
+      "id": "909195",
+      "scientificName": "Exocentrus fasciolatus",
+      "commonName": "クモガタケシカミキリ"
+    },
+    {
+      "id": "909225",
+      "scientificName": "Atrachya menetriesii",
+      "commonName": "ウリハムシモドキ"
+    },
+    {
+      "id": "911841",
+      "scientificName": "Glenea chlorospila",
+      "commonName": "リュウキュウルリボシカミキリ"
+    },
+    {
+      "id": "914351",
+      "scientificName": "Olenecamptus cretaceus",
+      "commonName": "オオシロカミキリ"
+    },
+    {
+      "id": "919700",
+      "scientificName": "Chrysodema lewisii",
+      "commonName": "アヤムネスジタマムシ"
+    },
+    {
+      "id": "919934",
+      "scientificName": "Mesechthistatus binodosus",
+      "commonName": "コブヤハズカミキリ"
+    },
+    {
+      "id": "920580",
+      "scientificName": "Oenopia hirayamai",
+      "commonName": "ウスキホシテントウ"
+    },
+    {
+      "id": "921599",
+      "scientificName": "Bacchisa fortunei",
+      "commonName": "ルリカミキリ"
+    },
+    {
+      "id": "922800",
+      "scientificName": "Chloridolum japonicum",
+      "commonName": "アカアシオオアオカミキリ"
+    },
+    {
+      "id": "923587",
+      "scientificName": "Dolichoprosopus yokoyamai",
+      "commonName": "ヨコヤマヒゲナガカミキリ"
+    },
+    {
+      "id": "923627",
+      "scientificName": "Amphicoma pectinata",
+      "commonName": "ヒゲブトハナムグリ"
+    },
+    {
+      "id": "923660",
+      "scientificName": "Etorofus vicarius",
+      "commonName": "フタスジハナカミキリ"
+    },
+    {
+      "id": "925379",
+      "scientificName": "Melolontha masafumii",
+      "commonName": "オキナワコフキコガネ"
+    },
+    {
+      "id": "928028",
+      "scientificName": "Ectinohoplia obducta",
+      "commonName": "ヒメアシナガコガネ"
+    },
+    {
+      "id": "928249",
+      "scientificName": "Clytus melaenus",
+      "commonName": "シラケトラカミキリ"
+    },
+    {
+      "id": "930880",
+      "scientificName": "Agomadaranus pardalis",
+      "commonName": "ゴマダラオトシブミ"
+    },
+    {
+      "id": "932831",
+      "scientificName": "Monochamus nitens",
+      "commonName": "シラフヒゲナガカミキリ"
+    },
+    {
+      "id": "933149",
+      "scientificName": "Brachinus scotomedes",
+      "commonName": "オオホソクビゴミムシ"
+    },
+    {
+      "id": "935433",
+      "scientificName": "Dorcus rectus",
+      "commonName": "コクワガタ"
+    },
+    {
+      "id": "935491",
+      "scientificName": "Asaperda rufipes",
+      "commonName": "キクスイモドキカミキリ"
+    },
+    {
+      "id": "935639",
+      "scientificName": "Aulaconotus pachypezoides",
+      "commonName": "タテジマカミキリ"
+    },
+    {
+      "id": "938869",
+      "scientificName": "Polyphylla schoenfeldti",
+      "commonName": "オキナワシロスジコガネ"
+    },
+    {
+      "id": "948196",
+      "scientificName": "Nacerdes katoi",
+      "commonName": "カトウカミキリモドキ"
+    },
+    {
+      "id": "956293",
+      "scientificName": "Pachyrhynchus infernalis",
+      "commonName": "クロカタゾウムシ"
+    },
+    {
+      "id": "960538",
+      "scientificName": "Meloe coarctatus",
+      "commonName": "ヒメツチハンミョウ"
+    },
+    {
+      "id": "961851",
+      "scientificName": "Pectocera yonaha",
+      "commonName": "オキナワヒゲコメツキ"
+    },
+    {
+      "id": "961918",
+      "scientificName": "Sphaeroderma quadrimaculatum",
+      "commonName": "ヨツモンタマノミハムシ"
+    },
+    {
+      "id": "963708",
+      "scientificName": "Aplotes roelofsi",
+      "commonName": "トホシオサゾウムシ"
+    },
+    {
+      "id": "968062",
+      "scientificName": "Parechthistatus gibber",
+      "commonName": "セダカコブヤハズカミキリ"
+    },
+    {
+      "id": "974192",
+      "scientificName": "Demonax transilis",
+      "commonName": "トゲヒゲトラカミキリ"
+    },
+    {
+      "id": "980555",
+      "scientificName": "Apomecyna naevia",
+      "commonName": "カノコサビカミキリ"
+    },
+    {
+      "id": "986422",
+      "scientificName": "Metapocyrtus adspersus",
+      "commonName": "ビサヤアカアシカタゾウムシ"
+    },
+    {
+      "id": "986660",
+      "scientificName": "Stictoleptura dichroa",
+      "commonName": "アカハナカミキリ"
+    }
+  ]
+}

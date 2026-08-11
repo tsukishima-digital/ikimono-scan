@@ -113,6 +113,20 @@ class INaturalistClient:
             page += 1
         return observations
 
+    def observations_by_ids(self, observation_ids: list[int]) -> list[dict[str, Any]]:
+        """Fetch up to 200 observations by their stable iNaturalist identifiers."""
+
+        if not observation_ids:
+            return []
+        if len(observation_ids) > 200:
+            raise ValueError("iNaturalist observation ID batches cannot exceed 200")
+        payload = self.get(
+            "observations",
+            {"id": ",".join(str(value) for value in observation_ids), "per_page": 200},
+        )
+        results = payload.get("results", [])
+        return [item for item in results if isinstance(item, dict)]
+
     def resolve_taxon(self, scientific_name: str) -> Taxon:
         payload = self.get(
             "taxa",
