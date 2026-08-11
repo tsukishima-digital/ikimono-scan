@@ -67,7 +67,7 @@ tasks:
     deps: [ui:build, infra:validate:config]
 
   infra:validate:config:
-    internal: true
+    desc: Check Terraform formatting and validate all roots without building assets
     cmds:
       - terraform fmt -check -recursive infra
       - terraform -chdir=infra/bootstrap init -backend=false -input=false
@@ -198,6 +198,11 @@ tasks:
     desc: Scan tracked files for secrets
     cmds:
       - uv run pre-commit run gitleaks --all-files
+
+  hooks:install:
+    desc: Install the pre-commit and pre-push quality gates
+    cmds:
+      - uv run pre-commit install
 
   check:
     desc: Run only checks relevant to current working-tree changes
