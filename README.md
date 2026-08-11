@@ -32,11 +32,15 @@ npm test
 npm run dev
 ```
 
-コミット前チェックにはgitleaks、uv、pre-commitが必要です。
+ローカルの品質チェックにはgitleaks、uv、pre-commit、Terraformが必要です。Webアプリの依存関係も事前にインストールします。
 
 ```console
-pre-commit install
-pre-commit run --all-files
+uv sync --extra dev
+cd web && npm ci && cd ..
+task hooks:install
+uv run pre-commit run --all-files
 ```
+
+pre-commitではRuff、ESLint、Terraformのフォーマットと構成検証を実行します。pre-pushでは変更範囲に応じてPythonテスト、Webテスト、TypeScript型検査、Terraform検証を実行します。
 
 Cloudflareのリソース定義は `infra/` に置きます。デプロイはまだ行いません。
