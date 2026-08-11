@@ -9,8 +9,8 @@ import {
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { contentPagePaths, contentPageRoutes } from "./content-page-routes";
+import { buildPhotoCredits } from "./content/photo-credits";
 import { createClassifier } from "./inference/classifier";
-import { buildPhotoCredits } from "./pages/SupportedSpeciesPage";
 import { scrollPositionStorageKey } from "./scroll-restoration";
 import App from "./App";
 
