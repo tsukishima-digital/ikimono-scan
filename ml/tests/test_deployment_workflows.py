@@ -161,6 +161,8 @@ def test_preview_workflow_is_manual_serialized_and_applies_a_saved_plan():
     assert "terraform_backend.py backup preview pre-apply" in source
     assert "terraform_backend.py backup preview post-apply" in source
     assert "pull_request_target" not in source
+    assert "secrets.CLOUDFLARE_PREVIEW_API_TOKEN" in source
+    assert "secrets.CLOUDFLARE_API_TOKEN" not in source
 
 
 def test_preview_infrastructure_is_access_protected_for_cloudflare_account_members():
