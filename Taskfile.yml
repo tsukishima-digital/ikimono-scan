@@ -15,6 +15,10 @@ tasks:
 
   dev:mobile:
     desc: Start the Access-protected HTTPS preview for mobile UI checks
+    vars:
+      WEB_ROOT: '{{.WEB_ROOT | default "web"}}'
+    env:
+      IKIMONO_SCAN_WEB_ROOT: "{{.WEB_ROOT}}"
     cmds:
       - python scripts/mobile_preview.py
 
