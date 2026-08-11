@@ -23,7 +23,7 @@ export function metadataForPath(pathname: string): PageMetadata {
   }
   if (pathname === "/scan") {
     return {
-      title: "写真を判定する｜生き物スキャン",
+      title: "生物を判定する｜生き物スキャン",
       description: "カメラで撮影するか、端末に保存した写真から生き物を判定します。",
       canonicalPath: "/scan",
       index: false,

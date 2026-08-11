@@ -194,7 +194,7 @@ test("menu order and cursor make the current page unambiguous", async ({
     "判定できる生き物",
     "使い方",
     "更新情報",
-    "写真を判定する",
+    "生物を判定する",
   ]);
 
   const current = menu.getByRole("link", { name: "判定できる生き物" });
@@ -389,7 +389,7 @@ test("visitors start the scanner deliberately from the public introduction", asy
   await expect(page.getByRole("heading", { name: "写真から、生き物を知る。" })).toBeVisible();
   await expectNoAutomaticAccessibilityViolations(page);
 
-  const startButton = page.getByRole("link", { name: "写真を判定する" });
+  const startButton = page.getByRole("link", { name: "生物を判定する" });
   await startButton.focus();
   await page.keyboard.press("Enter");
 

@@ -108,7 +108,7 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(getUserMedia).not.toHaveBeenCalled();
 
-    fireEvent.click(screen.getByRole("link", { name: "写真を判定する" }));
+    fireEvent.click(screen.getByRole("link", { name: "生物を判定する" }));
 
     expect(window.location.pathname).toBe("/scan");
     await waitFor(() => expect(getUserMedia).toHaveBeenCalledOnce());
@@ -216,7 +216,7 @@ describe("App", () => {
       "判定できる生き物",
       "使い方",
       "更新情報",
-      "写真を判定する",
+      "生物を判定する",
     ]);
     expect(screen.getByRole("link", { name: "使い方" })).toHaveAttribute(
       "href",
@@ -231,7 +231,7 @@ describe("App", () => {
   });
 
   it.each([
-    ["/scan", "写真を判定する"] as const,
+    ["/scan", "生物を判定する"] as const,
     ...contentPageRoutes.flatMap(({ menuLabel, paths }) =>
       paths.map((path) => [path, menuLabel] as const),
     ),
@@ -554,24 +554,21 @@ describe("App", () => {
     render(<App />);
 
     expect(
-      screen.getByRole("heading", { name: "公益のために、生き物を見分ける" }),
+      screen.getByRole("heading", { name: "見つけた生き物の、名前を調べる" }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", {
         name: "写真から、生き物を知る。",
       }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByText(/侵略的外来種の早期発見と、在来種の誤った駆除/),
-    ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "写真を判定する" })).toHaveAttribute(
+    expect(screen.getByText(/写真から生き物の種類の候補を調べられる/)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "生物を判定する" })).toHaveAttribute(
       "href",
       "/scan",
     );
-    expect(screen.getByRole("link", { name: "判定できる生き物を見る" })).toHaveAttribute(
-      "href",
-      "/supported-species",
-    );
+    expect(
+      screen.getByRole("region", { name: "見つけた生き物の、名前を調べる" }),
+    ).toHaveTextContent("現在は、日本で観察された甲虫422種に対応");
     expect(
       screen.getByRole("banner", { name: "サイトヘッダー" }),
     ).toHaveClass("fixed");

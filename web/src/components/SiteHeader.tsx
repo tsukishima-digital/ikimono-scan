@@ -156,7 +156,7 @@ export function SiteHeader({
               <div
                 className={`mt-2 border-t pt-2 ${overlay ? "border-white/14" : "border-ink/10"}`}
               >
-                {menuLink("scan", "/scan", "写真を判定する")}
+                {menuLink("scan", "/scan", "生物を判定する")}
               </div>
             </nav>
           )}
