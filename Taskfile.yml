@@ -13,6 +13,20 @@ tasks:
       - echo "Result fixtures /__dev/result?case=target|uncertain|no-alternatives|long-name"
       - npm run dev -- --host 127.0.0.1 --port {{.PORT | default "5175"}}
 
+  dev:mobile:
+    desc: Start the Access-protected HTTPS preview for mobile UI checks
+    vars:
+      WEB_ROOT: '{{.WEB_ROOT | default "web"}}'
+    env:
+      IKIMONO_SCAN_WEB_ROOT: "{{.WEB_ROOT}}"
+    cmds:
+      - python scripts/mobile_preview.py
+
+  preview:provision:
+    desc: Dispatch the workflow that provisions the private preview endpoint
+    cmds:
+      - gh workflow run preview.yml --ref main --field confirmation="provision dev.ikimono-scan.app"
+
   ui:
     desc: Run the fast UI feedback checks in parallel
     deps: [ui:test, ui:lint, ui:typecheck]
@@ -34,6 +48,12 @@ tasks:
     dir: web
     cmds:
       - npm run typecheck
+
+  ui:e2e:
+    desc: Run Playwright against a production-like local build
+    dir: web
+    cmds:
+      - npm run e2e
 
   ui:build:
     desc: Build the production web bundle
@@ -74,6 +94,8 @@ tasks:
       - terraform -chdir=infra/bootstrap validate
       - terraform -chdir=infra/storage init -backend=false -input=false
       - terraform -chdir=infra/storage validate
+      - terraform -chdir=infra/preview init -backend=false -input=false
+      - terraform -chdir=infra/preview validate
       - terraform -chdir=infra/production init -backend=false -input=false
       - terraform -chdir=infra/production validate
 
@@ -130,6 +152,12 @@ tasks:
     desc: Check the deployed application endpoint
     cmds:
       - curl --fail --silent --show-error --retry 12 --retry-delay 10 --retry-max-time 180 --retry-all-errors https://ikimono-scan.app/ >/dev/null
+
+  deploy:e2e:
+    desc: Run the real-model browser smoke against production
+    dir: web
+    cmds:
+      - E2E_PUBLIC_BASE_URL=https://ikimono-scan.app npm run e2e:production
 
   unpublish:
     desc: Dispatch the workflow that removes the production custom domain

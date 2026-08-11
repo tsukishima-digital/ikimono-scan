@@ -3,10 +3,14 @@ import { useEffect, useRef, useState } from "react";
 import { AppLink } from "./AppLink";
 
 interface SiteHeaderProps {
+  howToHref?: string;
   overlay?: boolean;
 }
 
-export function SiteHeader({ overlay = false }: SiteHeaderProps) {
+export function SiteHeader({
+  howToHref = "/how-to",
+  overlay = false,
+}: SiteHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuContainerRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -90,6 +94,13 @@ export function SiteHeader({ overlay = false }: SiteHeaderProps) {
             id="site-menu"
             aria-label="メインナビゲーション"
           >
+            <AppLink
+              className={menuLinkClassName}
+              href={howToHref}
+              onClick={() => setMenuOpen(false)}
+            >
+              How to use
+            </AppLink>
             <AppLink
               className={menuLinkClassName}
               href="/about"

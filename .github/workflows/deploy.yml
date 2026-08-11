@@ -90,3 +90,7 @@ jobs:
         run: task deploy:smoke
       - name: Verify public model
         run: task model:smoke
+      - name: Install production browser
+        run: npm --prefix web exec -- playwright install --with-deps chromium
+      - name: End-to-end smoke
+        run: task deploy:e2e

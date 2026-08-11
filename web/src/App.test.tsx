@@ -8,6 +8,7 @@ import {
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createClassifier } from "./inference/classifier";
+import { ONBOARDING_STORAGE_KEY } from "./onboarding";
 import App from "./App";
 
 vi.mock("./inference/classifier", async (importOriginal) => {
@@ -37,6 +38,7 @@ function cameraStream() {
 describe("App", () => {
   beforeEach(() => {
     window.history.replaceState({}, "", "/");
+    window.localStorage.setItem(ONBOARDING_STORAGE_KEY, "complete");
     vi.stubGlobal("scrollTo", vi.fn());
     mockedCreateClassifier.mockReset();
     mockedCreateClassifier.mockResolvedValue({
@@ -58,8 +60,78 @@ describe("App", () => {
   });
 
   afterEach(() => {
+    window.localStorage.clear();
     vi.unstubAllGlobals();
     Reflect.deleteProperty(navigator, "mediaDevices");
+  });
+
+  it("shows How to use before requesting the camera on a first visit", async () => {
+    const getUserMedia = vi.fn().mockResolvedValue(cameraStream());
+    installCamera(getUserMedia);
+    window.localStorage.removeItem(ONBOARDING_STORAGE_KEY);
+
+    render(<App />);
+
+    expect(window.location.pathname).toBe("/how-to");
+    expect(
+      screen.getByRole("heading", {
+        name: "How to use",
+      }),
+    ).toBeInTheDocument();
+    expect(getUserMedia).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: "カメラを開く" }));
+
+    expect(window.localStorage.getItem(ONBOARDING_STORAGE_KEY)).toBe(
+      "complete",
+    );
+    expect(window.location.pathname).toBe("/");
+    await waitFor(() => expect(getUserMedia).toHaveBeenCalledOnce());
+  });
+
+  it("starts with image selection from the corresponding How to use action", () => {
+    const getUserMedia = vi.fn().mockResolvedValue(cameraStream());
+    installCamera(getUserMedia);
+    window.localStorage.removeItem(ONBOARDING_STORAGE_KEY);
+
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "写真から始める" }));
+
+    expect(window.localStorage.getItem(ONBOARDING_STORAGE_KEY)).toBe(
+      "complete",
+    );
+    expect(window.location.pathname).toBe("/");
+    expect(window.location.search).toBe("?mode=photo");
+    expect(screen.getByRole("tab", { name: "写真" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    expect(screen.getByLabelText("写真を選ぶ")).toBeInTheDocument();
+    expect(getUserMedia).not.toHaveBeenCalled();
+  });
+
+  it("can start the current session when persistent storage is unavailable", async () => {
+    const getUserMedia = vi.fn().mockResolvedValue(cameraStream());
+    installCamera(getUserMedia);
+    window.localStorage.removeItem(ONBOARDING_STORAGE_KEY);
+    const getItem = vi
+      .spyOn(Storage.prototype, "getItem")
+      .mockImplementation(() => {
+        throw new DOMException("blocked", "SecurityError");
+      });
+    const setItem = vi
+      .spyOn(Storage.prototype, "setItem")
+      .mockImplementation(() => {
+        throw new DOMException("blocked", "SecurityError");
+      });
+
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "カメラを開く" }));
+
+    expect(window.location.pathname).toBe("/");
+    await waitFor(() => expect(getUserMedia).toHaveBeenCalledOnce());
+    getItem.mockRestore();
+    setItem.mockRestore();
   });
 
   it("requests the rear camera when the scanner opens", async () => {
@@ -91,6 +163,10 @@ describe("App", () => {
     fireEvent.click(menuButton);
 
     expect(menuButton).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("link", { name: "How to use" })).toHaveAttribute(
+      "href",
+      "/how-to#camera",
+    );
     expect(screen.getByRole("link", { name: "About" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("link", { name: "Changelog" }));
 
@@ -98,6 +174,19 @@ describe("App", () => {
     expect(
       screen.getByRole("heading", { name: "Changelog" }),
     ).toBeInTheDocument();
+  });
+
+  it("links the photo tab to its How to use section", () => {
+    installCamera(vi.fn().mockResolvedValue(cameraStream()));
+    window.history.replaceState({}, "", "/?mode=photo");
+
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "メニューを開く" }));
+
+    expect(screen.getByRole("link", { name: "How to use" })).toHaveAttribute(
+      "href",
+      "/how-to#photo",
+    );
   });
 
   it("switches to image selection when camera permission is denied", async () => {
@@ -233,6 +322,33 @@ describe("App", () => {
     expect(
       screen.getByRole("banner", { name: "サイトヘッダー" }),
     ).toHaveClass("fixed");
+    expect(getUserMedia).not.toHaveBeenCalled();
+  });
+
+  it("provides camera and photo instructions on one How to use page", () => {
+    const getUserMedia = vi.fn();
+    installCamera(getUserMedia);
+    window.history.replaceState({}, "", "/how-to#photo");
+
+    render(<App />);
+
+    expect(
+      screen.getByRole("heading", { name: "How to use" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "カメラで撮る" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "写真を選ぶ" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "カメラの使い方" })).toHaveAttribute(
+      "href",
+      "#camera",
+    );
+    expect(screen.getByRole("link", { name: "写真の使い方" })).toHaveAttribute(
+      "href",
+      "#photo",
+    );
     expect(getUserMedia).not.toHaveBeenCalled();
   });
 
