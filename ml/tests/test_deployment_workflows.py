@@ -77,6 +77,7 @@ def test_deploy_is_manual_serialized_and_applies_a_saved_plan():
     assert "Publish verified model artifacts" not in source
     assert "pull_request_target" not in source
     assert "scripts/install_ci_tools.sh terraform task gitleaks" in source
+    assert "task model:smoke" in source
 
 
 def test_ci_and_deploy_share_the_pinned_gitleaks_installer():
@@ -152,10 +153,12 @@ def test_model_tasks_export_locally_and_upload_without_dispatching_actions():
     taskfile = yaml.safe_load(TASKFILE.read_text())
     export_source = "\n".join(taskfile["tasks"]["model:export"]["cmds"])
     upload_source = "\n".join(taskfile["tasks"]["model:upload"]["cmds"])
+    smoke_source = "\n".join(taskfile["tasks"]["model:smoke"]["cmds"])
 
     assert "ikimono-scan-ml-export-web" in export_source
     assert "publish_model.py" in upload_source
     assert "gh workflow run" not in upload_source
+    assert "verify_public_model.py" in smoke_source
 
 
 def test_worker_serves_tracked_manifest_and_r2_model_objects():

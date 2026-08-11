@@ -34,17 +34,17 @@ class FakeRemote:
     def __init__(self, *, exists: bool = False, downloaded: bytes = b"licensed model"):
         self.exists = exists
         self.downloaded = downloaded
-        self.checked_urls: list[str] = []
+        self.checked_keys: list[str] = []
         self.uploads: list[tuple[Path, str]] = []
 
-    def object_exists(self, url: str) -> bool:
-        self.checked_urls.append(url)
+    def object_exists(self, key: str) -> bool:
+        self.checked_keys.append(key)
         return self.exists
 
     def upload(self, model: Path, key: str) -> None:
         self.uploads.append((model, key))
 
-    def download_sha256(self, _url: str) -> str:
+    def download_sha256(self, _key: str) -> str:
         return hashlib.sha256(self.downloaded).hexdigest()
 
 
@@ -53,14 +53,14 @@ def test_uploads_verified_model_then_promotes_manifest(tmp_path: Path):
     tracked_manifest = tmp_path / "tracked" / "manifest.json"
     remote = FakeRemote()
 
-    ModelPublisher(remote=remote, public_base_url="https://example.test/models/").publish(
+    ModelPublisher(remote=remote).publish(
         manifest_path=manifest,
         model_path=model,
         tracked_manifest_path=tracked_manifest,
     )
 
     assert remote.uploads == [(model, model.name)]
-    assert remote.checked_urls == ["https://example.test/models/beetles-v1.0.0.onnx"]
+    assert remote.checked_keys == ["beetles-v1.0.0.onnx"]
     assert json.loads(tracked_manifest.read_text()) == json.loads(manifest.read_text())
 
 
