@@ -561,7 +561,23 @@ describe("App", () => {
         name: "写真から、生き物を知る。",
       }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByText("見つけた生き物を写真に撮ると、名前の候補を調べられます。"),
+    ).toBeInTheDocument();
     expect(screen.getByText(/写真から生き物の種類の候補を調べられる/)).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "写真は端末内で判定" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/写真の判定処理は端末内で完結し、画像データを外部へ送信しません/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/ページを開いている間なら、電波の届かない場所でも判定できます/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "実装をオープンソースで公開" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("ソースコードはGitHubで公開しています。")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "生物を判定する" })).toHaveAttribute(
       "href",
       "/scan",

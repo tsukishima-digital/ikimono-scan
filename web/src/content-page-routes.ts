@@ -19,7 +19,7 @@ export const contentPageRoutes = [
     paths: ["/"],
     title: "写真で生き物の名前を判定｜生き物スキャン",
     description:
-      "写真から生き物の名前の候補を調べる、非営利のWebアプリ。写真は外部へ送信せず、端末内で判定します。",
+      "写真から生き物の名前の候補を調べられるWebアプリ。画像データを外部へ送信せず、端末内で判定します。",
   },
   {
     id: "supported-species",

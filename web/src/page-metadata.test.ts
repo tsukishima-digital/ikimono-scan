@@ -9,6 +9,9 @@ describe("page metadata", () => {
 
     expect(new Set(pages.map(({ title }) => title)).size).toBe(paths.length);
     expect(pages.every(({ index }) => index)).toBe(true);
+    expect(metadataForPath("/").description).toBe(
+      "写真から生き物の名前の候補を調べられるWebアプリ。画像データを外部へ送信せず、端末内で判定します。",
+    );
   });
 
   it("keeps the scanner out of search results", () => {

@@ -6,7 +6,7 @@ export function HomePage() {
   return (
     <ContentPageLayout
       currentPage="home"
-      description="見つけた生き物を写真に撮ると、名前の候補を端末内で調べられます。"
+      description="見つけた生き物を写真に撮ると、名前の候補を調べられます。"
       eyebrow="IKIMONO SCAN"
       title="写真から、生き物を知る。"
     >
@@ -25,7 +25,7 @@ export function HomePage() {
           </h2>
           <div className="text-[15px] leading-[1.95] text-muted">
             <p className="m-0">
-              生き物スキャンは、写真から生き物の種類の候補を調べられる、非営利のオープンソースWebアプリです。
+              生き物スキャンは、写真から生き物の種類の候補を調べられるWebアプリです。
             </p>
             <p className="mt-5 mb-0">
               現在は、日本で観察された甲虫422種に対応しています。対応範囲は、甲虫に限らず段階的に広げていきます。
@@ -49,10 +49,10 @@ export function HomePage() {
             PRIVATE
           </p>
           <h2 className="mt-4 mb-0 font-mincho text-[28px] font-semibold tracking-[-0.035em]">
-            写真は端末の中で判定
+            写真は端末内で判定
           </h2>
           <p className="mt-4 mb-0 text-sm leading-[1.85] text-muted">
-            選んだ写真を判定のために外部へ送信しません。モデルを読み込み、ブラウザの中で処理します。
+            写真の判定処理は端末内で完結し、画像データを外部へ送信しません。必要なデータの読み込み後は、ページを開いている間なら、電波の届かない場所でも判定できます。
           </p>
         </article>
         <article className="rounded-[22px] bg-card p-7 shadow-[0_12px_36px_rgb(20_38_26/8%)]">
@@ -60,10 +60,10 @@ export function HomePage() {
             OPEN
           </p>
           <h2 className="mt-4 mb-0 font-mincho text-[28px] font-semibold tracking-[-0.035em]">
-            誰でも使える非営利OSS
+            実装をオープンソースで公開
           </h2>
           <p className="mt-4 mb-0 text-sm leading-[1.85] text-muted">
-            対応する生き物を日本全体へ広げるため、開発内容を公開しています。
+            ソースコードはGitHubで公開しています。
           </p>
           <a
             className="mt-5 inline-flex text-sm font-bold text-brand underline-offset-4 hover:underline focus-visible:underline"
