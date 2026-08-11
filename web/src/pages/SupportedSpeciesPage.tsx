@@ -9,6 +9,11 @@ import {
 import { fetchModelManifest } from "../inference/classifier";
 import type { ModelManifest } from "../inference/types";
 
+const japaneseNameCollator = new Intl.Collator("ja", {
+  sensitivity: "base",
+  usage: "sort",
+});
+
 export function SupportedSpeciesPage() {
   const [manifest, setManifest] = useState<ModelManifest>();
   const [loadFailed, setLoadFailed] = useState(false);
@@ -30,12 +35,18 @@ export function SupportedSpeciesPage() {
 
   const visibleClasses = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase("ja");
-    if (!normalizedQuery) return manifest?.classes ?? [];
-    return (manifest?.classes ?? []).filter(({ commonName, scientificName }) =>
-      `${commonName ?? ""} ${scientificName}`
-        .toLocaleLowerCase("ja")
-        .includes(normalizedQuery),
+    const matches = (manifest?.classes ?? []).filter(
+      ({ commonName, scientificName }) =>
+        !normalizedQuery ||
+        `${commonName ?? ""} ${scientificName}`
+          .toLocaleLowerCase("ja")
+          .includes(normalizedQuery),
     );
+    return matches.sort((first, second) => {
+      if (!first.commonName) return second.commonName ? 1 : 0;
+      if (!second.commonName) return -1;
+      return japaneseNameCollator.compare(first.commonName, second.commonName);
+    });
   }, [manifest, query]);
 
   return (
@@ -60,96 +71,65 @@ export function SupportedSpeciesPage() {
           今後は甲虫に限らず、日本で観察される生き物へ広げていきます。
         </p>
 
-          <ul
-            className="mt-10 grid list-none grid-cols-2 gap-4 p-0"
-            aria-label="判定対象の概要"
-          >
-            <li className="flex min-h-[140px] flex-col gap-5 rounded-[22px] bg-card p-6 shadow-[0_12px_36px_rgb(20_38_26/8%)] max-[720px]:min-h-[116px] max-[720px]:p-5">
-              <span className="text-xs text-muted">現在の分類対象</span>
-              <strong className="font-mincho text-[27px]">
-                {manifest ? `${manifest.classes.length.toLocaleString("ja-JP")}種` : "—"}
-              </strong>
-            </li>
-            <li className="flex min-h-[140px] flex-col gap-5 rounded-[22px] bg-card p-6 shadow-[0_12px_36px_rgb(20_38_26/8%)] max-[720px]:min-h-[116px] max-[720px]:p-5">
-              <span className="text-xs text-muted">現在の対象グループ</span>
-              <strong className="font-mincho text-[27px]">甲虫</strong>
-            </li>
-          </ul>
+        <ul
+          className="mt-10 grid list-none grid-cols-2 gap-4 p-0"
+          aria-label="判定対象の概要"
+        >
+          <li className="flex min-h-[140px] flex-col gap-5 rounded-[22px] bg-card p-6 shadow-[0_12px_36px_rgb(20_38_26/8%)] max-[720px]:min-h-[116px] max-[720px]:p-5">
+            <span className="text-xs text-muted">現在の分類対象</span>
+            <strong className="font-mincho text-[27px]">
+              {manifest
+                ? `${manifest.classes.length.toLocaleString("ja-JP")}種`
+                : "—"}
+            </strong>
+          </li>
+          <li className="flex min-h-[140px] flex-col gap-5 rounded-[22px] bg-card p-6 shadow-[0_12px_36px_rgb(20_38_26/8%)] max-[720px]:min-h-[116px] max-[720px]:p-5">
+            <span className="text-xs text-muted">現在の対象グループ</span>
+            <strong className="font-mincho text-[27px]">甲虫</strong>
+          </li>
+        </ul>
 
-          <div
-            className="mt-8 grid grid-cols-3 gap-4 max-[720px]:-mx-[18px] max-[720px]:grid-flow-col max-[720px]:grid-cols-none max-[720px]:auto-cols-[82%] max-[720px]:snap-x max-[720px]:snap-mandatory max-[720px]:overflow-x-auto max-[720px]:px-[18px] max-[720px]:pb-5 max-[720px]:[scrollbar-width:none] max-[720px]:[&::-webkit-scrollbar]:hidden"
-            role="list"
-            aria-label="判定対象の例"
-          >
-            {specimenPhotos.map((specimen) => (
-              <figure
-                className="m-0 overflow-hidden rounded-[22px] bg-card shadow-[0_12px_36px_rgb(20_38_26/8%)] max-[720px]:snap-start"
-                key={specimen.scientificName}
-                role="listitem"
-              >
-                <img
-                  className="aspect-[4/3] w-full bg-[#dfe5d8] object-cover"
-                  src={specimen.photoUrl}
-                  alt={`${specimen.commonName}の観察写真`}
-                  loading="lazy"
-                />
-                <figcaption className="p-5">
-                  <div
-                    className="mb-3 flex h-[25px] items-start"
-                    data-testid="specimen-designation-slot"
-                  >
-                    {specimen.designation && (
-                      <span className="inline-block rounded-full bg-danger/10 px-2.5 py-1 text-[10px] font-extrabold tracking-[0.08em] text-danger">
-                        {specimen.designation}
-                      </span>
-                    )}
-                  </div>
-                  <strong
-                    className="block text-[16px]"
-                    data-testid="specimen-common-name"
-                  >
-                    {specimen.commonName}
-                  </strong>
-                  <em className="mt-1 block text-xs text-muted">
-                    {specimen.scientificName}
-                  </em>
-                </figcaption>
-              </figure>
-            ))}
-          </div>
-
-          <aside
-            aria-label="写真クレジット"
-            className="mt-3 text-[10px] leading-[1.7] text-muted"
-            role="note"
-          >
-            <span>写真クレジット</span>
-            <ul className="m-0 inline list-none p-0">
-              {photosRequiringAttribution.map((specimen) => (
-                <li className="inline" key={specimen.photoId}>
-                  {" / "}
-                  <a
-                    className="underline underline-offset-2"
-                    href={specimen.sourcePhotoUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {specimen.commonName}: {specimen.attribution}
-                  </a>{" "}
-                  (
-                  <a
-                    className="underline underline-offset-2"
-                    href={specimen.licenseUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {specimen.license} 4.0
-                  </a>
-                  )
-                </li>
-              ))}
-            </ul>
-          </aside>
+        <div
+          className="mt-8 grid grid-cols-3 gap-4 max-[720px]:-mx-[18px] max-[720px]:grid-flow-col max-[720px]:grid-cols-none max-[720px]:auto-cols-[82%] max-[720px]:snap-x max-[720px]:snap-mandatory max-[720px]:overflow-x-auto max-[720px]:px-[18px] max-[720px]:pb-5 max-[720px]:[scrollbar-width:none] max-[720px]:[&::-webkit-scrollbar]:hidden"
+          role="list"
+          aria-label="判定対象の例"
+        >
+          {specimenPhotos.map((specimen) => (
+            <figure
+              className="m-0 overflow-hidden rounded-[22px] bg-card shadow-[0_12px_36px_rgb(20_38_26/8%)] max-[720px]:snap-start"
+              key={specimen.scientificName}
+              role="listitem"
+            >
+              <img
+                className="aspect-[4/3] w-full bg-[#dfe5d8] object-cover"
+                src={specimen.photoUrl}
+                alt={`${specimen.commonName}の観察写真`}
+                loading="lazy"
+              />
+              <figcaption className="p-5">
+                <div
+                  className="mb-3 flex h-[25px] items-start"
+                  data-testid="specimen-designation-slot"
+                >
+                  {specimen.designation && (
+                    <span className="inline-block rounded-full bg-danger/10 px-2.5 py-1 text-[10px] font-extrabold tracking-[0.08em] text-danger">
+                      {specimen.designation}
+                    </span>
+                  )}
+                </div>
+                <strong
+                  className="block text-[16px]"
+                  data-testid="specimen-common-name"
+                >
+                  {specimen.commonName}
+                </strong>
+                <em className="mt-1 block text-xs text-muted">
+                  {specimen.scientificName}
+                </em>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
 
         <div className="mt-10 rounded-[18px] bg-[#e8edde] p-6">
           <strong>判定結果について</strong>
@@ -170,7 +150,7 @@ export function SupportedSpeciesPage() {
             どのくらい判定できる？
           </h2>
           <p className="mt-5 max-w-[720px] text-[15px] leading-[1.9] text-muted">
-            公開前に取り分けた写真で、モデルの判定結果を確かめています。実際の写真では、明るさや写り方によって結果が変わります。
+            分類の正解率は以下のようになっています。撮影条件などでパフォーマンスは上下することがあります。
           </p>
           {manifest?.evaluation && (
             <table className="mt-8 w-full max-w-[680px] border-collapse overflow-hidden rounded-[18px] bg-card text-left shadow-[0_12px_36px_rgb(20_38_26/8%)]">
@@ -178,11 +158,16 @@ export function SupportedSpeciesPage() {
                 <tr className="border-b border-line">
                   <th className="p-5 text-sm font-bold">評価に使った写真</th>
                   <td className="p-5 text-right font-bold">
-                    {manifest.evaluation.validationImages.toLocaleString("ja-JP")}枚
+                    {manifest.evaluation.validationImages.toLocaleString(
+                      "ja-JP",
+                    )}
+                    枚
                   </td>
                 </tr>
                 <tr>
-                  <th className="p-5 text-sm font-bold">正しく種類を選べた割合</th>
+                  <th className="p-5 text-sm font-bold">
+                    正しく種類を選べた割合
+                  </th>
                   <td className="p-5 text-right font-bold">
                     {(manifest.evaluation.accuracy * 100).toFixed(1)}%
                   </td>
@@ -221,7 +206,10 @@ export function SupportedSpeciesPage() {
             />
           </label>
           {loadFailed && (
-            <p className="mt-8 rounded-[16px] bg-[#fff1e8] p-5 text-sm text-danger" role="alert">
+            <p
+              className="mt-8 rounded-[16px] bg-[#fff1e8] p-5 text-sm text-danger"
+              role="alert"
+            >
               一覧を読み込めませんでした。時間をおいてもう一度お試しください。
             </p>
           )}
@@ -239,7 +227,10 @@ export function SupportedSpeciesPage() {
                 </thead>
                 <tbody>
                   {visibleClasses.map(({ id, commonName, scientificName }) => (
-                    <tr className="border-t border-line first:border-t-0" key={id}>
+                    <tr
+                      className="border-t border-line first:border-t-0"
+                      key={id}
+                    >
                       <td className="break-words p-4 text-sm font-bold">
                         {commonName || "和名なし"}
                       </td>
@@ -251,11 +242,46 @@ export function SupportedSpeciesPage() {
                 </tbody>
               </table>
               {visibleClasses.length === 0 && (
-                <p className="m-0 p-6 text-sm text-muted">一致する生き物はありません。</p>
+                <p className="m-0 p-6 text-sm text-muted">
+                  一致する生き物はありません。
+                </p>
               )}
             </div>
           )}
         </section>
+
+        <aside
+          aria-label="写真クレジット"
+          className="mt-16 border-t border-line pt-8 text-[10px] leading-[1.7] text-muted max-[720px]:mt-12"
+          role="note"
+        >
+          <span>写真クレジット</span>
+          <ul className="m-0 inline list-none p-0">
+            {photosRequiringAttribution.map((specimen) => (
+              <li className="inline" key={specimen.photoId}>
+                {" / "}
+                <a
+                  className="underline underline-offset-2"
+                  href={specimen.sourcePhotoUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {specimen.commonName}: {specimen.attribution}
+                </a>{" "}
+                (
+                <a
+                  className="underline underline-offset-2"
+                  href={specimen.licenseUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {specimen.license} 4.0
+                </a>
+                )
+              </li>
+            ))}
+          </ul>
+        </aside>
       </section>
     </ContentPageLayout>
   );

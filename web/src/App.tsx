@@ -10,12 +10,17 @@ import { ResultFixturePage } from "./pages/ResultFixturePage";
 import { ScannerPage, type SourceMode } from "./pages/ScannerPage";
 import { SupportedSpeciesPage } from "./pages/SupportedSpeciesPage";
 import { UpdatesPage } from "./pages/UpdatesPage";
+import { saveScrollPosition, useScrollRestoration } from "./scroll-restoration";
 
 function usePathname() {
   const [pathname, setPathname] = useState(window.location.pathname);
 
   useEffect(() => {
-    const updatePathname = () => setPathname(window.location.pathname);
+    const updatePathname = () =>
+      setPathname((currentPathname) => {
+        saveScrollPosition(currentPathname);
+        return window.location.pathname;
+      });
     window.addEventListener("popstate", updatePathname);
     return () => window.removeEventListener("popstate", updatePathname);
   }, []);
@@ -25,6 +30,7 @@ function usePathname() {
 
 export default function App() {
   const pathname = usePathname();
+  useScrollRestoration(pathname);
 
   useEffect(() => applyPageMetadata(pathname), [pathname]);
 

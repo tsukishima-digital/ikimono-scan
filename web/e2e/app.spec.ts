@@ -54,10 +54,10 @@ async function selectPatternImage(
       let bytes = new Uint8Array(await blob.arrayBuffer());
       if (options.exifOrientation === 6) {
         const exif = new Uint8Array([
-          0xff, 0xe1, 0x00, 0x22, 0x45, 0x78, 0x69, 0x66, 0x00, 0x00,
-          0x49, 0x49, 0x2a, 0x00, 0x08, 0x00, 0x00, 0x00, 0x01, 0x00,
-          0x12, 0x01, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x06, 0x00,
-          0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+          0xff, 0xe1, 0x00, 0x22, 0x45, 0x78, 0x69, 0x66, 0x00, 0x00, 0x49,
+          0x49, 0x2a, 0x00, 0x08, 0x00, 0x00, 0x00, 0x01, 0x00, 0x12, 0x01,
+          0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x00,
+          0x00, 0x00, 0x00,
         ]);
         const oriented = new Uint8Array(bytes.length + exif.length);
         oriented.set(bytes.subarray(0, 2));
@@ -162,9 +162,7 @@ test("search discovery files list only public content pages", async ({
   const sitemap = await request.get("/sitemap.xml");
   const sitemapText = await sitemap.text();
   expect(sitemap.ok()).toBe(true);
-  expect(sitemapText).toContain(
-    "https://ikimono-scan.app/supported-species",
-  );
+  expect(sitemapText).toContain("https://ikimono-scan.app/supported-species");
   expect(sitemapText).not.toContain("https://ikimono-scan.app/scan");
   expect(sitemapText).not.toContain("https://ikimono-scan.app/about");
 });
@@ -192,9 +190,8 @@ test("scanner input modes stay inside the viewport on every screen size", async 
         const scrollingElement = document.scrollingElement!;
         return {
           bodyBackground: getComputedStyle(document.body).backgroundColor,
-          documentBackground: getComputedStyle(
-            document.documentElement,
-          ).backgroundColor,
+          documentBackground: getComputedStyle(document.documentElement)
+            .backgroundColor,
           innerHeight: window.innerHeight,
           scrollHeight: scrollingElement.scrollHeight,
         };
@@ -278,7 +275,9 @@ test("menu order and cursor make the current page unambiguous", async ({
   );
 });
 
-test("Supported species keeps image credits out of specimen cards", async ({ page }) => {
+test("Supported species keeps image credits out of specimen cards", async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/supported-species");
 
@@ -289,7 +288,20 @@ test("Supported species keeps image credits out of specimen cards", async ({ pag
     );
   expect(new Set(names).size).toBe(1);
   await expect(page.getByTestId("specimen-license")).toHaveCount(0);
-  await expect(page.getByRole("note", { name: "写真クレジット" })).toBeVisible();
+  const credit = page.getByRole("note", { name: "写真クレジット" });
+  await expect(credit).toBeVisible();
+  expect(
+    await page
+      .getByRole("table", { name: "判定できる生き物の一覧" })
+      .evaluate(
+        (table, creditElement) =>
+          Boolean(
+            table.compareDocumentPosition(creditElement) &
+            Node.DOCUMENT_POSITION_FOLLOWING,
+          ),
+        await credit.elementHandle(),
+      ),
+  ).toBe(true);
 });
 
 test("specimen examples load as decodable images", async ({ page }) => {
@@ -337,15 +349,16 @@ test("How to use guide and actions fit the minimum viewport", async ({
   expect(guideLayout.tipWidths).toEqual([284, 284, 284, 284]);
   expect(guideLayout.pageWidth).toBe(guideLayout.viewportWidth);
 
-  const actions = await page.getByTestId("how-to-action").evaluateAll(
-    (elements) =>
+  const actions = await page
+    .getByTestId("how-to-action")
+    .evaluateAll((elements) =>
       elements.map((element) => ({
         clientHeight: element.clientHeight,
         clientWidth: element.clientWidth,
         scrollWidth: element.scrollWidth,
         whiteSpace: getComputedStyle(element).whiteSpace,
       })),
-  );
+    );
 
   expect(actions).toHaveLength(2);
   for (const action of actions) {
@@ -407,9 +420,7 @@ test("EXIF Orientation is applied before center cropping", async ({ page }) => {
 
   await selectPatternImage(page, "image/jpeg", "landscape", 6);
 
-  await expect(page.getByLabel("前処理結果")).toHaveText(
-    "red,red,blue,blue",
-  );
+  await expect(page.getByLabel("前処理結果")).toHaveText("red,red,blue,blue");
 });
 
 test("Safari can preprocess an iPhone HEIC photo", async ({
@@ -438,7 +449,10 @@ test("visitors start the scanner deliberately from the public introduction", asy
 
   await expect(page).toHaveURL(/\/$/);
   await expect(
-    page.getByRole("heading", { level: 1, name: "見つけた生き物の、名前を調べる" }),
+    page.getByRole("heading", {
+      level: 1,
+      name: /見つけた生き物の、\s*名前を調べる/,
+    }),
   ).toBeVisible();
   await expectNoAutomaticAccessibilityViolations(page);
 
