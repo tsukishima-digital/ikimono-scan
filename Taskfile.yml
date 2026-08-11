@@ -13,6 +13,16 @@ tasks:
       - echo "Result fixtures /__dev/result?case=target|uncertain|no-alternatives|long-name"
       - npm run dev -- --host 127.0.0.1 --port {{.PORT | default "5175"}}
 
+  dev:mobile:
+    desc: Start the Access-protected HTTPS preview for mobile UI checks
+    cmds:
+      - python scripts/mobile_preview.py
+
+  preview:provision:
+    desc: Dispatch the workflow that provisions the private preview endpoint
+    cmds:
+      - gh workflow run preview.yml --ref main --field confirmation="provision dev.ikimono-scan.app"
+
   ui:
     desc: Run the fast UI feedback checks in parallel
     deps: [ui:test, ui:lint, ui:typecheck]
@@ -74,6 +84,8 @@ tasks:
       - terraform -chdir=infra/bootstrap validate
       - terraform -chdir=infra/storage init -backend=false -input=false
       - terraform -chdir=infra/storage validate
+      - terraform -chdir=infra/preview init -backend=false -input=false
+      - terraform -chdir=infra/preview validate
       - terraform -chdir=infra/production init -backend=false -input=false
       - terraform -chdir=infra/production validate
 
