@@ -408,6 +408,70 @@ test("Supported species search stays below the header only while browsing cards"
     .toBeLessThanOrEqual(68);
 });
 
+test("Species photo preview keeps its image and information positions across aspect ratios", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/supported-species");
+
+  async function openPreview(name: string) {
+    const search = page.getByRole("combobox", { name: "生き物を検索" });
+    await search.fill(name);
+    await page.getByRole("button", { name: `${name}を表示` }).click();
+    await page.getByRole("button", { name: `${name}の写真を拡大` }).click();
+
+    const dialog = page.getByRole("dialog", { name });
+    const image = dialog.getByRole("img", { name: `${name}の写真` });
+    await expect(image).toBeVisible();
+    await page.waitForTimeout(300);
+    return dialog.evaluate((element) => {
+      const imageStage = element.querySelector<HTMLElement>(
+        '[data-testid="species-photo-stage"]',
+      )!;
+      const information = element.querySelector<HTMLElement>(
+        '[data-testid="species-photo-information"]',
+      )!;
+      const image = element.querySelector<HTMLImageElement>("img")!;
+      const dialogRect = element.getBoundingClientRect();
+      const stageRect = imageStage.getBoundingClientRect();
+      const informationRect = information.getBoundingClientRect();
+      const imageRect = image.getBoundingClientRect();
+      const imageStyle = getComputedStyle(image);
+      return {
+        dialogTop: dialogRect.top,
+        imageCenterX: imageRect.left + imageRect.width / 2,
+        imageCenterY: imageRect.top + imageRect.height / 2,
+        informationTop: informationRect.top,
+        naturalHeight: image.naturalHeight,
+        naturalWidth: image.naturalWidth,
+        objectFit: imageStyle.objectFit,
+        objectPosition: imageStyle.objectPosition,
+        stageCenterX: stageRect.left + stageRect.width / 2,
+        stageCenterY: stageRect.top + stageRect.height / 2,
+      };
+    });
+  }
+
+  const portrait = await openPreview("クロツヤキマワリ");
+  await page.getByRole("button", { name: "閉じる" }).click();
+  const landscape = await openPreview("ノコギリクワガタ");
+
+  expect(portrait.dialogTop).toBeCloseTo(landscape.dialogTop, 0);
+  expect(portrait.informationTop).toBeCloseTo(landscape.informationTop, 0);
+  expect(portrait.stageCenterX).toBeCloseTo(landscape.stageCenterX, 0);
+  expect(portrait.stageCenterY).toBeCloseTo(landscape.stageCenterY, 0);
+  expect(portrait.imageCenterX).toBeCloseTo(portrait.stageCenterX, 0);
+  expect(portrait.imageCenterY).toBeCloseTo(portrait.stageCenterY, 0);
+  expect(landscape.imageCenterX).toBeCloseTo(landscape.stageCenterX, 0);
+  expect(landscape.imageCenterY).toBeCloseTo(landscape.stageCenterY, 0);
+  expect(portrait.naturalHeight).toBeGreaterThan(portrait.naturalWidth);
+  expect(landscape.naturalWidth).toBeGreaterThan(landscape.naturalHeight);
+  expect(portrait.objectFit).toBe("contain");
+  expect(landscape.objectFit).toBe("contain");
+  expect(portrait.objectPosition).toBe("50% 50%");
+  expect(landscape.objectPosition).toBe("50% 50%");
+});
+
 test("specimen examples load as decodable images", async ({ page }) => {
   await page.goto("/supported-species");
   await expectDecodedImages(

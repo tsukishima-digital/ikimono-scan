@@ -323,7 +323,7 @@ function PhotoDialog({
       }}
     >
       <section
-        className="animate-materialize relative grid max-h-[min(820px,calc(100dvh_-_48px))] w-[min(760px,100%)] cursor-auto grid-rows-[minmax(0,1fr)_auto] overflow-hidden rounded-[26px] bg-card shadow-[0_30px_80px_rgb(0_0_0/35%)] max-[620px]:max-h-[92dvh] max-[620px]:w-full max-[620px]:rounded-t-[26px] max-[620px]:rounded-b-none"
+        className="animate-materialize relative grid h-[min(820px,calc(100dvh_-_48px))] max-h-[min(820px,calc(100dvh_-_48px))] w-[min(760px,100%)] cursor-auto grid-rows-[minmax(0,1fr)_180px] overflow-hidden rounded-[26px] bg-card shadow-[0_30px_80px_rgb(0_0_0/35%)] max-[620px]:h-[92dvh] max-[620px]:max-h-[92dvh] max-[620px]:w-full max-[620px]:grid-rows-[minmax(0,1fr)_210px] max-[620px]:rounded-t-[26px] max-[620px]:rounded-b-none"
         role="dialog"
         aria-modal="true"
         aria-labelledby="species-photo-title"
@@ -338,16 +338,22 @@ function PhotoDialog({
         >
           <span aria-hidden="true">×</span>
         </button>
-        <div className="grid min-h-0 place-items-center bg-[#101813]">
+        <div
+          className="relative min-h-0 overflow-hidden bg-[#101813]"
+          data-testid="species-photo-stage"
+        >
           <img
-            className="max-h-full max-w-full object-contain"
+            className="absolute inset-0 block size-full object-contain object-center"
             src={selected.photo.photoUrl}
             alt={`${name}の写真`}
             width={selected.photo.width}
             height={selected.photo.height}
           />
         </div>
-        <div className="p-6 max-[620px]:p-5">
+        <div
+          className="min-h-0 overflow-y-auto overscroll-contain p-6 max-[620px]:p-5"
+          data-testid="species-photo-information"
+        >
           <h3
             className="m-0 font-mincho text-[clamp(25px,4vw,34px)] font-semibold tracking-[-0.04em]"
             id="species-photo-title"
