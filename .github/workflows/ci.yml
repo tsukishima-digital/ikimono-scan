@@ -169,6 +169,52 @@ jobs:
         if: steps.scope.outputs.run == 'false'
         run: echo "Web checks are not needed for this change."
 
+  web-heic:
+    name: Web HEIC (macOS)
+    runs-on: macos-15
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Detect Web changes
+        id: scope
+        working-directory: .
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          EVENT_NAME: ${{ github.event_name }}
+          HEAD_SHA: ${{ github.sha }}
+        run: |
+          if [[ "${EVENT_NAME}" != "pull_request" ]] || \
+            python3 scripts/changed_scope.py --base "${BASE_SHA}" --head "${HEAD_SHA}" --scope web; then
+            echo "run=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "run=false" >> "${GITHUB_OUTPUT}"
+          fi
+      - name: Set up Node.js
+        if: steps.scope.outputs.run == 'true'
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install dependencies
+        if: steps.scope.outputs.run == 'true'
+        run: npm ci
+      - name: Install WebKit
+        if: steps.scope.outputs.run == 'true'
+        run: npm exec -- playwright install webkit
+      - name: Verify HEIC preprocessing
+        if: steps.scope.outputs.run == 'true'
+        run: npm run e2e:heic
+      - name: No Web changes
+        if: steps.scope.outputs.run == 'false'
+        run: echo "HEIC compatibility checks are not needed for this change."
+
   secrets:
     name: Secrets
     runs-on: ubuntu-latest

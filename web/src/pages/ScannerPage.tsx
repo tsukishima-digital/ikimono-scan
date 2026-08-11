@@ -1,14 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 
+import { captureVideoFrame } from "../camera/captureVideoFrame";
 import { SiteHeader } from "../components/SiteHeader";
 import externalLinks from "../content/external-links.json";
 import { createClassifier } from "../inference/classifier";
+import { validateImageFile } from "../inference/preprocess";
 import type { ClassificationResult, Classifier } from "../inference/types";
 import {
   formatConfidencePercentage,
   visibleAlternativePredictions,
 } from "../results/presentation";
-import { captureVideoFrame } from "../camera/captureVideoFrame";
 
 const TARGET_SCIENTIFIC_NAME = "Aromia bungii";
 
@@ -101,10 +102,16 @@ export function ScannerPage({
   }
 
   async function classifyFile(file: File, requestId: number) {
-    if (!file.type.startsWith("image/")) {
+    try {
+      validateImageFile(file);
+    } catch (caught) {
       if (requestGeneration.current !== requestId) return;
       setPhase("error");
-      setError("画像ファイルを選んでください。");
+      setError(
+        caught instanceof Error
+          ? caught.message
+          : "画像ファイルを選んでください。",
+      );
       return;
     }
 
@@ -267,7 +274,7 @@ export function ScannerPage({
                 className="absolute size-px opacity-0"
                 type="file"
                 aria-label="写真を選ぶ"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
                 onChange={(event) => void handleFile(event.target.files?.[0])}
               />
               <span
@@ -277,7 +284,7 @@ export function ScannerPage({
                 ▧
               </span>
               <strong className="text-xl">写真を選ぶ</strong>
-              <small className="text-white/58">JPEG・PNG・WebP</small>
+              <small className="text-white/58">JPEG・PNG・WebP・HEIC</small>
             </label>
           )}
 
