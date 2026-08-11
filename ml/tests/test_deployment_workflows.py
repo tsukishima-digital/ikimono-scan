@@ -94,6 +94,23 @@ def test_ci_and_deploy_share_the_pinned_gitleaks_installer():
     assert "gitleaks) install_gitleaks" in installer
 
 
+def test_ci_runs_cross_browser_end_to_end_tests_for_web_changes():
+    _, source = _workflow("ci.yml")
+
+    assert "playwright install --with-deps chromium webkit" in source
+    assert "npm run e2e" in source
+
+
+def test_deploy_runs_real_model_end_to_end_tests_after_the_http_smoke():
+    _, source = _workflow("deploy.yml")
+
+    smoke = source.index("task deploy:smoke")
+    browser_install = source.index("playwright install --with-deps chromium")
+    production_e2e = source.index("task deploy:e2e")
+    assert smoke < browser_install < production_e2e
+    assert "VITE_E2E_FIXTURES" not in source
+
+
 def test_task_deploy_dispatches_the_main_workflow_instead_of_applying_locally():
     taskfile = yaml.safe_load(TASKFILE.read_text())
     source = "\n".join(taskfile["tasks"]["deploy"]["cmds"])
@@ -101,6 +118,16 @@ def test_task_deploy_dispatches_the_main_workflow_instead_of_applying_locally():
     assert "gh workflow run deploy.yml" in source
     assert "--ref main" in source
     assert "terraform apply" not in source
+
+
+def test_end_to_end_tasks_separate_local_and_production_targets():
+    taskfile = yaml.safe_load(TASKFILE.read_text())
+    local_source = "\n".join(taskfile["tasks"]["ui:e2e"]["cmds"])
+    production_source = "\n".join(taskfile["tasks"]["deploy:e2e"]["cmds"])
+
+    assert "npm run e2e" in local_source
+    assert "npm run e2e:production" in production_source
+    assert "E2E_PUBLIC_BASE_URL" in production_source
 
 
 def test_unpublish_is_manual_serialized_and_removes_only_publication():
