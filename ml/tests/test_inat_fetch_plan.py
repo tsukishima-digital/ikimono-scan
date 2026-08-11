@@ -1,4 +1,6 @@
-from ikimono_scan_ml.inat import Taxon, build_fetch_plan
+from ikimono_scan_ml import inat
+from ikimono_scan_ml.config import load_yaml
+from ikimono_scan_ml.inat import INaturalistClient, Taxon, build_fetch_plan
 
 
 class FakeINaturalistClient:
@@ -71,3 +73,75 @@ def test_fetch_plan_prioritizes_target_then_hard_then_common() -> None:
         (3, "common_negative", 40),
         (4, "common_negative", 40),
     ]
+
+
+class FakeJapanSpeciesClient:
+    def __init__(self) -> None:
+        self.params = None
+        self.request_sleep_seconds = None
+
+    def species_counts(
+        self,
+        params,
+        *,
+        per_page: int,
+        max_taxa: int | None = None,
+        request_sleep_seconds: float = 0.0,
+    ):
+        self.params = params
+        self.request_sleep_seconds = request_sleep_seconds
+        taxa = [
+            Taxon(1, "Abies firma", "モミ", 80),
+            Taxon(2, "Aromia bungii", "クビアカツヤカミキリ", 20),
+            Taxon(3, "Rare species", None, 19),
+        ]
+        return taxa if max_taxa is None else taxa[:max_taxa]
+
+
+def test_fetch_plan_selects_japan_species_meeting_the_image_minimum() -> None:
+    client = FakeJapanSpeciesClient()
+    config = load_yaml("ml/experiments/japan_species_classifier/configs/dataset.yaml")
+
+    plan = build_fetch_plan(config, client)
+
+    assert [(item.taxon.id, item.group, item.max_images) for item in plan] == [
+        (1, "observed_species", 40),
+        (2, "observed_species", 40),
+    ]
+    assert client.params == {
+        "place_id": 6737,
+        "quality_grade": "research",
+        "photos": "true",
+        "rank": "species",
+        "order": "desc",
+        "order_by": "observations_count",
+    }
+    assert client.request_sleep_seconds == 1.0
+
+
+def test_species_count_pages_respect_the_configured_request_delay(monkeypatch) -> None:
+    client = INaturalistClient("https://example.test/v1")
+    requested_pages = []
+    slept = []
+
+    def fake_get(path, params):
+        requested_pages.append(params["page"])
+        page_taxa = {
+            1: [(1, "Species one"), (2, "Species two")],
+            2: [(3, "Species three")],
+        }
+        return {
+            "results": [
+                {"count": 20, "taxon": {"id": taxon_id, "name": name}}
+                for taxon_id, name in page_taxa[params["page"]]
+            ]
+        }
+
+    monkeypatch.setattr(client, "get", fake_get)
+    monkeypatch.setattr(inat.time, "sleep", slept.append)
+
+    taxa = client.species_counts({}, per_page=2, request_sleep_seconds=0.75)
+
+    assert [taxon.id for taxon in taxa] == [1, 2, 3]
+    assert requested_pages == [1, 2]
+    assert slept == [0.75]
