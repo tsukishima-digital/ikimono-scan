@@ -17,7 +17,7 @@ dependencies = [
   "requests>=2.32",
   "scikit-learn>=1.5,<1.10",
   "torch>=2.5,<2.14",
-  "torchvision>=0.20,<0.21",
+  "torchvision>=0.20,<0.29",
   "tqdm>=4.66",
 ]
 
