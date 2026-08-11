@@ -8,6 +8,7 @@ import {
 } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { contentPagePaths, contentPageRoutes } from "./content-page-routes";
 import { createClassifier } from "./inference/classifier";
 import { ONBOARDING_STORAGE_KEY } from "./onboarding";
 import App from "./App";
@@ -203,6 +204,29 @@ describe("App", () => {
     expect(
       screen.getByRole("heading", { name: "Changelog" }),
     ).toBeInTheDocument();
+  });
+
+  it.each([
+    ["/", "Scan"] as const,
+    ...contentPageRoutes.flatMap(({ menuLabel, paths }) =>
+      paths.map((path) => [path, menuLabel] as const),
+    ),
+  ])("marks the current page in the site menu at %s", (pathname, label) => {
+    installCamera(vi.fn().mockResolvedValue(cameraStream()));
+    window.history.replaceState({}, "", pathname);
+
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "メニューを開く" }));
+
+    expect(screen.getByRole("link", { name: label })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    for (const link of screen.getAllByRole("link")) {
+      if (link.getAttribute("aria-label") === "生き物スキャン ホーム") continue;
+      if (link.textContent === label) continue;
+      expect(link).not.toHaveAttribute("aria-current");
+    }
   });
 
   it("links the photo tab to its How to use section", () => {
@@ -446,11 +470,12 @@ describe("App", () => {
     expect(
       screen.getByText("422種", { selector: "strong" }),
     ).toBeInTheDocument();
-    expect(
-      within(screen.getByRole("list", { name: "判定対象の概要" })).getAllByRole(
-        "listitem",
-      ),
-    ).toHaveLength(2);
+    const summaryItems = within(
+      screen.getByRole("list", { name: "判定対象の概要" }),
+    ).getAllByRole("listitem");
+    expect(summaryItems).toHaveLength(2);
+    expect(summaryItems[0]).toHaveTextContent(/^現在の分類対象422種$/);
+    expect(summaryItems[1]).toHaveTextContent(/^現在の対象グループ甲虫$/);
     expect(
       within(screen.getByRole("list", { name: "判定対象の例" })).getAllByRole(
         "listitem",
@@ -460,6 +485,11 @@ describe("App", () => {
     expect(
       screen.getAllByRole("link", { name: "iNaturalistで見る" }),
     ).toHaveLength(3);
+    expect(screen.getByText("特定外来生物")).toBeInTheDocument();
+    expect(screen.getAllByTestId("specimen-designation-slot")).toHaveLength(3);
+    expect(
+      screen.queryByRole("link", { name: "使い方を見る" }),
+    ).not.toBeInTheDocument();
     expect(
       screen.getByRole("banner", { name: "サイトヘッダー" }),
     ).toHaveClass("fixed");
@@ -513,6 +543,20 @@ describe("App", () => {
       screen.getByRole("banner", { name: "サイトヘッダー" }),
     ).toHaveClass("fixed");
   });
+
+  it.each(contentPagePaths)(
+    "renders %s through the shared content-page layout",
+    (pathname) => {
+      installCamera(vi.fn());
+      window.history.replaceState({}, "", pathname);
+
+      render(<App />);
+
+      expect(screen.getByTestId("content-page-layout")).toBeInTheDocument();
+      expect(screen.getAllByTestId("content-page-frame")).toHaveLength(3);
+      expect(screen.getByTestId("page-hero")).toBeInTheDocument();
+    },
+  );
 
   it("renders a development result fixture without camera or model access", () => {
     const getUserMedia = vi.fn();

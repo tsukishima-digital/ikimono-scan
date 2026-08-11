@@ -2,6 +2,8 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 import { fileURLToPath } from "node:url";
 
+import { contentPagePaths } from "../src/content-page-routes";
+
 const onboardingKey = "ikimono-scan:onboarding:v1";
 const specimenPath = fileURLToPath(
   new URL("../public/specimens/aromia-bungii-712990656.jpg", import.meta.url),
@@ -35,8 +37,81 @@ async function expectNoAutomaticAccessibilityViolations(page: Page) {
   expect(result.violations).toEqual([]);
 }
 
+async function contentFrameRects(page: Page) {
+  return page.getByTestId("content-page-frame").evaluateAll((elements) =>
+    elements.map((element) => {
+      const rect = element.getBoundingClientRect();
+      return { left: rect.left, right: rect.right, width: rect.width };
+    }),
+  );
+}
+
 test.beforeEach(async ({ page }) => {
   await denyCamera(page);
+});
+
+for (const pathname of contentPagePaths) {
+  test(`${pathname} obeys the shared content-page layout`, async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto(pathname);
+
+    await expect(page.getByTestId("content-page-layout")).toBeVisible();
+    const desktopRects = await contentFrameRects(page);
+    expect(desktopRects).toHaveLength(3);
+    expect(new Set(desktopRects.map(({ left }) => left)).size).toBe(1);
+    expect(new Set(desktopRects.map(({ right }) => right)).size).toBe(1);
+    expect(desktopRects[0]?.width).toBe(1040);
+
+    await page.setViewportSize({ width: 320, height: 720 });
+    const mobileRects = await contentFrameRects(page);
+    expect(new Set(mobileRects.map(({ left }) => left)).size).toBe(1);
+    expect(new Set(mobileRects.map(({ right }) => right)).size).toBe(1);
+    expect(mobileRects[0]?.width).toBe(284);
+    expect(
+      await page.locator("body").evaluate((body) => body.scrollWidth),
+    ).toBe(320);
+  });
+}
+
+test("About keeps specimen metadata aligned across cards", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/about");
+
+  const names = await page
+    .getByTestId("specimen-common-name")
+    .evaluateAll((elements) =>
+      elements.map((element) => element.getBoundingClientRect().top),
+    );
+  const licenses = await page
+    .getByTestId("specimen-license")
+    .evaluateAll((elements) =>
+      elements.map((element) => element.getBoundingClientRect().top),
+    );
+
+  expect(new Set(names).size).toBe(1);
+  expect(new Set(licenses).size).toBe(1);
+});
+
+test("How to use actions contain their labels at the minimum viewport", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 320, height: 720 });
+  await page.goto("/how-to");
+
+  const actions = await page.getByTestId("how-to-action").evaluateAll(
+    (elements) =>
+      elements.map((element) => ({
+        clientWidth: element.clientWidth,
+        scrollWidth: element.scrollWidth,
+        whiteSpace: getComputedStyle(element).whiteSpace,
+      })),
+  );
+
+  expect(actions).toHaveLength(2);
+  for (const action of actions) {
+    expect(action.scrollWidth).toBeLessThanOrEqual(action.clientWidth);
+    expect(action.whiteSpace).toBe("nowrap");
+  }
 });
 
 test("first-time visitors start the scanner deliberately and keep that choice", async ({

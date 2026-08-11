@@ -10,7 +10,7 @@ export interface SpecimenPhoto {
   attribution: string;
   license: string;
   licenseUrl: string;
-  priority?: boolean;
+  designation?: "特定外来生物";
 }
 
 export const specimenPhotos: SpecimenPhoto[] = [
@@ -24,7 +24,7 @@ export const specimenPhotos: SpecimenPhoto[] = [
     attribution: "renshuchu",
     license: "CC0",
     licenseUrl: externalLinks.licenseCc0,
-    priority: true,
+    designation: "特定外来生物",
   },
   {
     commonName: "ナミテントウ",
