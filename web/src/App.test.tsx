@@ -10,6 +10,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { contentPagePaths, contentPageRoutes } from "./content-page-routes";
 import { createClassifier } from "./inference/classifier";
+import { buildPhotoCredits } from "./pages/SupportedSpeciesPage";
 import { scrollPositionStorageKey } from "./scroll-restoration";
 import App from "./App";
 
@@ -707,7 +708,9 @@ describe("App", () => {
       "href",
       "https://creativecommons.org/licenses/by/4.0/",
     );
-    expect(within(dialog).getByRole("button", { name: "閉じる" })).toHaveFocus();
+    expect(
+      within(dialog).getByRole("button", { name: "閉じる" }),
+    ).toHaveFocus();
     fireEvent.keyDown(document, { key: "Escape" });
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     await waitFor(() => expect(photoButton).toHaveFocus());
@@ -717,6 +720,32 @@ describe("App", () => {
       speciesList.compareDocumentPosition(credit) &
         Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
+    expect(
+      within(credit)
+        .getAllByRole("listitem")
+        .map((item) => item.textContent?.split(":")[0]),
+    ).toEqual(["ナミテントウ", "ヨナグニゴマフカミキリ", "ルリボシカミキリ"]);
+  });
+
+  it("places photo credits without Japanese names after the kana-sorted credits", () => {
+    const credits = buildPhotoCredits([
+      {
+        id: "1008176",
+        commonName: "ヨナグニゴマフカミキリ",
+        scientificName: "Agelasta yonaguni",
+      },
+      {
+        id: "338213",
+        scientificName: "Plateumaris sericea",
+      },
+    ]);
+
+    expect(credits.map(({ commonName }) => commonName)).toEqual([
+      "ナミテントウ",
+      "ヨナグニゴマフカミキリ",
+      "ルリボシカミキリ",
+      "Plateumaris sericea",
+    ]);
   });
 
   it("adds gallery cards without exposing the internal page size and searches every species", async () => {
@@ -724,7 +753,7 @@ describe("App", () => {
     window.history.replaceState({}, "", "/supported-species");
     const classes = Array.from({ length: 26 }, (_, index) => ({
       id: String(2_000_000 + index),
-      commonName: `生き物${String(index + 1).padStart(2, "0")}`,
+      commonName: `イキモノ${String(index + 1).padStart(2, "0")}`,
       scientificName: `Species ${index + 1}`,
     }));
     vi.stubGlobal(
@@ -769,7 +798,13 @@ describe("App", () => {
 
     const search = screen.getByRole("combobox", { name: "生き物を検索" });
     fireEvent.change(search, {
-      target: { value: "生き物26" },
+      target: { value: "いきもの26" },
+    });
+    expect(
+      screen.getByRole("button", { name: "イキモノ26を表示" }),
+    ).toBeInTheDocument();
+    fireEvent.change(search, {
+      target: { value: "イキモノ26" },
     });
     fireEvent.keyDown(search, { key: "Enter" });
 

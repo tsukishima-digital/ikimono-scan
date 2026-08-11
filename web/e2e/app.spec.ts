@@ -374,6 +374,40 @@ test("Supported species search reveals and moves to an unloaded card", async ({
   ).toBeGreaterThan(24);
 });
 
+test("Supported species search stays below the header only while browsing cards", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/supported-species");
+
+  const search = page.getByRole("combobox", { name: "生き物を検索" });
+  const cards = page
+    .getByRole("list", { name: "判定できる生き物の一覧" })
+    .getByRole("listitem");
+  await expect(search).toBeVisible();
+
+  await cards.nth(16).scrollIntoViewIfNeeded();
+  await expect
+    .poll(() =>
+      search.evaluate((element) => element.getBoundingClientRect().top),
+    )
+    .toBeGreaterThanOrEqual(68);
+  await expect
+    .poll(() =>
+      search.evaluate((element) => element.getBoundingClientRect().top),
+    )
+    .toBeLessThan(90);
+
+  const credits = page.getByRole("note", { name: "写真クレジット" });
+  await credits.getByText("写真クレジット", { exact: true }).click();
+  await credits.getByRole("listitem").last().scrollIntoViewIfNeeded();
+  await expect
+    .poll(() =>
+      search.evaluate((element) => element.getBoundingClientRect().bottom),
+    )
+    .toBeLessThanOrEqual(68);
+});
+
 test("specimen examples load as decodable images", async ({ page }) => {
   await page.goto("/supported-species");
   await expectDecodedImages(

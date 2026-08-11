@@ -15,6 +15,17 @@ interface RevealRequest {
   sequence: number;
 }
 
+function normalizeSearchText(value: string) {
+  return value
+    .normalize("NFKC")
+    .trim()
+    .toLocaleLowerCase("ja")
+    .replace(/[\u3041-\u3096]/g, (character) =>
+      String.fromCharCode(character.charCodeAt(0) + 0x60),
+    )
+    .replace(/\s+/g, " ");
+}
+
 export function SpeciesGallery({ species }: { species: ModelClass[] }) {
   const [visibleCount, setVisibleCount] = useState(GALLERY_BATCH_SIZE);
   const [query, setQuery] = useState("");
@@ -24,15 +35,37 @@ export function SpeciesGallery({ species }: { species: ModelClass[] }) {
   const lastTrigger = useRef<HTMLElement | null>(null);
   const highlightedId = revealRequest?.id;
 
-  const normalizedQuery = query.trim().toLocaleLowerCase("ja");
+  const normalizedQuery = normalizeSearchText(query);
   const suggestions = useMemo(() => {
     if (!normalizedQuery) return [];
     return species
-      .filter(({ commonName, scientificName }) =>
-        `${commonName ?? ""} ${scientificName}`
-          .toLocaleLowerCase("ja")
-          .includes(normalizedQuery),
+      .map((target, index) => {
+        const commonName = normalizeSearchText(target.commonName ?? "");
+        const scientificName = normalizeSearchText(target.scientificName);
+        const rank =
+          commonName === normalizedQuery
+            ? 0
+            : commonName.startsWith(normalizedQuery)
+              ? 1
+              : scientificName.startsWith(normalizedQuery)
+                ? 2
+                : `${commonName} ${scientificName}`.includes(normalizedQuery)
+                  ? 3
+                  : undefined;
+        return { index, rank, target };
+      })
+      .filter(
+        (
+          result,
+        ): result is typeof result & {
+          rank: number;
+        } => result.rank !== undefined,
       )
+      .sort(
+        (first, second) =>
+          first.rank - second.rank || first.index - second.index,
+      )
+      .map(({ target }) => target)
       .slice(0, 8);
   }, [normalizedQuery, species]);
 
@@ -77,139 +110,142 @@ export function SpeciesGallery({ species }: { species: ModelClass[] }) {
 
   return (
     <>
-      <div
-        className="relative mt-8 max-w-[680px]"
-        onBlur={(event) => {
-          if (!event.currentTarget.contains(event.relatedTarget)) {
-            setShowSuggestions(false);
-          }
-        }}
-      >
-        <label className="block text-sm font-bold">
+      <div className="relative" data-testid="species-gallery">
+        <p className="mt-8 mb-0 text-sm font-bold" id="species-search-label">
           生き物を検索
-          <input
-            className="mt-3 h-14 w-full rounded-[16px] border border-line bg-card px-5 text-base outline-none transition-shadow focus:border-brand focus:ring-3 focus:ring-lime"
-            type="search"
-            value={query}
-            onChange={(event) => {
-              setQuery(event.target.value);
-              setShowSuggestions(true);
-            }}
-            onFocus={() => setShowSuggestions(true)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter" && suggestions[0]) {
-                event.preventDefault();
-                revealSpecies(suggestions[0]);
+        </p>
+        <div className="sticky top-[78px] z-20 -mx-2 mt-1 max-w-[696px] bg-paper/88 px-2 py-2 backdrop-blur-[18px] backdrop-saturate-150 after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-3 after:bg-gradient-to-b after:from-paper/40 after:to-transparent after:content-[''] max-[720px]:top-[68px] [@media(prefers-contrast:more)]:bg-paper [@media(prefers-reduced-transparency:reduce)]:bg-paper [@media(prefers-reduced-transparency:reduce)]:backdrop-blur-none">
+          <div
+            className="relative max-w-[680px]"
+            onBlur={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget)) {
+                setShowSuggestions(false);
               }
             }}
-            placeholder="和名または学名"
-            autoComplete="off"
-            role="combobox"
-            aria-autocomplete="list"
-            aria-controls="species-search-suggestions"
-            aria-expanded={showSuggestions && Boolean(normalizedQuery)}
-          />
-        </label>
-        {showSuggestions && normalizedQuery && (
-          <div className="absolute z-10 mt-2 w-full overflow-hidden rounded-[16px] border border-line bg-card shadow-[0_18px_42px_rgb(20_38_26/16%)]">
-            {suggestions.length > 0 ? (
-              <ul
-                id="species-search-suggestions"
-                className="m-0 max-h-[320px] list-none overflow-y-auto p-2"
-                aria-label="検索候補"
-              >
-                {suggestions.map((target) => (
-                  <li key={target.id}>
-                    <button
-                      className="flex min-h-12 w-full cursor-pointer items-center justify-between gap-4 rounded-[11px] border-0 bg-transparent px-3 py-2 text-left text-sm text-ink transition-colors hover:bg-[#e8edde] active:bg-[#dce5d2] focus-visible:outline-3 focus-visible:outline-lime"
-                      type="button"
-                      onPointerDown={(event) => {
-                        event.preventDefault();
-                      }}
-                      onClick={() => revealSpecies(target)}
-                      aria-label={`${target.commonName || target.scientificName}を表示`}
-                    >
-                      <strong>{target.commonName || "和名なし"}</strong>
-                      <i className="text-xs text-muted">
-                        {target.scientificName}
-                      </i>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="m-0 px-4 py-3 text-sm text-muted">
-                一致する生き物はありません。
-              </p>
+          >
+            <input
+              className="h-14 w-full rounded-[16px] border border-line bg-card px-5 text-base shadow-[0_8px_22px_rgb(20_38_26/7%)] outline-none transition-shadow focus:border-brand focus:ring-3 focus:ring-lime"
+              type="search"
+              value={query}
+              onChange={(event) => {
+                setQuery(event.target.value);
+                setShowSuggestions(true);
+              }}
+              onFocus={() => setShowSuggestions(true)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" && suggestions[0]) {
+                  event.preventDefault();
+                  revealSpecies(suggestions[0]);
+                }
+              }}
+              placeholder="和名または学名"
+              autoComplete="off"
+              role="combobox"
+              aria-autocomplete="list"
+              aria-controls="species-search-suggestions"
+              aria-expanded={showSuggestions && Boolean(normalizedQuery)}
+              aria-labelledby="species-search-label"
+            />
+            {showSuggestions && normalizedQuery && (
+              <div className="absolute z-10 mt-2 w-full overflow-hidden rounded-[16px] border border-line bg-card shadow-[0_18px_42px_rgb(20_38_26/16%)]">
+                {suggestions.length > 0 ? (
+                  <ul
+                    id="species-search-suggestions"
+                    className="m-0 max-h-[320px] list-none overflow-y-auto p-2"
+                    aria-label="検索候補"
+                  >
+                    {suggestions.map((target) => (
+                      <li key={target.id}>
+                        <button
+                          className="flex min-h-12 w-full cursor-pointer items-center justify-between gap-4 rounded-[11px] border-0 bg-transparent px-3 py-2 text-left text-sm text-ink transition-colors hover:bg-[#e8edde] active:bg-[#dce5d2] focus-visible:outline-3 focus-visible:outline-lime"
+                          type="button"
+                          onPointerDown={(event) => {
+                            event.preventDefault();
+                          }}
+                          onClick={() => revealSpecies(target)}
+                          aria-label={`${target.commonName || target.scientificName}を表示`}
+                        >
+                          <strong>{target.commonName || "和名なし"}</strong>
+                          <i className="text-xs text-muted">
+                            {target.scientificName}
+                          </i>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="m-0 px-4 py-3 text-sm text-muted">
+                    一致する生き物はありません。
+                  </p>
+                )}
+              </div>
             )}
+          </div>
+        </div>
+
+        <ul
+          className="mt-6 grid list-none grid-cols-4 gap-4 p-0 max-[900px]:grid-cols-3 max-[620px]:grid-cols-2 max-[620px]:gap-3"
+          aria-label="判定できる生き物の一覧"
+        >
+          {species.slice(0, visibleCount).map((target) => {
+            const photo = speciesPhotos[target.id];
+            const name = target.commonName || "和名なし";
+            return (
+              <li
+                className={`min-w-0 scroll-mt-28 rounded-[20px] outline-offset-4 transition-[outline-color,box-shadow] duration-200 ${
+                  highlightedId === target.id
+                    ? "outline-3 outline-lime shadow-[0_14px_36px_rgb(20_76_43/18%)]"
+                    : "outline-3 outline-transparent"
+                }`}
+                id={`species-${target.id}`}
+                key={target.id}
+                aria-current={highlightedId === target.id ? "true" : undefined}
+              >
+                {photo ? (
+                  <button
+                    className="group block size-full cursor-zoom-in overflow-hidden rounded-[18px] border-0 bg-card p-0 text-left text-ink shadow-[0_10px_30px_rgb(20_38_26/9%)] transition-[transform,box-shadow] duration-100 ease-out hover:-translate-y-0.5 hover:shadow-[0_15px_34px_rgb(20_38_26/13%)] active:scale-[0.985] focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-lime"
+                    type="button"
+                    aria-label={`${name}の写真を拡大`}
+                    onClick={(event) => openPhoto(event, target, photo)}
+                  >
+                    <img
+                      className="aspect-[4/3] w-full bg-[#dfe5d8] object-cover transition-transform duration-200 ease-out group-hover:scale-[1.025]"
+                      src={photo.photoUrl}
+                      alt={`${name}の写真`}
+                      width={photo.width}
+                      height={photo.height}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <SpeciesCardCaption species={target} />
+                  </button>
+                ) : (
+                  <div className="overflow-hidden rounded-[18px] bg-card shadow-[0_10px_30px_rgb(20_38_26/9%)]">
+                    <div className="grid aspect-[4/3] place-items-center bg-[radial-gradient(circle_at_35%_30%,#d8ef70_0,#dce7c9_32%,#b9c9ae_100%)] text-[11px] font-bold text-brand/65">
+                      写真なし
+                    </div>
+                    <SpeciesCardCaption species={target} />
+                  </div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+
+        {visibleCount < species.length && (
+          <div className="mt-10 flex justify-center">
+            <button
+              className="how-to-action"
+              type="button"
+              onClick={() =>
+                setVisibleCount((count) => count + GALLERY_BATCH_SIZE)
+              }
+            >
+              さらに表示
+            </button>
           </div>
         )}
       </div>
-
-      <ul
-        className="mt-8 grid list-none grid-cols-4 gap-4 p-0 max-[900px]:grid-cols-3 max-[620px]:grid-cols-2 max-[620px]:gap-3"
-        aria-label="判定できる生き物の一覧"
-      >
-        {species.slice(0, visibleCount).map((target) => {
-          const photo = speciesPhotos[target.id];
-          const name = target.commonName || "和名なし";
-          return (
-            <li
-              className={`min-w-0 scroll-mt-28 rounded-[20px] outline-offset-4 transition-[outline-color,box-shadow] duration-200 ${
-                highlightedId === target.id
-                  ? "outline-3 outline-lime shadow-[0_14px_36px_rgb(20_76_43/18%)]"
-                  : "outline-3 outline-transparent"
-              }`}
-              id={`species-${target.id}`}
-              key={target.id}
-              aria-current={highlightedId === target.id ? "true" : undefined}
-            >
-              {photo ? (
-                <button
-                  className="group block size-full cursor-zoom-in overflow-hidden rounded-[18px] border-0 bg-card p-0 text-left text-ink shadow-[0_10px_30px_rgb(20_38_26/9%)] transition-[transform,box-shadow] duration-100 ease-out hover:-translate-y-0.5 hover:shadow-[0_15px_34px_rgb(20_38_26/13%)] active:scale-[0.985] focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-lime"
-                  type="button"
-                  aria-label={`${name}の写真を拡大`}
-                  onClick={(event) => openPhoto(event, target, photo)}
-                >
-                  <img
-                    className="aspect-[4/3] w-full bg-[#dfe5d8] object-cover transition-transform duration-200 ease-out group-hover:scale-[1.025]"
-                    src={photo.photoUrl}
-                    alt={`${name}の写真`}
-                    width={photo.width}
-                    height={photo.height}
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <SpeciesCardCaption species={target} />
-                </button>
-              ) : (
-                <div className="overflow-hidden rounded-[18px] bg-card shadow-[0_10px_30px_rgb(20_38_26/9%)]">
-                  <div
-                    className="grid aspect-[4/3] place-items-center bg-[radial-gradient(circle_at_35%_30%,#d8ef70_0,#dce7c9_32%,#b9c9ae_100%)] text-[11px] font-bold text-brand/65"
-                  >
-                    写真なし
-                  </div>
-                  <SpeciesCardCaption species={target} />
-                </div>
-              )}
-            </li>
-          );
-        })}
-      </ul>
-
-      {visibleCount < species.length && (
-        <div className="mt-10 flex justify-center">
-          <button
-            className="how-to-action"
-            type="button"
-            onClick={() =>
-              setVisibleCount((count) => count + GALLERY_BATCH_SIZE)
-            }
-          >
-            さらに表示
-          </button>
-        </div>
-      )}
 
       {selectedSpecies && (
         <PhotoDialog selected={selectedSpecies} onClose={closePhoto} />
