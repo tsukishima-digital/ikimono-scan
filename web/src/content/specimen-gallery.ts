@@ -13,19 +13,21 @@ export interface SpecimenPhoto {
   designation?: "特定外来生物";
 }
 
+export const featuredSpecimenPhoto: SpecimenPhoto = {
+  commonName: "クビアカツヤカミキリ",
+  scientificName: "Aromia bungii",
+  photoUrl: "/specimens/aromia-bungii-712990656.jpg",
+  photoId: 712990656,
+  sourcePhotoUrl: externalLinks.specimenAromiaPhoto,
+  observationId: 389254258,
+  attribution: "renshuchu",
+  license: "CC0",
+  licenseUrl: externalLinks.licenseCc0,
+  designation: "特定外来生物",
+};
+
 export const specimenPhotos: SpecimenPhoto[] = [
-  {
-    commonName: "クビアカツヤカミキリ",
-    scientificName: "Aromia bungii",
-    photoUrl: "/specimens/aromia-bungii-712990656.jpg",
-    photoId: 712990656,
-    sourcePhotoUrl: externalLinks.specimenAromiaPhoto,
-    observationId: 389254258,
-    attribution: "renshuchu",
-    license: "CC0",
-    licenseUrl: externalLinks.licenseCc0,
-    designation: "特定外来生物",
-  },
+  featuredSpecimenPhoto,
   {
     commonName: "ナミテントウ",
     scientificName: "Harmonia axyridis",

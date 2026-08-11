@@ -223,7 +223,7 @@ describe("App", () => {
     expect(menuButton).toHaveAttribute("aria-expanded", "true");
     expect(screen.getByRole("link", { name: "How to use" })).toHaveAttribute(
       "href",
-      "/how-to#camera",
+      "/how-to#photo-guide",
     );
     expect(screen.getByRole("link", { name: "About" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("link", { name: "Changelog" }));
@@ -257,7 +257,7 @@ describe("App", () => {
     }
   });
 
-  it("links the photo tab to its How to use section", () => {
+  it("links both input modes to the shared photo guide", () => {
     installCamera(vi.fn().mockResolvedValue(cameraStream()));
     window.history.replaceState({}, "", "/?mode=photo");
 
@@ -266,7 +266,7 @@ describe("App", () => {
 
     expect(screen.getByRole("link", { name: "How to use" })).toHaveAttribute(
       "href",
-      "/how-to#photo",
+      "/how-to#photo-guide",
     );
   });
 
@@ -524,10 +524,10 @@ describe("App", () => {
     expect(getUserMedia).not.toHaveBeenCalled();
   });
 
-  it("provides camera and photo instructions without an intermediate chooser", () => {
+  it("uses an iNaturalist example to explain one shared photo guide", () => {
     const getUserMedia = vi.fn();
     installCamera(getUserMedia);
-    window.history.replaceState({}, "", "/how-to#photo");
+    window.history.replaceState({}, "", "/how-to#photo-guide");
 
     render(<App />);
 
@@ -535,14 +535,34 @@ describe("App", () => {
       screen.getByRole("heading", { name: "How to use" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "カメラで撮る" }),
+      screen.getByRole("heading", { name: "判定しやすい写真を用意する" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "写真を選ぶ" }),
+      screen.getByText(/iNaturalistに投稿された研究用グレードの観察写真/),
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole("navigation", { name: "使い方を選ぶ" }),
-    ).not.toBeInTheDocument();
+      screen.getByRole("img", {
+        name: "判定しやすい写真の見本: クビアカツヤカミキリ",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      within(
+        screen.getByRole("list", { name: "判定しやすい写真のポイント" }),
+      ).getAllByRole("listitem"),
+    ).toHaveLength(4);
+    expect(screen.getByText("特定外来生物")).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "iNaturalistで写真を見る" }),
+    ).toHaveAttribute(
+      "href",
+      "https://www.inaturalist.org/observations/389254258",
+    );
+    expect(
+      screen.getByRole("button", { name: "カメラを開く" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "写真から始める" }),
+    ).toBeInTheDocument();
     expect(getUserMedia).not.toHaveBeenCalled();
   });
 

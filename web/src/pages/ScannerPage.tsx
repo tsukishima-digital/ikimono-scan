@@ -200,7 +200,7 @@ export function ScannerPage({
     <main className="min-h-dvh bg-[#09100c] text-white">
       <SiteHeader
         overlay
-        howToHref={`/how-to#${sourceMode === "camera" ? "camera" : "photo"}`}
+        howToHref="/how-to#photo-guide"
       />
       <section
         className="relative min-h-dvh w-full overflow-hidden bg-[#09100c]"

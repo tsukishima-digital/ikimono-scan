@@ -92,11 +92,30 @@ test("About keeps specimen metadata aligned across cards", async ({ page }) => {
   expect(new Set(licenses).size).toBe(1);
 });
 
-test("How to use actions contain their labels at the minimum viewport", async ({
+test("How to use guide and actions fit the minimum viewport", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 320, height: 720 });
   await page.goto("/how-to");
+
+  const guideLayout = await page.evaluate(() => ({
+    imageHeight: document.querySelector<HTMLElement>("#photo-guide img")
+      ?.clientHeight,
+    imageWidth: document.querySelector<HTMLElement>("#photo-guide img")
+      ?.clientWidth,
+    pageWidth: document.documentElement.scrollWidth,
+    tipWidths: Array.from(
+      document.querySelectorAll<HTMLElement>(
+        '[aria-label="判定しやすい写真のポイント"] li',
+      ),
+    ).map((element) => element.clientWidth),
+    viewportWidth: window.innerWidth,
+  }));
+
+  expect(guideLayout.imageWidth).toBe(284);
+  expect(guideLayout.imageHeight).toBe(213);
+  expect(guideLayout.tipWidths).toEqual([284, 284, 284, 284]);
+  expect(guideLayout.pageWidth).toBe(guideLayout.viewportWidth);
 
   const actions = await page.getByTestId("how-to-action").evaluateAll(
     (elements) =>
