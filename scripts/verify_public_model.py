@@ -13,6 +13,9 @@ from pathlib import Path
 from urllib.parse import urljoin
 
 DEFAULT_PUBLIC_BASE_URL = "https://ikimono-scan.app/"
+# Implementation: Cloudflare rejects urllib's default identity on the public route.
+# Remove only after the deployment check proves that an unmodified urllib request is accepted.
+PUBLIC_MODEL_USER_AGENT = "Mozilla/5.0 (compatible; IkimonoScanReleaseCheck/1.0)"
 
 
 def verify_public_model(
@@ -35,7 +38,11 @@ def _download_with_retries(url: str) -> bytes:
     last_error: Exception | None = None
     for _ in range(6):
         try:
-            with urllib.request.urlopen(url, timeout=60) as response:
+            request = urllib.request.Request(
+                url,
+                headers={"User-Agent": PUBLIC_MODEL_USER_AGENT},
+            )
+            with urllib.request.urlopen(request, timeout=60) as response:
                 return response.read()
         except (urllib.error.URLError, TimeoutError) as error:
             last_error = error
