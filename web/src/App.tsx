@@ -49,7 +49,9 @@ export default function App() {
   if (pathname === "/changelog" || pathname === "/updates") {
     return <UpdatesPage />;
   }
-  if (import.meta.env.DEV && pathname === "/__dev/result") {
+  const resultFixturesEnabled =
+    import.meta.env.DEV || import.meta.env.VITE_E2E_FIXTURES === "true";
+  if (resultFixturesEnabled && pathname === "/__dev/result") {
     return <ResultFixturePage />;
   }
   return <ScannerPage />;

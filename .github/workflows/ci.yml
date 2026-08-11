@@ -156,6 +156,12 @@ jobs:
       - name: Build
         if: steps.scope.outputs.run == 'true'
         run: npm run build
+      - name: Install Playwright browsers
+        if: steps.scope.outputs.run == 'true'
+        run: npm exec -- playwright install --with-deps chromium webkit
+      - name: End-to-end test
+        if: steps.scope.outputs.run == 'true'
+        run: npm run e2e
       - name: No Web changes
         if: steps.scope.outputs.run == 'false'
         run: echo "Web checks are not needed for this change."

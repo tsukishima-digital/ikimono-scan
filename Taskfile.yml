@@ -35,6 +35,12 @@ tasks:
     cmds:
       - npm run typecheck
 
+  ui:e2e:
+    desc: Run Playwright against a production-like local build
+    dir: web
+    cmds:
+      - npm run e2e
+
   ui:build:
     desc: Build the production web bundle
     dir: web
@@ -130,6 +136,12 @@ tasks:
     desc: Check the deployed application endpoint
     cmds:
       - curl --fail --silent --show-error --retry 12 --retry-delay 10 --retry-max-time 180 --retry-all-errors https://ikimono-scan.app/ >/dev/null
+
+  deploy:e2e:
+    desc: Run the real-model browser smoke against production
+    dir: web
+    cmds:
+      - E2E_PUBLIC_BASE_URL=https://ikimono-scan.app npm run e2e:production
 
   unpublish:
     desc: Dispatch the workflow that removes the production custom domain
