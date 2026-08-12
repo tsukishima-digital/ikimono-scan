@@ -119,6 +119,41 @@ def test_fetch_plan_selects_japan_species_meeting_the_image_minimum() -> None:
     assert client.request_sleep_seconds == 1.0
 
 
+def test_arthropoda_fetch_plan_limits_species_counts_to_the_root_taxon() -> None:
+    client = FakeJapanSpeciesClient()
+    config = load_yaml("ml/experiments/japan_species_classifier/configs/arthropoda_dataset.yaml")
+
+    plan = build_fetch_plan(config, client)
+
+    assert [item.taxon.id for item in plan] == [1, 2]
+    assert client.params["taxon_id"] == 47120
+
+
+def test_fetch_plan_manifest_identifies_reusable_class_directories() -> None:
+    plan = [
+        inat.TaxonFetchPlanItem(
+            taxon=Taxon(47120, "Arthropoda", "節足動物門", 120),
+            group="observed_species",
+            max_images=40,
+        )
+    ]
+
+    assert inat.fetch_plan_manifest(plan) == {
+        "schemaVersion": 1,
+        "taxa": [
+            {
+                "id": 47120,
+                "scientificName": "Arthropoda",
+                "preferredCommonName": "節足動物門",
+                "classDirName": "47120_arthropoda",
+                "observationsCount": 120,
+                "group": "observed_species",
+                "maxImages": 40,
+            }
+        ],
+    }
+
+
 def test_species_count_pages_respect_the_configured_request_delay(monkeypatch) -> None:
     client = INaturalistClient("https://example.test/v1")
     requested_pages = []
