@@ -16,9 +16,9 @@
 
 ## 現在の公開状態
 
-甲虫分類モデルv0.1.0はONNXとしてモデル用R2 bucketへ配置済みで、配信manifestもmainで管理しています。対応種と一般向けの評価値はmanifestからWebページへ表示し、詳しい評価、配布条件、学習データ監査は[モデルカード](web/public/models/v0.1.0.md)に記録しています。
+生き物スキャンは[ikimono-scan.app](https://ikimono-scan.app)で公開しています。本番の公開と更新は、mainを対象とした手動のGitHub Actions workflowから行います。デプロイ後は公開URL、モデルの整合性、実ブラウザでの推論を検証します。
 
-本番Custom Domainは停止しています。初回公開までの残作業は、[iPhone写真の互換性](https://github.com/tsukishima-digital/ikimono-scan/issues/30)、[推論中の連続操作](https://github.com/tsukishima-digital/ikimono-scan/issues/31)、[本番の実モデル検証](https://github.com/tsukishima-digital/ikimono-scan/issues/21)で追跡しています。本番の公開と更新は、mainを対象とした手動のGitHub Actions workflowだけが行います。
+甲虫分類モデルv0.1.0はONNXとしてモデル用R2 bucketへ配置済みで、配信manifestもmainで管理しています。対応種と一般向けの評価値はmanifestからWebページへ表示し、詳しい評価、配布条件、学習データ監査は[モデルカード](web/public/models/v0.1.0.md)に記録しています。
 
 MVPは甲虫の写真を入力する条件付き分類サービスです。対象外画像を広く検出することより、対応範囲を利用者へ明示し、対象画像について撮影・選択から端末内推論、結果表示、再試行までを安定して完了できることを優先します。
 
