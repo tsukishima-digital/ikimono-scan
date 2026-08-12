@@ -164,6 +164,14 @@ def fetch_dataset(config_path: str | Path) -> None:
     client = INaturalistClient(source["api_base_url"])
     plan = build_fetch_plan(config, client)
 
+    manifest_path = cache_dir / "taxa.json"
+    temporary_manifest_path = manifest_path.with_suffix(".json.tmp")
+    temporary_manifest_path.write_text(
+        json.dumps(fetch_plan_manifest(plan), ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    temporary_manifest_path.replace(manifest_path)
+
     metadata_path = cache_dir / "observations.jsonl"
     known_metadata_keys = _load_metadata_keys(metadata_path)
     allowed_licenses = _allowed_licenses(filters)
@@ -269,6 +277,8 @@ def build_fetch_plan(config: dict[str, Any], client) -> list[TaxonFetchPlanItem]
         allowed_licenses = _allowed_licenses(filters)
         if allowed_licenses is not None:
             params["photo_license"] = ",".join(allowed_licenses)
+        if root_taxon_id := observed_config.get("root_taxon_id"):
+            params["taxon_id"] = int(root_taxon_id)
         taxa = client.species_counts(
             params,
             per_page=per_page,
@@ -343,6 +353,24 @@ def build_fetch_plan(config: dict[str, Any], client) -> list[TaxonFetchPlanItem]
         if common_added >= common_max_taxa:
             break
     return plan
+
+
+def fetch_plan_manifest(plan: list[TaxonFetchPlanItem]) -> dict[str, Any]:
+    return {
+        "schemaVersion": 1,
+        "taxa": [
+            {
+                "id": item.taxon.id,
+                "scientificName": item.taxon.scientific_name,
+                "preferredCommonName": item.taxon.preferred_common_name,
+                "classDirName": item.taxon.class_dir_name,
+                "observationsCount": item.taxon.observations_count,
+                "group": item.group,
+                "maxImages": item.max_images,
+            }
+            for item in plan
+        ],
+    }
 
 
 def _append_plan_item(

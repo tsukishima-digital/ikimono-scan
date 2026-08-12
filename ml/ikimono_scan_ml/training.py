@@ -65,6 +65,11 @@ def train_from_config(config_path: str | Path) -> TrainArtifacts:
         train_split=float(data_config["train_split"]),
         min_images_per_class=int(data_config["min_images_per_class"]),
         seed=seed,
+        included_class_dirs=(
+            _load_class_dirs(project_path(data_config["class_manifest"]))
+            if data_config.get("class_manifest")
+            else None
+        ),
     )
 
     image_size = int(data_config["image_size"])
@@ -324,6 +329,7 @@ def _prepare_split(
     train_split: float,
     min_images_per_class: int,
     seed: int,
+    included_class_dirs: set[str] | None = None,
 ) -> None:
     if not raw_dir.exists():
         raise FileNotFoundError(f"Raw dataset directory does not exist: {raw_dir}")
@@ -333,7 +339,10 @@ def _prepare_split(
         return
 
     rng = random.Random(seed)
-    for class_dir in sorted(path for path in raw_dir.iterdir() if path.is_dir()):
+    class_dirs = sorted(path for path in raw_dir.iterdir() if path.is_dir())
+    if included_class_dirs is not None:
+        class_dirs = [path for path in class_dirs if path.name in included_class_dirs]
+    for class_dir in class_dirs:
         images = [
             path
             for path in sorted(class_dir.iterdir())
@@ -353,6 +362,20 @@ def _prepare_split(
                 target_path = target_dir / image_path.name
                 if not target_path.exists():
                     shutil.copy2(image_path, target_path)
+
+
+def _load_class_dirs(manifest_path: Path) -> set[str]:
+    payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+    if payload.get("schemaVersion") != 1 or not isinstance(payload.get("taxa"), list):
+        raise ValueError(f"Unsupported taxon manifest: {manifest_path}")
+    class_dirs = {
+        item["classDirName"]
+        for item in payload["taxa"]
+        if isinstance(item, dict) and isinstance(item.get("classDirName"), str)
+    }
+    if not class_dirs:
+        raise ValueError(f"Taxon manifest contains no classes: {manifest_path}")
+    return class_dirs
 
 
 def _build_model(*, architecture: str, num_classes: int, pretrained: bool) -> nn.Module:

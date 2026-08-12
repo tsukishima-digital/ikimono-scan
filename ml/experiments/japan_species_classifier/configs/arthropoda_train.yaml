@@ -1,0 +1,49 @@
+seed: 42
+
+data:
+  raw_dir: ml/data/japan_species/raw/inaturalist
+  processed_dir: ml/data/japan_species/cohorts/arthropoda/processed
+  class_manifest: ml/experiments/japan_species_classifier/.cache/arthropoda/taxa.json
+  train_split: 0.8
+  val_split: 0.2
+  min_images_per_class: 10
+  image_size: 320
+  num_workers: 4
+  augmentation:
+    auto_augment:
+      type: randaugment
+      num_ops: 2
+      magnitude: 7
+    color_jitter: null
+
+model:
+  architecture: efficientnet_b0
+  pretrained: true
+
+training:
+  epochs: 30
+  batch_size: 64
+  optimizer: sgd
+  learning_rate: 0.03
+  momentum: 0.9
+  weight_decay: 0.0001
+  label_smoothing: 0.05
+  lr_scheduler:
+    type: cosine
+    min_learning_rate: 0.000001
+  mixed_precision: true
+  mixed_precision_dtype: fp16
+
+output:
+  model_dir: ml/models/japan_species/arthropoda
+  report_dir: ml/experiments/japan_species_classifier/reports/arthropoda
+
+tracking:
+  backend: mlflow
+  tracking_uri: sqlite:///ml/experiments/japan_species_classifier/.cache/mlflow.db
+  experiment_name: japan_species_classifier
+  run_name: auto
+  dataset_name: japan_arthropoda
+  model_name: auto
+  required_git_branch: main
+  log_model: true
