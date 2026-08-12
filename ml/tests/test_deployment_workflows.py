@@ -105,6 +105,18 @@ def test_dependabot_checks_the_production_terraform_provider_weekly():
     assert terraform["schedule"]["interval"] == "weekly"
 
 
+def test_dependabot_defers_only_typescript_major_updates():
+    config = yaml.safe_load(DEPENDABOT_CONFIG.read_text())
+    npm = next(update for update in config["updates"] if update["package-ecosystem"] == "npm")
+
+    assert npm["ignore"] == [
+        {
+            "dependency-name": "typescript",
+            "update-types": ["version-update:semver-major"],
+        }
+    ]
+
+
 def test_ci_runs_cross_browser_end_to_end_tests_for_web_changes():
     _, source = _workflow("ci.yml")
 
