@@ -13,6 +13,15 @@ data "cloudflare_registrar_domain" "app" {
   domain_name = var.domain_name
 }
 
+resource "cloudflare_dns_record" "search_console_verification" {
+  zone_id = one(data.cloudflare_zones.app.result).id
+  name    = var.domain_name
+  type    = "TXT"
+  content = "google-site-verification=tmgHvC-gbK_QdGwrcyvnliYvDfSCI9pKHhtMOEPbSG4"
+  ttl     = 1
+  proxied = false
+}
+
 resource "cloudflare_workers_script" "app" {
   account_id         = var.cloudflare_account_id
   script_name        = var.worker_name
