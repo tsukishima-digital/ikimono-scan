@@ -8,6 +8,7 @@ REPOSITORY_ROOT = Path(__file__).parents[2]
 WORKFLOWS = REPOSITORY_ROOT / ".github" / "workflows"
 TASKFILE = REPOSITORY_ROOT / "Taskfile.yml"
 GITLEAKS_CONFIG = REPOSITORY_ROOT / ".gitleaks.toml"
+DEPENDABOT_CONFIG = REPOSITORY_ROOT / ".github" / "dependabot.yml"
 PINNED_ACTION = re.compile(r"^[^\s@]+@[0-9a-f]{40}$")
 
 
@@ -73,7 +74,7 @@ def test_deploy_is_manual_serialized_and_applies_a_saved_plan():
     assert workflow["concurrency"]["cancel-in-progress"] is False
     assert "task deploy:check" in source
     assert re.search(r"terraform .* plan .* -out=\S+\.tfplan", source)
-    assert re.search(r"terraform .* apply .* \S+\.tfplan", source)
+    assert "scripts/production_apply.py production.tfplan" in source
     assert "merge-base --is-ancestor" in source
     assert "terraform_backend.py backup production pre-apply" in source
     assert "terraform_backend.py backup production post-apply" in source
@@ -92,6 +93,16 @@ def test_ci_and_deploy_share_the_pinned_gitleaks_installer():
     assert "gitleaks_version=" in installer
     assert "gitleaks_sha256=" in installer
     assert "gitleaks) install_gitleaks" in installer
+
+
+def test_dependabot_checks_the_production_terraform_provider_weekly():
+    config = yaml.safe_load(DEPENDABOT_CONFIG.read_text())
+    terraform = next(
+        update for update in config["updates"] if update["package-ecosystem"] == "terraform"
+    )
+
+    assert terraform["directory"] == "/infra/production"
+    assert terraform["schedule"]["interval"] == "weekly"
 
 
 def test_ci_runs_cross_browser_end_to_end_tests_for_web_changes():

@@ -83,7 +83,7 @@ jobs:
       - name: Back up state before apply
         run: python scripts/terraform_backend.py backup production pre-apply
       - name: Apply saved production plan
-        run: terraform -chdir=infra/production apply -input=false production.tfplan
+        run: python scripts/production_apply.py production.tfplan
       - name: Back up state after apply
         run: python scripts/terraform_backend.py backup production post-apply
       - name: Smoke test
