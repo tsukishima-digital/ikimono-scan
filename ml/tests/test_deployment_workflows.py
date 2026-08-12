@@ -271,6 +271,19 @@ def test_production_domain_can_be_removed_without_destroying_the_worker():
     assert "site_published" not in worker_block
 
 
+def test_search_console_ownership_uses_an_apex_dns_txt_record():
+    source = (REPOSITORY_ROOT / "infra" / "production" / "main.tf").read_text()
+    verification_block = source.split(
+        'resource "cloudflare_dns_record" "search_console_verification"', 1
+    )[1]
+
+    assert "zone_id = one(data.cloudflare_zones.app.result).id" in verification_block
+    assert "name    = var.domain_name" in verification_block
+    assert 'type    = "TXT"' in verification_block
+    assert 'content = "google-site-verification=' in verification_block
+    assert "proxied = false" in verification_block
+
+
 def test_secret_scan_runs_the_synced_pre_commit_environment():
     taskfile = yaml.safe_load(TASKFILE.read_text())
     source = "\n".join(taskfile["tasks"]["secrets"]["cmds"])
