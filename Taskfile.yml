@@ -57,6 +57,17 @@ tasks:
     cmds:
       - uv run pytest -q ml/tests/test_species_gallery.py
 
+  priority:check:
+    desc: Validate the priority species registry and its official source snapshots
+    cmds:
+      - uv run pytest -q ml/tests/test_priority_registry.py ml/tests/test_priority_source_check.py ml/tests/test_priority_source_workflow.py
+      - uv run python scripts/check_priority_sources.py ml/taxonomy/priority-registry.json
+
+  priority:sources:refresh:
+    desc: Refresh official source fingerprints after reviewing registry changes
+    cmds:
+      - uv run python scripts/check_priority_sources.py ml/taxonomy/priority-registry.json --refresh
+
   ui:lint:
     desc: Lint the web app
     dir: web

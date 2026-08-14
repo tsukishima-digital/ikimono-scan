@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "jurisdiction": "JP",
+  "sources": [
+    {
+      "id": "moe-specified-invasive-alien-species",
+      "name": "環境省 特定外来生物等一覧",
+      "url": "https://www.env.go.jp/nature/intro/2outline/list.html",
+      "monitor": {
+        "mode": "normalized_text_sha256",
+        "sha256": "07963dc7ba01446e748632865f01ca09af6973ec19fe6827860ffaf06f5f1104",
+        "checkedOn": "2026-08-14"
+      }
+    },
+    {
+      "id": "moe-ecosystem-damage-invasive-species",
+      "name": "環境省 生態系被害防止外来種リスト",
+      "url": "https://www.env.go.jp/nature/intro/2outline/invasive.html",
+      "monitor": {
+        "mode": "normalized_text_sha256",
+        "sha256": "4383f688069859e949de4ecfb1b9e121e58988b7f8b5a617a6b87d613ab00d76",
+        "checkedOn": "2026-08-14"
+      }
+    },
+    {
+      "id": "moe-domestic-rare-species",
+      "name": "環境省 国内希少野生動植物種一覧",
+      "url": "https://www.env.go.jp/nature/kisho/domestic/list.html",
+      "monitor": {
+        "mode": "normalized_text_sha256",
+        "sha256": "cc2abb674c2a9ed1f5d281e1e72b90c1cffac433e1c4dc5cbc17f2c81d4c8c27",
+        "checkedOn": "2026-08-14"
+      }
+    },
+    {
+      "id": "moe-red-list",
+      "name": "環境省 レッドリスト・レッドデータブック",
+      "url": "https://www.env.go.jp/nature/kisho/hozen/redlist/index.html",
+      "monitor": {
+        "mode": "normalized_text_sha256",
+        "sha256": "a88349676c98a9208e395267a90f2a57a03a86366558d27f8c357fd4fcef3890",
+        "checkedOn": "2026-08-14"
+      }
+    }
+  ],
+  "taxa": [
+    {
+      "taxonId": 494519,
+      "scientificName": "Aromia bungii",
+      "commonName": "クビアカツヤカミキリ",
+      "officialStatuses": [
+        {
+          "type": "specified_invasive_alien_species",
+          "sourceId": "moe-specified-invasive-alien-species",
+          "verifiedOn": "2026-08-14"
+        }
+      ],
+      "priority": {
+        "level": "P0",
+        "reasons": [
+          "action_consequence",
+          "established_product_focus"
+        ],
+        "falsePositiveImpact": "high",
+        "falseNegativeImpact": "high"
+      },
+      "identificationGroupIds": [
+        "aromia-bungii-confusers"
+      ]
+    }
+  ],
+  "identificationGroups": [
+    {
+      "id": "aromia-bungii-confusers",
+      "anchorTaxonIds": [
+        494519
+      ],
+      "selectionRules": [
+        {
+          "type": "same_family_observed_in_japan",
+          "scientificName": "Cerambycidae"
+        },
+        {
+          "type": "empirical_model_confusion"
+        },
+        {
+          "type": "opposing_action_consequence"
+        }
+      ]
+    }
+  ]
+}
