@@ -1,4 +1,4 @@
-"""Detect content changes in official sources referenced by the priority registry."""
+"""Detect content changes in official species-status and control-program sources."""
 
 from __future__ import annotations
 
@@ -13,9 +13,9 @@ from pathlib import Path
 from urllib.error import URLError
 from urllib.request import Request, urlopen
 
-from ikimono_scan_ml.priority_registry import load_priority_registry
+from ikimono_scan_ml.species_status_registry import load_species_status_registry
 
-USER_AGENT = "ikimono-scan-priority-source-check/1.0"
+USER_AGENT = "ikimono-scan-species-status-source-check/1.0"
 
 
 class _VisibleTextParser(HTMLParser):
@@ -85,7 +85,7 @@ def refresh(path: str | Path, *, checked_on: str | None = None) -> None:
     """Replace stored fingerprints after a human has reviewed official changes."""
 
     registry_path = Path(path)
-    registry = load_priority_registry(registry_path)
+    registry = load_species_status_registry(registry_path)
     date = checked_on or datetime.now(UTC).date().isoformat()
     for source in registry["sources"]:
         source["monitor"]["sha256"] = fingerprint(fetch(source["url"]))
@@ -97,7 +97,7 @@ def refresh(path: str | Path, *, checked_on: str | None = None) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Check official priority-registry sources")
+    parser = argparse.ArgumentParser(description="Check official species-status sources")
     parser.add_argument("registry", type=Path)
     parser.add_argument("--refresh", action="store_true")
     parser.add_argument("--report", type=Path)
@@ -107,7 +107,7 @@ def main() -> int:
         refresh(args.registry)
         return 0
 
-    registry = load_priority_registry(args.registry)
+    registry = load_species_status_registry(args.registry)
     changed = check_sources(registry)
     report = json.dumps({"changedSources": changed}, ensure_ascii=False, indent=2) + "\n"
     if args.report:

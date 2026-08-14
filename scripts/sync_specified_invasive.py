@@ -1,4 +1,4 @@
-"""Synchronize the official specified-invasive scopes embedded in the priority registry."""
+"""Synchronize official specified-invasive scopes in the species-status registry."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 from urllib.request import Request, urlopen
 
-from ikimono_scan_ml.priority_registry import validate_priority_registry
+from ikimono_scan_ml.species_status_registry import validate_species_status_registry
 from ikimono_scan_ml.specified_invasive import SOURCE_ID, extract_designations
 
 USER_AGENT = "ikimono-scan-specified-invasive-sync/1.0"
@@ -28,7 +28,7 @@ def refresh(path: str | Path) -> None:
     registry_path = Path(path)
     registry = json.loads(registry_path.read_text(encoding="utf-8"))
     registry["officialDesignations"] = current_designations(registry)
-    validate_priority_registry(registry)
+    validate_species_status_registry(registry)
     registry_path.write_text(
         json.dumps(registry, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
@@ -45,7 +45,7 @@ def main() -> int:
     extracted = current_designations(registry)
     if args.refresh:
         registry["officialDesignations"] = extracted
-        validate_priority_registry(registry)
+        validate_species_status_registry(registry)
         args.registry.write_text(
             json.dumps(registry, ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",

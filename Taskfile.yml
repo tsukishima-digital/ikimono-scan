@@ -57,22 +57,22 @@ tasks:
     cmds:
       - uv run pytest -q ml/tests/test_species_gallery.py
 
-  priority:check:
-    desc: Validate the priority species registry and its official source snapshots
+  species-status:check:
+    desc: Validate factual species statuses, control programs, and source snapshots
     cmds:
-      - uv run pytest -q ml/tests/test_priority_registry.py ml/tests/test_specified_invasive.py ml/tests/test_priority_source_check.py ml/tests/test_priority_source_workflow.py
-      - uv run python scripts/sync_specified_invasive.py ml/taxonomy/priority-registry.json
-      - uv run python scripts/check_priority_sources.py ml/taxonomy/priority-registry.json
+      - uv run pytest -q ml/tests/test_species_status_registry.py ml/tests/test_specified_invasive.py ml/tests/test_species_status_source_check.py ml/tests/test_species_status_source_workflow.py
+      - uv run python scripts/sync_specified_invasive.py ml/taxonomy/species-status-registry.json
+      - uv run python scripts/check_species_status_sources.py ml/taxonomy/species-status-registry.json
 
-  priority:specified:refresh:
+  species-status:specified:refresh:
     desc: Refresh all specified-invasive designation scopes after official review
     cmds:
-      - uv run python scripts/sync_specified_invasive.py ml/taxonomy/priority-registry.json --refresh
+      - uv run python scripts/sync_specified_invasive.py ml/taxonomy/species-status-registry.json --refresh
 
-  priority:sources:refresh:
+  species-status:sources:refresh:
     desc: Refresh official source fingerprints after reviewing registry changes
     cmds:
-      - uv run python scripts/check_priority_sources.py ml/taxonomy/priority-registry.json --refresh
+      - uv run python scripts/check_species_status_sources.py ml/taxonomy/species-status-registry.json --refresh
 
   ui:lint:
     desc: Lint the web app

@@ -1,5 +1,6 @@
 {
   "schemaVersion": 1,
+  "registryType": "species_status_and_control_programs",
   "jurisdiction": "JP",
   "sources": [
     {
@@ -39,6 +40,16 @@
       "monitor": {
         "mode": "normalized_text_sha256",
         "sha256": "a88349676c98a9208e395267a90f2a57a03a86366558d27f8c357fd4fcef3890",
+        "checkedOn": "2026-08-14"
+      }
+    },
+    {
+      "id": "ibaraki-alien-longhorn-beetle-campaign",
+      "name": "茨城県 いばらきカミキリみっけ隊",
+      "url": "https://www.pref.ibaraki.jp/seikatsukankyo/kansei/tayosei/kamikirimikketai.html",
+      "monitor": {
+        "mode": "normalized_text_sha256",
+        "sha256": "8f708a979af38e53b57cd810b4764149333a5ce8dcb6477999bca2ece8f783b6",
         "checkedOn": "2026-08-14"
       }
     }
@@ -1343,10 +1354,6 @@
       "conditionalMembers": []
     }
   ],
-  "designationPriorityDefaults": {
-    "specified": "P1",
-    "conditional": "P1"
-  },
   "taxa": [
     {
       "taxonId": 494519,
@@ -1359,18 +1366,6 @@
           "designationId": "moe-ias-ad1ad8108aa66e44",
           "verifiedOn": "2026-08-14"
         }
-      ],
-      "priority": {
-        "level": "P0",
-        "reasons": [
-          "action_consequence",
-          "established_product_focus"
-        ],
-        "falsePositiveImpact": "high",
-        "falseNegativeImpact": "high"
-      },
-      "identificationGroupIds": [
-        "aromia-bungii-confusers"
       ]
     },
     {
@@ -1384,18 +1379,6 @@
           "designationId": "moe-ias-db9d8e370cb6a131",
           "verifiedOn": "2026-08-14"
         }
-      ],
-      "priority": {
-        "level": "P1",
-        "reasons": [
-          "legal_handling",
-          "action_consequence"
-        ],
-        "falsePositiveImpact": "medium",
-        "falseNegativeImpact": "high"
-      },
-      "identificationGroupIds": [
-        "procambarus-clarkii-confusers"
       ]
     },
     {
@@ -1409,18 +1392,6 @@
           "designationId": "moe-ias-7a0724a19fadac7b",
           "verifiedOn": "2026-08-14"
         }
-      ],
-      "priority": {
-        "level": "P1",
-        "reasons": [
-          "legal_handling",
-          "action_consequence"
-        ],
-        "falsePositiveImpact": "medium",
-        "falseNegativeImpact": "high"
-      },
-      "identificationGroupIds": [
-        "trachemys-scripta-confusers"
       ]
     },
     {
@@ -1434,79 +1405,123 @@
           "designationId": "moe-ias-7a0724a19fadac7b",
           "verifiedOn": "2026-08-14"
         }
-      ],
-      "priority": {
-        "level": "P1",
-        "reasons": [
-          "legal_handling",
-          "action_consequence"
-        ],
-        "falsePositiveImpact": "medium",
-        "falseNegativeImpact": "high"
-      },
-      "identificationGroupIds": [
-        "trachemys-scripta-confusers"
+      ]
+    },
+    {
+      "taxonId": 128525,
+      "scientificName": "Anoplophora glabripennis",
+      "commonName": "ツヤハダゴマダラカミキリ",
+      "officialStatuses": [
+        {
+          "type": "specified_invasive_alien_species",
+          "sourceId": "moe-specified-invasive-alien-species",
+          "designationId": "moe-ias-3f95114016e113ac",
+          "verifiedOn": "2026-08-14"
+        }
       ]
     }
   ],
-  "identificationGroups": [
+  "controlPrograms": [
     {
-      "id": "aromia-bungii-confusers",
-      "anchorTaxonIds": [
-        494519
-      ],
-      "selectionRules": [
+      "id": "ibaraki-alien-longhorn-beetle-campaign-2026",
+      "name": "2026年度いばらきカミキリみっけ隊",
+      "sourceId": "ibaraki-alien-longhorn-beetle-campaign",
+      "area": {
+        "countryCode": "JP",
+        "prefectureCode": "JP-08",
+        "focusMunicipalities": [
+          "水戸市",
+          "土浦市",
+          "古河市",
+          "石岡市",
+          "結城市",
+          "下妻市",
+          "常総市",
+          "笠間市",
+          "取手市",
+          "牛久市",
+          "つくば市",
+          "筑西市",
+          "坂東市",
+          "桜川市",
+          "つくばみらい市",
+          "小美玉市",
+          "阿見町",
+          "八千代町",
+          "五霞町",
+          "境町"
+        ]
+      },
+      "validFrom": "2026-06-01",
+      "validThrough": "2026-09-30",
+      "participationPolicies": [
         {
-          "type": "same_family_observed_in_japan",
-          "scientificName": "Cerambycidae"
+          "targets": [
+            {
+              "taxonId": 494519,
+              "lifeStages": [
+                "adult"
+              ]
+            },
+            {
+              "taxonId": 128525,
+              "lifeStages": [
+                "adult"
+              ]
+            }
+          ],
+          "audience": {
+            "type": "prefecture_residents",
+            "jurisdictionCode": "JP-08",
+            "minimumSchoolStage": "elementary_school"
+          },
+          "requestedActions": [
+            "report"
+          ],
+          "incentive": null
         },
         {
-          "type": "empirical_model_confusion"
-        },
-        {
-          "type": "opposing_action_consequence"
+          "targets": [
+            {
+              "taxonId": 494519,
+              "lifeStages": [
+                "adult"
+              ]
+            },
+            {
+              "taxonId": 128525,
+              "lifeStages": [
+                "adult"
+              ]
+            }
+          ],
+          "audience": {
+            "type": "prefecture_residents",
+            "jurisdictionCode": "JP-08",
+            "minimumSchoolStage": "elementary_school",
+            "excludedRoles": [
+              "commercial_pest_control",
+              "national_or_local_government_employee",
+              "independent_administrative_agency_employee"
+            ],
+            "guardianRequiredFor": [
+              "elementary_school_students",
+              "junior_high_school_students"
+            ]
+          },
+          "requestedActions": [
+            "capture",
+            "kill",
+            "submit_specimen"
+          ],
+          "incentive": {
+            "type": "prepaid_card",
+            "valueYen": 500,
+            "perSpecimenCount": 10
+          }
         }
-      ]
-    },
-    {
-      "id": "procambarus-clarkii-confusers",
-      "anchorTaxonIds": [
-        51221
       ],
-      "selectionRules": [
-        {
-          "type": "same_family_observed_in_japan",
-          "scientificName": "Cambaridae"
-        },
-        {
-          "type": "empirical_model_confusion"
-        },
-        {
-          "type": "opposing_action_consequence"
-        }
-      ]
-    },
-    {
-      "id": "trachemys-scripta-confusers",
-      "anchorTaxonIds": [
-        39782,
-        51271
-      ],
-      "selectionRules": [
-        {
-          "type": "native_freshwater_turtles_observed_in_japan"
-        },
-        {
-          "type": "same_family_observed_in_japan",
-          "scientificName": "Emydidae"
-        },
-        {
-          "type": "empirical_model_confusion"
-        },
-        {
-          "type": "opposing_action_consequence"
-        }
-      ]
+      "verifiedOn": "2026-08-14"
     }
   ]
 }

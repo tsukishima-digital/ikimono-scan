@@ -1,13 +1,15 @@
 import json
 
-from scripts import check_priority_sources
+from scripts import check_species_status_sources
 
 
 def test_normalized_html_fingerprint_ignores_markup_and_whitespace() -> None:
     first = b"<html><body><h1>Official list</h1><p>Aromia bungii</p></body></html>"
     second = b"<html>\n<body><h1> Official list </h1> <p>Aromia bungii</p></body>\n</html>"
 
-    assert check_priority_sources.fingerprint(first) == check_priority_sources.fingerprint(second)
+    assert check_species_status_sources.fingerprint(
+        first
+    ) == check_species_status_sources.fingerprint(second)
 
 
 def test_check_sources_reports_only_changed_content(monkeypatch) -> None:
@@ -15,7 +17,7 @@ def test_check_sources_reports_only_changed_content(monkeypatch) -> None:
     changed = b"<main>changed</main>"
     registry = _registry(
         {
-            "stable": check_priority_sources.fingerprint(unchanged),
+            "stable": check_species_status_sources.fingerprint(unchanged),
             "changed": "a" * 64,
         }
     )
@@ -23,26 +25,26 @@ def test_check_sources_reports_only_changed_content(monkeypatch) -> None:
         "https://example.go.jp/stable": unchanged,
         "https://example.go.jp/changed": changed,
     }
-    monkeypatch.setattr(check_priority_sources, "fetch", responses.__getitem__)
+    monkeypatch.setattr(check_species_status_sources, "fetch", responses.__getitem__)
 
-    results = check_priority_sources.check_sources(registry)
+    results = check_species_status_sources.check_sources(registry)
 
     assert [item["sourceId"] for item in results] == ["changed"]
-    assert results[0]["actualSha256"] == check_priority_sources.fingerprint(changed)
+    assert results[0]["actualSha256"] == check_species_status_sources.fingerprint(changed)
 
 
 def test_refresh_updates_only_source_fingerprints(tmp_path, monkeypatch) -> None:
     content = b"<main>new official list</main>"
-    path = tmp_path / "priority-registry.json"
+    path = tmp_path / "species-status-registry.json"
     path.write_text(json.dumps(_registry({"source": "a" * 64})), encoding="utf-8")
-    monkeypatch.setattr(check_priority_sources, "fetch", lambda _: content)
+    monkeypatch.setattr(check_species_status_sources, "fetch", lambda _: content)
 
-    check_priority_sources.refresh(path, checked_on="2026-08-14")
+    check_species_status_sources.refresh(path, checked_on="2026-08-14")
 
     payload = json.loads(path.read_text(encoding="utf-8"))
     assert payload["sources"][0]["monitor"] == {
         "mode": "normalized_text_sha256",
-        "sha256": check_priority_sources.fingerprint(content),
+        "sha256": check_species_status_sources.fingerprint(content),
         "checkedOn": "2026-08-14",
     }
 
@@ -50,6 +52,7 @@ def test_refresh_updates_only_source_fingerprints(tmp_path, monkeypatch) -> None
 def _registry(fingerprints: dict[str, str]) -> dict:
     return {
         "schemaVersion": 1,
+        "registryType": "species_status_and_control_programs",
         "jurisdiction": "JP",
         "sources": [
             {
@@ -64,10 +67,6 @@ def _registry(fingerprints: dict[str, str]) -> dict:
             for source_id, sha256 in fingerprints.items()
         ],
         "officialDesignations": [],
-        "designationPriorityDefaults": {
-            "specified": "P1",
-            "conditional": "P1",
-        },
         "taxa": [],
-        "identificationGroups": [],
+        "controlPrograms": [],
     }

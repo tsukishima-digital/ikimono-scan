@@ -1,4 +1,4 @@
-name: Priority species sources
+name: Species status sources
 
 on:
   schedule:
@@ -22,7 +22,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          PYTHONPATH=ml python scripts/check_priority_sources.py ml/taxonomy/priority-registry.json --report priority-source-report.json
+          PYTHONPATH=ml python scripts/check_species_status_sources.py ml/taxonomy/species-status-registry.json --report species-status-source-report.json
           status=$?
           set -e
           if [[ "${status}" -eq 2 ]]; then
@@ -36,26 +36,26 @@ jobs:
         if: steps.compare.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-          ISSUE_TITLE: 重点種台帳の公式ソースが更新されました
+          ISSUE_TITLE: 生物ステータス・制度台帳の公式ソースが更新されました
         shell: bash
         run: |
           {
             echo "公式ソースの本文変更を検知しました。自動で法的ステータスは変更していません。"
             echo
             echo '```json'
-            cat priority-source-report.json
+            cat species-status-source-report.json
             echo '```'
             echo
-            echo "公式発表を確認して台帳を更新し、レビュー後に次を実行してください。"
+            echo "公式発表と自治体制度を確認して台帳を更新し、レビュー後に次を実行してください。"
             echo
             echo '```console'
-            echo "task priority:specified:refresh"
-            echo "task priority:sources:refresh"
+            echo "task species-status:specified:refresh"
+            echo "task species-status:sources:refresh"
             echo '```'
-          } > priority-source-issue.md
+          } > species-status-source-issue.md
           issue_number="$(gh issue list --state open --search "${ISSUE_TITLE} in:title" --json number --jq '.[0].number // empty')"
           if [[ -n "${issue_number}" ]]; then
-            gh issue comment "${issue_number}" --body-file priority-source-issue.md
+            gh issue comment "${issue_number}" --body-file species-status-source-issue.md
           else
-            gh issue create --title "${ISSUE_TITLE}" --body-file priority-source-issue.md
+            gh issue create --title "${ISSUE_TITLE}" --body-file species-status-source-issue.md
           fi
