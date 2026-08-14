@@ -150,6 +150,13 @@ def test_registry_rejects_program_without_atomic_audience_action_policy() -> Non
         validate_species_status_registry(registry)
 
 
+def test_registry_accepts_unknown_program_end_date() -> None:
+    registry = _minimal_registry()
+    registry["controlPrograms"][0]["validThrough"] = None
+
+    validate_species_status_registry(registry)
+
+
 def test_registry_requires_source_fingerprints() -> None:
     registry = _minimal_registry()
     registry["sources"][0]["monitor"]["sha256"] = "not-a-hash"

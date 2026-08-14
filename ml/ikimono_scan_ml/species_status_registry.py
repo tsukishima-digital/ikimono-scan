@@ -144,9 +144,13 @@ def validate_species_status_registry(registry: dict) -> None:
                 f"Control program {program_id} references unknown sourceId: {source_id}"
             )
         _validate_area(program.get("area"), program_id)
-        _validate_date(program, "validFrom", program_id)
-        _validate_date(program, "validThrough", program_id)
-        if program["validFrom"] > program["validThrough"]:
+        _validate_optional_date(program, "validFrom", program_id)
+        _validate_optional_date(program, "validThrough", program_id)
+        if (
+            program["validFrom"] is not None
+            and program["validThrough"] is not None
+            and program["validFrom"] > program["validThrough"]
+        ):
             raise ValueError(f"Control program {program_id} has an invalid validity period")
         _validate_date(program, "verifiedOn", program_id)
 
@@ -186,6 +190,13 @@ def _validate_date(payload: dict, key: str, program_id: str) -> None:
         date.fromisoformat(value)
     except ValueError as error:
         raise ValueError(f"Control program {program_id} has an invalid {key}") from error
+
+
+def _validate_optional_date(payload: dict, key: str, program_id: str) -> None:
+    if key not in payload:
+        raise ValueError(f"Control program {program_id} requires {key}")
+    if payload[key] is not None:
+        _validate_date(payload, key, program_id)
 
 
 def _validate_participation_policy(policy, program_id: str, taxon_ids: set[int]) -> None:
