@@ -21,13 +21,30 @@ POLICY_OR_JUDGMENT_KEYS = {
     "sampleWeight",
     "samplingProbability",
 }
-CONTROL_ACTIONS = {"capture", "kill", "remove", "report", "submit_specimen"}
+CONTROL_ACTIONS = {
+    "capture",
+    "dispose_carcass",
+    "hand_over_live_animal",
+    "inspect_trap",
+    "kill",
+    "photograph",
+    "remove",
+    "report",
+    "report_capture",
+    "submit_specimen",
+    "transport",
+}
 AUDIENCE_TYPES = {
+    "adult_municipality_residents",
+    "anyone",
     "general_public",
+    "licensed_hunters",
     "municipality_residents",
     "permitted_trappers",
     "prefecture_residents",
     "property_owners_or_managers",
+    "registered_program_participants",
+    "registered_trap_users",
     "registered_control_workers",
 }
 SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
@@ -67,12 +84,7 @@ def validate_species_status_registry(registry: dict) -> None:
         url = _nonempty_string(source, "url", f"source {source_id}")
         if not url.startswith("https://"):
             raise ValueError(f"Source {source_id} must use HTTPS")
-        monitor = source.get("monitor")
-        if not isinstance(monitor, dict) or monitor.get("mode") != "normalized_text_sha256":
-            raise ValueError(f"Source {source_id} must use normalized_text_sha256")
-        digest = monitor.get("sha256")
-        if not isinstance(digest, str) or SHA256_PATTERN.fullmatch(digest) is None:
-            raise ValueError(f"Source {source_id} has an invalid sha256")
+        _validate_source_monitor(source.get("monitor"), source_id)
 
     designation_ids: set[str] = set()
     for designation in designations:
@@ -184,6 +196,20 @@ def _validate_area(value, program_id: str) -> None:
         raise ValueError(f"Control program {program_id} area requires focusMunicipalities")
 
 
+def _validate_source_monitor(monitor, source_id: str) -> None:
+    if not isinstance(monitor, dict):
+        raise ValueError(f"Source {source_id} requires monitor settings")
+    if monitor.get("mode") == "manual":
+        _nonempty_string(monitor, "checkedOn", f"source {source_id} manual monitor")
+        _nonempty_string(monitor, "reason", f"source {source_id} manual monitor")
+        return
+    if monitor.get("mode") != "normalized_text_sha256":
+        raise ValueError(f"Source {source_id} has an invalid monitor mode")
+    digest = monitor.get("sha256")
+    if not isinstance(digest, str) or SHA256_PATTERN.fullmatch(digest) is None:
+        raise ValueError(f"Source {source_id} has an invalid sha256")
+
+
 def _validate_date(payload: dict, key: str, program_id: str) -> None:
     value = _nonempty_string(payload, key, f"control program {program_id}")
     try:
@@ -209,8 +235,14 @@ def _validate_participation_policy(policy, program_id: str, taxon_ids: set[int])
         taxon_id = target.get("taxonId")
         if taxon_id not in taxon_ids:
             raise ValueError(f"Control program {program_id} references unknown taxonId: {taxon_id}")
-        if not _nonempty_string_list(target.get("lifeStages")):
-            raise ValueError(f"Control program {program_id} target requires lifeStages")
+        subjects = target.get("subjects")
+        if not isinstance(subjects, list) or not subjects:
+            raise ValueError(f"Control program {program_id} target requires subjects")
+        for subject in subjects:
+            if not isinstance(subject, dict) or subject.get("type") not in {"organism", "trace"}:
+                raise ValueError(f"Control program {program_id} target has an invalid subject")
+            required_key = "lifeStage" if subject["type"] == "organism" else "traceType"
+            _nonempty_string(subject, required_key, f"control program {program_id} subject")
     audience = policy.get("audience")
     if not isinstance(audience, dict) or audience.get("type") not in AUDIENCE_TYPES:
         raise ValueError(f"Control program {program_id} has an invalid audience")
@@ -228,12 +260,21 @@ def _validate_participation_policy(policy, program_id: str, taxon_ids: set[int])
     if not isinstance(incentive, dict):
         raise ValueError(f"Control program {program_id} has an invalid incentive")
     _nonempty_string(incentive, "type", f"control program {program_id} incentive")
-    if not isinstance(incentive.get("valueYen"), int) or incentive["valueYen"] <= 0:
-        raise ValueError(f"Control program {program_id} incentive requires positive valueYen")
-    if not isinstance(incentive.get("perSpecimenCount"), int) or incentive["perSpecimenCount"] <= 0:
-        raise ValueError(
-            f"Control program {program_id} incentive requires positive perSpecimenCount"
-        )
+    _nonempty_string(incentive, "description", f"control program {program_id} incentive")
+    amount = incentive.get("amount")
+    if amount is not None:
+        if not isinstance(amount, dict) or amount.get("currency") != "JPY":
+            raise ValueError(f"Control program {program_id} has an invalid incentive amount")
+        values = [amount.get(key) for key in ("value", "minimumValue", "maximumValue")]
+        if not any(isinstance(value, int) and value > 0 for value in values):
+            raise ValueError(f"Control program {program_id} incentive amount requires a value")
+    rate = incentive.get("rate")
+    if rate is not None:
+        if not isinstance(rate, dict) or not isinstance(rate.get("count"), int):
+            raise ValueError(f"Control program {program_id} has an invalid incentive rate")
+        if rate["count"] <= 0:
+            raise ValueError(f"Control program {program_id} has an invalid incentive rate")
+        _nonempty_string(rate, "unit", f"control program {program_id} incentive rate")
 
 
 def _nonempty_string_list(value) -> bool:

@@ -33,6 +33,35 @@ def test_check_sources_reports_only_changed_content(monkeypatch) -> None:
     assert results[0]["actualSha256"] == check_species_status_sources.fingerprint(changed)
 
 
+def test_check_sources_skips_sources_marked_for_manual_review(monkeypatch) -> None:
+    registry = _registry({"automatic": "a" * 64})
+    registry["sources"].append(
+        {
+            "id": "manual",
+            "name": "manual",
+            "url": "https://legacy.example.go.jp/source",
+            "monitor": {
+                "mode": "manual",
+                "checkedOn": "2026-08-14",
+                "reason": "tls_incompatible_with_automation",
+            },
+        }
+    )
+    fetched_urls: list[str] = []
+
+    def fetch(url: str) -> bytes:
+        fetched_urls.append(url)
+        return b"automatic"
+
+    monkeypatch.setattr(check_species_status_sources, "fetch", fetch)
+    registry["sources"][0]["monitor"]["sha256"] = check_species_status_sources.fingerprint(
+        b"automatic"
+    )
+
+    assert check_species_status_sources.check_sources(registry) == []
+    assert fetched_urls == ["https://example.go.jp/automatic"]
+
+
 def test_refresh_updates_only_source_fingerprints(tmp_path, monkeypatch) -> None:
     content = b"<main>new official list</main>"
     path = tmp_path / "species-status-registry.json"

@@ -52,6 +52,136 @@
         "sha256": "8f708a979af38e53b57cd810b4764149333a5ce8dcb6477999bca2ece8f783b6",
         "checkedOn": "2026-08-14"
       }
+    },
+    {
+      "id": "ibaraki-kyon-bounties",
+      "name": "茨城県 キョン目撃情報・捕獲褒賞金制度",
+      "url": "https://www.pref.ibaraki.jp/seikatsukankyo/kansei/tayosei/kyon.html",
+      "monitor": {
+        "mode": "normalized_text_sha256",
+        "sha256": "9c6942899c91badc94d3e5a39cb96bcaaefa04247fb0e8615bd401e5e9cd0866",
+        "checkedOn": "2026-08-14"
+      }
+    },
+    {
+      "id": "tokyo-oshima-kyon-bounty",
+      "name": "東京都 大島町キョン捕獲報奨金制度",
+      "url": "https://www.kankyo.metro.tokyo.lg.jp/nature/animals_plants/kyon/reward",
+      "monitor": {
+        "mode": "normalized_text_sha256",
+        "sha256": "1df73b38f8cb11ca3aac9d5573ecdf908f094973c487a161f7cf0b2a31d5440c",
+        "checkedOn": "2026-08-14"
+      }
+    },
+    {
+      "id": "osaka-kubiaka-summer-campaign",
+      "name": "大阪府 サクラを守れ！クビアカツヤカミキリ 夏の陣",
+      "url": "https://www.pref.osaka.lg.jp/o120030/midorikikaku/kankyo/kubiakanatsunojin.html",
+      "monitor": {
+        "mode": "normalized_text_sha256",
+        "sha256": "0b171428120b74aa8119448c494ef2a7b3df1c0f4dcb219bab4703654169d83d",
+        "checkedOn": "2026-08-14"
+      }
+    },
+    {
+      "id": "gunma-kubiaka-card",
+      "name": "群馬県 クビアカツヤカミキリ死骸持込カード配布",
+      "url": "https://www.pref.gunma.jp/site/houdou/759913.html",
+      "monitor": {
+        "mode": "normalized_text_sha256",
+        "sha256": "51215e9b4aae680fc9e49cf16bc69f1bc2411477fdcf3ea52d51368bbf71a183",
+        "checkedOn": "2026-08-14"
+      }
+    },
+    {
+      "id": "gunma-kubiaka-reporting",
+      "name": "群馬県 ぐんまクビアカネット",
+      "url": "https://www.pref.gunma.jp/site/houdou/750757.html",
+      "monitor": {
+        "mode": "normalized_text_sha256",
+        "sha256": "c10c3dbc9192f54f806af2636db0226db98c1728b564051766c98632e41ecc7f",
+        "checkedOn": "2026-08-14"
+      }
+    },
+    {
+      "id": "higashimatsuyama-kubiaka-bounty",
+      "name": "東松山市 クビアカツヤカミキリ駆除奨励品交付事業",
+      "url": "https://www.city.higashimatsuyama.lg.jp/soshiki/13/12310.html",
+      "monitor": {
+        "mode": "normalized_text_sha256",
+        "sha256": "ef7648e1de76b325714046498608a47999eb9823881977d5fa1711fbf59c5e20",
+        "checkedOn": "2026-08-14"
+      }
+    },
+    {
+      "id": "kawachinagano-kubiaka-ranking",
+      "name": "河内長野市 クビアカツヤカミキリ駆除ランキング",
+      "url": "https://www.city.kawachinagano.lg.jp/soshiki/14/112557.html",
+      "monitor": {
+        "mode": "normalized_text_sha256",
+        "sha256": "70ef74306e0da1522b51333af4e88d64d2917d222a5d107af29da9e43c71a7ca",
+        "checkedOn": "2026-08-14"
+      }
+    },
+    {
+      "id": "kato-small-mammal-bounty",
+      "name": "加東市 アライグマ等緊急捕獲対策協力報奨金",
+      "url": "https://www.city.kato.lg.jp/kakukanogoannai/sangyoushinkoubu/nouchiseibika/cyojyu/15024.html",
+      "monitor": {
+        "mode": "normalized_text_sha256",
+        "sha256": "0b30044aa4da15ed886f7ca6e6b2bf752744c457a1308ecea89b43e0efbe30d0",
+        "checkedOn": "2026-08-14"
+      }
+    },
+    {
+      "id": "sakai-raccoon-bounty",
+      "name": "堺市 アライグマ農作物被害対策報奨金",
+      "url": "https://www.city.sakai.lg.jp/sangyo/nosui/sonota/araiguma.html",
+      "monitor": {
+        "mode": "normalized_text_sha256",
+        "sha256": "1cccced373d320d20b7cf2638bbcf73ef2f9b6d51b828d4d73ef4ca585fbc4d6",
+        "checkedOn": "2026-08-14"
+      }
+    },
+    {
+      "id": "iwakuni-nutria-raccoon-bounty",
+      "name": "岩国市 ヌートリア・アライグマ捕獲奨励金",
+      "url": "https://www.city.iwakuni.lg.jp/soshiki/42/67973.html",
+      "monitor": {
+        "mode": "normalized_text_sha256",
+        "sha256": "445bc21d13b5ff1413cf3970b89cd369b1adb459ecad9ba05b4ac6e2ba5e7ac1",
+        "checkedOn": "2026-08-14"
+      }
+    },
+    {
+      "id": "fukagawa-raccoon-bounty",
+      "name": "深川市 アライグマ捕獲報奨金",
+      "url": "https://www.city.fukagawa.lg.jp/cms/section/nosei/gm9h2g000000n1w4.html",
+      "monitor": {
+        "mode": "manual",
+        "checkedOn": "2026-08-14",
+        "reason": "tls_incompatible_with_automation"
+      }
+    },
+    {
+      "id": "tomioka-medium-mammal-bounty",
+      "name": "富岡市 中型獣捕獲奨励金",
+      "url": "https://www.city.tomioka.lg.jp/www/contents/1467356239573/index.html",
+      "monitor": {
+        "mode": "manual",
+        "checkedOn": "2026-08-14",
+        "reason": "tls_incompatible_with_automation"
+      }
+    },
+    {
+      "id": "shosanbetsu-raccoon-bounty",
+      "name": "初山別村 アライグマ捕獲報奨金",
+      "url": "https://www.vill.shosanbetsu.lg.jp/sangyobusiness/yugaichoujukujo/",
+      "monitor": {
+        "mode": "normalized_text_sha256",
+        "sha256": "9d8e002536bc0a8352012293054e67a1e94236d1bcb0db42738e743e4cc30a1b",
+        "checkedOn": "2026-08-14"
+      }
     }
   ],
   "officialDesignations": [
@@ -1419,6 +1549,51 @@
           "verifiedOn": "2026-08-14"
         }
       ]
+    },
+    {
+      "taxonId": 42187,
+      "scientificName": "Muntiacus reevesi",
+      "commonName": "キョン",
+      "officialStatuses": [
+        {
+          "type": "specified_invasive_alien_species",
+          "sourceId": "moe-specified-invasive-alien-species",
+          "designationId": "moe-ias-5be1ccad707cb073",
+          "verifiedOn": "2026-08-14"
+        }
+      ]
+    },
+    {
+      "taxonId": 41663,
+      "scientificName": "Procyon lotor",
+      "commonName": "アライグマ",
+      "officialStatuses": [
+        {
+          "type": "specified_invasive_alien_species",
+          "sourceId": "moe-specified-invasive-alien-species",
+          "designationId": "moe-ias-d05c0aa009056a3e",
+          "verifiedOn": "2026-08-14"
+        }
+      ]
+    },
+    {
+      "taxonId": 43997,
+      "scientificName": "Myocastor coypus",
+      "commonName": "ヌートリア",
+      "officialStatuses": [
+        {
+          "type": "specified_invasive_alien_species",
+          "sourceId": "moe-specified-invasive-alien-species",
+          "designationId": "moe-ias-a409919c1d1eeb36",
+          "verifiedOn": "2026-08-14"
+        }
+      ]
+    },
+    {
+      "taxonId": 41625,
+      "scientificName": "Paguma larvata",
+      "commonName": "ハクビシン",
+      "officialStatuses": []
     }
   ],
   "controlPrograms": [
@@ -1459,14 +1634,20 @@
           "targets": [
             {
               "taxonId": 494519,
-              "lifeStages": [
-                "adult"
+              "subjects": [
+                {
+                  "type": "organism",
+                  "lifeStage": "adult"
+                }
               ]
             },
             {
               "taxonId": 128525,
-              "lifeStages": [
-                "adult"
+              "subjects": [
+                {
+                  "type": "organism",
+                  "lifeStage": "adult"
+                }
               ]
             }
           ],
@@ -1484,14 +1665,20 @@
           "targets": [
             {
               "taxonId": 494519,
-              "lifeStages": [
-                "adult"
+              "subjects": [
+                {
+                  "type": "organism",
+                  "lifeStage": "adult"
+                }
               ]
             },
             {
               "taxonId": 128525,
-              "lifeStages": [
-                "adult"
+              "subjects": [
+                {
+                  "type": "organism",
+                  "lifeStage": "adult"
+                }
               ]
             }
           ],
@@ -1516,8 +1703,515 @@
           ],
           "incentive": {
             "type": "prepaid_card",
-            "valueYen": 500,
-            "perSpecimenCount": 10
+            "description": "成虫10匹につき500円分",
+            "amount": {
+              "currency": "JPY",
+              "value": 500
+            },
+            "rate": {
+              "count": 10,
+              "unit": "dead_adult_specimens"
+            },
+            "availability": "while_budget_or_supplies_last"
+          }
+        }
+      ],
+      "verifiedOn": "2026-08-14"
+    },
+    {
+      "id": "ibaraki-kyon-bounties",
+      "name": "茨城県キョン目撃・捕獲報奨金制度",
+      "sourceId": "ibaraki-kyon-bounties",
+      "area": {
+        "countryCode": "JP",
+        "prefectureCode": "JP-08",
+        "focusMunicipalities": ["茨城県全域"]
+      },
+      "validFrom": "2024-04-01",
+      "validThrough": null,
+      "participationPolicies": [
+        {
+          "targets": [
+            {
+              "taxonId": 42187,
+              "subjects": [{"type": "organism", "lifeStage": "any"}]
+            }
+          ],
+          "audience": {
+            "type": "general_public",
+            "jurisdictionCode": "JP"
+          },
+          "requestedActions": ["photograph", "report"],
+          "incentive": {
+            "type": "cash",
+            "description": "生きたキョンと確認された目撃情報1件につき2,000円",
+            "amount": {"currency": "JPY", "value": 2000},
+            "rate": {"count": 1, "unit": "verified_sighting"}
+          }
+        },
+        {
+          "targets": [
+            {
+              "taxonId": 42187,
+              "subjects": [{"type": "organism", "lifeStage": "any"}]
+            }
+          ],
+          "audience": {
+            "type": "licensed_hunters",
+            "jurisdictionCode": "JP-08",
+            "requirements": ["capture_permission_or_hunting_license"]
+          },
+          "requestedActions": ["capture", "kill", "report"],
+          "incentive": {
+            "type": "cash",
+            "description": "適法に捕獲したキョン1頭につき30,000円",
+            "amount": {"currency": "JPY", "value": 30000},
+            "rate": {"count": 1, "unit": "captured_individual"}
+          }
+        }
+      ],
+      "verifiedOn": "2026-08-14"
+    },
+    {
+      "id": "tokyo-oshima-kyon-bounty",
+      "name": "東京都大島町キョン捕獲協力報奨金制度",
+      "sourceId": "tokyo-oshima-kyon-bounty",
+      "area": {
+        "countryCode": "JP",
+        "prefectureCode": "JP-13",
+        "focusMunicipalities": ["大島町"]
+      },
+      "validFrom": "2025-09-08",
+      "validThrough": null,
+      "participationPolicies": [
+        {
+          "targets": [
+            {
+              "taxonId": 42187,
+              "subjects": [{"type": "organism", "lifeStage": "any"}]
+            }
+          ],
+          "audience": {
+            "type": "municipality_residents",
+            "jurisdictionCode": "JP-13-OSHIMA",
+            "requirements": ["able_to_install_and_manage_trap"]
+          },
+          "requestedActions": ["inspect_trap", "report_capture"],
+          "incentive": {
+            "type": "cash",
+            "description": "捕獲後に指定業者が回収したキョン1頭につき8,000円",
+            "amount": {"currency": "JPY", "value": 8000},
+            "rate": {"count": 1, "unit": "recovered_individual"}
+          }
+        }
+      ],
+      "verifiedOn": "2026-08-14"
+    },
+    {
+      "id": "osaka-kubiaka-summer-campaign-2026",
+      "name": "サクラを守れ！クビアカツヤカミキリ 夏の陣 2026",
+      "sourceId": "osaka-kubiaka-summer-campaign",
+      "area": {
+        "countryCode": "JP",
+        "prefectureCode": "JP-27",
+        "focusMunicipalities": [
+          "大阪市", "堺市", "岸和田市", "八尾市", "富田林市", "河内長野市",
+          "松原市", "羽曳野市", "藤井寺市", "大阪狭山市", "柏原市", "太子町",
+          "河南町", "千早赤阪村"
+        ]
+      },
+      "validFrom": "2026-06-01",
+      "validThrough": "2026-08-28",
+      "participationPolicies": [
+        {
+          "targets": [
+            {
+              "taxonId": 494519,
+              "subjects": [{"type": "organism", "lifeStage": "adult"}]
+            }
+          ],
+          "audience": {
+            "type": "anyone",
+            "jurisdictionCode": "JP",
+            "guardianConsentRequiredBelow": "high_school"
+          },
+          "requestedActions": ["capture", "kill", "report"],
+          "incentive": {
+            "type": "ranked_prize",
+            "description": "捕獲数上位20名にAmazonギフトカード等を贈呈",
+            "tiers": [
+              {"ranks": "1-5", "amount": {"currency": "JPY", "value": 15000}},
+              {"ranks": "6-10", "amount": {"currency": "JPY", "value": 8000}},
+              {"ranks": "11-20", "amount": {"currency": "JPY", "value": 5000}}
+            ]
+          }
+        }
+      ],
+      "verifiedOn": "2026-08-14"
+    },
+    {
+      "id": "gunma-kubiaka-card-2026",
+      "name": "群馬県クビアカツヤカミキリ捕獲特典カード配布",
+      "sourceId": "gunma-kubiaka-card",
+      "area": {
+        "countryCode": "JP",
+        "prefectureCode": "JP-10",
+        "focusMunicipalities": ["群馬県全域"]
+      },
+      "validFrom": "2026-06-01",
+      "validThrough": null,
+      "participationPolicies": [
+        {
+          "targets": [
+            {
+              "taxonId": 494519,
+              "subjects": [{"type": "organism", "lifeStage": "adult"}]
+            }
+          ],
+          "audience": {
+            "type": "prefecture_residents",
+            "jurisdictionCode": "JP-10"
+          },
+          "requestedActions": ["capture", "kill", "submit_specimen"],
+          "incentive": {
+            "type": "collectible_card",
+            "description": "死亡した成虫10匹につき特定外来生物カード1枚",
+            "rate": {"count": 10, "unit": "dead_adult_specimens"},
+            "availability": "while_supplies_last"
+          }
+        }
+      ],
+      "verifiedOn": "2026-08-14"
+    },
+    {
+      "id": "gunma-kubiaka-reporting-2026",
+      "name": "群馬県クビアカツヤカミキリ発生情報収集2026",
+      "sourceId": "gunma-kubiaka-reporting",
+      "area": {
+        "countryCode": "JP",
+        "prefectureCode": "JP-10",
+        "focusMunicipalities": ["群馬県全域"]
+      },
+      "validFrom": "2026-04-02",
+      "validThrough": "2026-12-25",
+      "participationPolicies": [
+        {
+          "targets": [
+            {
+              "taxonId": 494519,
+              "subjects": [
+                {"type": "organism", "lifeStage": "adult"},
+                {"type": "trace", "traceType": "frass_or_exit_hole"}
+              ]
+            }
+          ],
+          "audience": {"type": "general_public", "jurisdictionCode": "JP"},
+          "requestedActions": ["photograph", "report"],
+          "incentive": null
+        }
+      ],
+      "verifiedOn": "2026-08-14"
+    },
+    {
+      "id": "higashimatsuyama-kubiaka-bounty-2026",
+      "name": "東松山市クビアカツヤカミキリ駆除奨励品交付事業2026",
+      "sourceId": "higashimatsuyama-kubiaka-bounty",
+      "area": {
+        "countryCode": "JP",
+        "prefectureCode": "JP-11",
+        "focusMunicipalities": ["東松山市"]
+      },
+      "validFrom": "2026-06-01",
+      "validThrough": "2026-07-10",
+      "plannedValidThrough": "2026-09-30",
+      "participationPolicies": [
+        {
+          "targets": [
+            {
+              "taxonId": 494519,
+              "subjects": [{"type": "organism", "lifeStage": "adult"}]
+            }
+          ],
+          "audience": {
+            "type": "municipality_residents",
+            "jurisdictionCode": "JP-11-HIGASHIMATSUYAMA"
+          },
+          "requestedActions": ["capture", "kill", "submit_specimen"],
+          "incentive": {
+            "type": "local_currency",
+            "description": "死亡した成虫30匹につき、ぼたん圓2枚（計1,000円相当）",
+            "amount": {"currency": "JPY", "value": 1000},
+            "rate": {"count": 30, "unit": "dead_adult_specimens"},
+            "availability": "ended_early_when_budget_exhausted"
+          }
+        }
+      ],
+      "verifiedOn": "2026-08-14"
+    },
+    {
+      "id": "kawachinagano-kubiaka-ranking-2026",
+      "name": "河内長野市クビアカツヤカミキリ捕獲ポイントランキング2026",
+      "sourceId": "kawachinagano-kubiaka-ranking",
+      "area": {
+        "countryCode": "JP",
+        "prefectureCode": "JP-27",
+        "focusMunicipalities": ["河内長野市"]
+      },
+      "validFrom": "2026-06-15",
+      "validThrough": "2026-09-23",
+      "reportDeadline": "2026-09-30",
+      "participationPolicies": [
+        {
+          "targets": [
+            {
+              "taxonId": 494519,
+              "subjects": [{"type": "organism", "lifeStage": "adult"}]
+            }
+          ],
+          "audience": {
+            "type": "registered_program_participants",
+            "jurisdictionCode": "JP-27-KAWACHINAGANO"
+          },
+          "requestedActions": ["capture", "kill", "report"],
+          "incentive": {
+            "type": "leaderboard_points",
+            "description": "死亡した成虫1匹につき50ポイント",
+            "pointsPerUnit": 50,
+            "rate": {"count": 1, "unit": "dead_adult_specimen"}
+          }
+        },
+        {
+          "targets": [
+            {
+              "taxonId": 494519,
+              "subjects": [{"type": "organism", "lifeStage": "egg"}]
+            }
+          ],
+          "audience": {
+            "type": "registered_program_participants",
+            "jurisdictionCode": "JP-27-KAWACHINAGANO"
+          },
+          "requestedActions": ["kill", "report"],
+          "incentive": {
+            "type": "leaderboard_points",
+            "description": "卵1個につき15ポイント",
+            "pointsPerUnit": 15,
+            "rate": {"count": 1, "unit": "egg"}
+          }
+        },
+        {
+          "targets": [
+            {
+              "taxonId": 494519,
+              "subjects": [{"type": "trace", "traceType": "frass"}]
+            }
+          ],
+          "audience": {
+            "type": "registered_program_participants",
+            "jurisdictionCode": "JP-27-KAWACHINAGANO"
+          },
+          "requestedActions": ["photograph", "report"],
+          "incentive": {
+            "type": "leaderboard_points",
+            "description": "フラス発生木1本につき1ポイント",
+            "pointsPerUnit": 1,
+            "rate": {"count": 1, "unit": "tree_with_frass"}
+          }
+        }
+      ],
+      "verifiedOn": "2026-08-14"
+    },
+    {
+      "id": "kato-small-mammal-bounty-2024-2027",
+      "name": "加東市アライグマ等緊急捕獲対策協力報奨金",
+      "sourceId": "kato-small-mammal-bounty",
+      "area": {
+        "countryCode": "JP",
+        "prefectureCode": "JP-28",
+        "focusMunicipalities": ["加東市"]
+      },
+      "validFrom": "2024-04-01",
+      "validThrough": "2027-03-31",
+      "participationPolicies": [
+        {
+          "targets": [
+            {"taxonId": 41663, "subjects": [{"type": "organism", "lifeStage": "any"}]},
+            {"taxonId": 43997, "subjects": [{"type": "organism", "lifeStage": "any"}]},
+            {"taxonId": 41625, "subjects": [{"type": "organism", "lifeStage": "any"}]}
+          ],
+          "audience": {
+            "type": "registered_trap_users",
+            "jurisdictionCode": "JP-28-KATO",
+            "requirements": ["city_loaned_or_registered_owned_trap"]
+          },
+          "requestedActions": ["capture", "report_capture", "hand_over_live_animal"],
+          "incentive": {
+            "type": "cash",
+            "description": "生きた捕獲個体1頭につき3,000円（わな内で死亡した個体は対象外）",
+            "amount": {"currency": "JPY", "value": 3000},
+            "rate": {"count": 1, "unit": "live_captured_individual"}
+          }
+        }
+      ],
+      "verifiedOn": "2026-08-14"
+    },
+    {
+      "id": "sakai-raccoon-bounty",
+      "name": "堺市アライグマ捕獲報償金",
+      "sourceId": "sakai-raccoon-bounty",
+      "area": {
+        "countryCode": "JP",
+        "prefectureCode": "JP-27",
+        "focusMunicipalities": ["堺市"]
+      },
+      "validFrom": null,
+      "validThrough": null,
+      "participationPolicies": [
+        {
+          "targets": [
+            {"taxonId": 41663, "subjects": [{"type": "organism", "lifeStage": "any"}]}
+          ],
+          "audience": {
+            "type": "registered_trap_users",
+            "jurisdictionCode": "JP-27-SAKAI",
+            "requirements": ["city_loaned_trap", "owned_or_used_farmland"]
+          },
+          "requestedActions": ["capture", "report_capture"],
+          "incentive": {
+            "type": "cash",
+            "description": "市貸与箱わなで捕獲したアライグマ1頭につき2,000円",
+            "amount": {"currency": "JPY", "value": 2000},
+            "rate": {"count": 1, "unit": "captured_individual"}
+          }
+        }
+      ],
+      "verifiedOn": "2026-08-14"
+    },
+    {
+      "id": "iwakuni-nutria-raccoon-bounty",
+      "name": "岩国市ヌートリア・アライグマ捕獲奨励金",
+      "sourceId": "iwakuni-nutria-raccoon-bounty",
+      "area": {
+        "countryCode": "JP",
+        "prefectureCode": "JP-35",
+        "focusMunicipalities": ["岩国市"]
+      },
+      "validFrom": null,
+      "validThrough": null,
+      "participationPolicies": [
+        {
+          "targets": [
+            {"taxonId": 43997, "subjects": [{"type": "organism", "lifeStage": "any"}]},
+            {"taxonId": 41663, "subjects": [{"type": "organism", "lifeStage": "any"}]}
+          ],
+          "audience": {
+            "type": "permitted_trappers",
+            "jurisdictionCode": "JP-35-IWAKUNI",
+            "requirements": ["control_worker_certificate_or_capture_permission"]
+          },
+          "requestedActions": ["capture", "kill", "dispose_carcass", "photograph", "report"],
+          "incentive": {
+            "type": "cash",
+            "description": "捕獲・処分した個体1頭につき3,000円",
+            "amount": {"currency": "JPY", "value": 3000},
+            "rate": {"count": 1, "unit": "captured_individual"}
+          }
+        }
+      ],
+      "verifiedOn": "2026-08-14"
+    },
+    {
+      "id": "fukagawa-raccoon-bounty",
+      "name": "深川市アライグマ捕獲報償金",
+      "sourceId": "fukagawa-raccoon-bounty",
+      "area": {
+        "countryCode": "JP",
+        "prefectureCode": "JP-01",
+        "focusMunicipalities": ["深川市"]
+      },
+      "validFrom": null,
+      "validThrough": null,
+      "participationPolicies": [
+        {
+          "targets": [
+            {"taxonId": 41663, "subjects": [{"type": "organism", "lifeStage": "any"}]}
+          ],
+          "audience": {
+            "type": "registered_control_workers",
+            "jurisdictionCode": "JP-01-FUKAGAWA",
+            "requirements": ["capture_permission"]
+          },
+          "requestedActions": ["capture", "transport", "dispose_carcass"],
+          "incentive": {
+            "type": "cash",
+            "description": "捕獲個体1頭につき2,000円から3,000円",
+            "amount": {"currency": "JPY", "minimumValue": 2000, "maximumValue": 3000},
+            "rate": {"count": 1, "unit": "captured_individual"}
+          }
+        }
+      ],
+      "verifiedOn": "2026-08-14"
+    },
+    {
+      "id": "tomioka-medium-mammal-bounty",
+      "name": "富岡市中型獣捕獲奨励金",
+      "sourceId": "tomioka-medium-mammal-bounty",
+      "area": {
+        "countryCode": "JP",
+        "prefectureCode": "JP-10",
+        "focusMunicipalities": ["富岡市"]
+      },
+      "validFrom": null,
+      "validThrough": null,
+      "participationPolicies": [
+        {
+          "targets": [
+            {"taxonId": 41663, "subjects": [{"type": "organism", "lifeStage": "any"}]},
+            {"taxonId": 41625, "subjects": [{"type": "organism", "lifeStage": "any"}]}
+          ],
+          "audience": {
+            "type": "municipality_residents",
+            "jurisdictionCode": "JP-10-TOMIOKA",
+            "requirements": ["city_loaned_trap", "own_property", "capture_permission"]
+          },
+          "requestedActions": ["capture", "report_capture"],
+          "incentive": {
+            "type": "prepaid_card",
+            "description": "捕獲個体1頭につき1,000円分の商品券",
+            "amount": {"currency": "JPY", "value": 1000},
+            "rate": {"count": 1, "unit": "captured_individual"}
+          }
+        }
+      ],
+      "verifiedOn": "2026-08-14"
+    },
+    {
+      "id": "shosanbetsu-raccoon-bounty",
+      "name": "初山別村アライグマ捕獲報償金",
+      "sourceId": "shosanbetsu-raccoon-bounty",
+      "area": {
+        "countryCode": "JP",
+        "prefectureCode": "JP-01",
+        "focusMunicipalities": ["初山別村"]
+      },
+      "validFrom": null,
+      "validThrough": null,
+      "participationPolicies": [
+        {
+          "targets": [
+            {"taxonId": 41663, "subjects": [{"type": "organism", "lifeStage": "any"}]}
+          ],
+          "audience": {
+            "type": "adult_municipality_residents",
+            "jurisdictionCode": "JP-01-SHOSANBETSU",
+            "requirements": ["registered_control_worker"]
+          },
+          "requestedActions": ["capture", "transport", "hand_over_live_animal"],
+          "incentive": {
+            "type": "cash",
+            "description": "捕獲したアライグマ1頭につき1,000円",
+            "amount": {"currency": "JPY", "value": 1000},
+            "rate": {"count": 1, "unit": "captured_individual"}
           }
         }
       ],

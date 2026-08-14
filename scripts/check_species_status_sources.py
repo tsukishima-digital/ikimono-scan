@@ -66,6 +66,8 @@ def check_sources(registry: dict) -> list[dict[str, str]]:
 
     changed: list[dict[str, str]] = []
     for source in registry["sources"]:
+        if source["monitor"]["mode"] == "manual":
+            continue
         actual = fingerprint(fetch(source["url"]))
         expected = source["monitor"]["sha256"]
         if actual != expected:
@@ -88,6 +90,8 @@ def refresh(path: str | Path, *, checked_on: str | None = None) -> None:
     registry = load_species_status_registry(registry_path)
     date = checked_on or datetime.now(UTC).date().isoformat()
     for source in registry["sources"]:
+        if source["monitor"]["mode"] == "manual":
+            continue
         source["monitor"]["sha256"] = fingerprint(fetch(source["url"]))
         source["monitor"]["checkedOn"] = date
     registry_path.write_text(
