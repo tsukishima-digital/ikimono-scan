@@ -376,10 +376,10 @@ def test_dataset_summary_counts_raw_and_processed_images(tmp_path: Path) -> None
 def test_git_metadata_uses_environment_fallback_when_git_is_unavailable(
     monkeypatch, tmp_path: Path
 ) -> None:
-    monkeypatch.setenv("HUNTLOG_GIT_COMMIT", "abc123")
-    monkeypatch.setenv("HUNTLOG_GIT_BRANCH", "codex/mlflow-tracking")
-    monkeypatch.setenv("HUNTLOG_GIT_STATUS", "")
-    monkeypatch.setenv("HUNTLOG_GIT_DIRTY", "false")
+    monkeypatch.setenv("IKIMONO_SCAN_GIT_COMMIT", "abc123")
+    monkeypatch.setenv("IKIMONO_SCAN_GIT_BRANCH", "codex/mlflow-tracking")
+    monkeypatch.setenv("IKIMONO_SCAN_GIT_STATUS", "")
+    monkeypatch.setenv("IKIMONO_SCAN_GIT_DIRTY", "false")
 
     metadata = tracking.collect_git_metadata(tmp_path)
 

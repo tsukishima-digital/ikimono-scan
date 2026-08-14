@@ -6,7 +6,7 @@ from typing import Any
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
-import torch
+from ikimono_scan_ml.checkpoint import load_checkpoint
 
 INAT_TAXA_URL = "https://api.inaturalist.org/v1/taxa"
 USER_AGENT = "ikimono-scan/0.1 (https://github.com/tsukishima-digital/ikimono-scan)"
@@ -14,7 +14,7 @@ BATCH_SIZE = 30
 
 
 def refresh_japanese_catalog(*, checkpoint_path: str | Path, output_path: str | Path) -> Path:
-    checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
+    checkpoint = load_checkpoint(checkpoint_path, map_location="cpu")
     taxon_ids = [_taxon_id(label) for label in checkpoint["classes"]]
     taxa: dict[str, dict[str, str]] = {}
 
