@@ -9,6 +9,8 @@ WORKFLOWS = REPOSITORY_ROOT / ".github" / "workflows"
 TASKFILE = REPOSITORY_ROOT / "Taskfile.yml"
 GITLEAKS_CONFIG = REPOSITORY_ROOT / ".gitleaks.toml"
 DEPENDABOT_CONFIG = REPOSITORY_ROOT / ".github" / "dependabot.yml"
+PYPROJECT = REPOSITORY_ROOT / "pyproject.toml"
+ML_DOCKERFILE = REPOSITORY_ROOT / "ml" / "Dockerfile"
 PINNED_ACTION = re.compile(r"^[^\s@]+@[0-9a-f]{40}$")
 
 
@@ -301,6 +303,16 @@ def test_model_tasks_export_locally_and_upload_without_dispatching_actions():
     assert "publish_model.py" in upload_source
     assert "gh workflow run" not in upload_source
     assert "verify_public_model.py" in smoke_source
+
+
+def test_training_runtime_uses_the_security_patched_pytorch_stack():
+    project = tomllib.loads(PYPROJECT.read_text())
+    dependencies = set(project["project"]["dependencies"])
+    dockerfile = ML_DOCKERFILE.read_text()
+
+    assert "torch>=2.13,<2.14" in dependencies
+    assert "torchvision>=0.28,<0.29" in dependencies
+    assert dockerfile.startswith("FROM pytorch/pytorch:2.13.0-cuda13.0-cudnn9-runtime\n")
 
 
 def test_worker_serves_tracked_manifest_and_r2_model_objects():

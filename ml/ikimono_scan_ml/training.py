@@ -16,6 +16,7 @@ from torch.utils.data import DataLoader
 from torchvision import datasets, models, transforms
 from tqdm import tqdm
 
+from ikimono_scan_ml.checkpoint import load_checkpoint
 from ikimono_scan_ml.config import load_yaml, project_path
 from ikimono_scan_ml.tracking import (
     build_dataset_summary,
@@ -191,7 +192,7 @@ def train_from_config(config_path: str | Path) -> TrainArtifacts:
                     best_path,
                 )
 
-        checkpoint = torch.load(best_path, map_location=device, weights_only=False)
+        checkpoint = load_checkpoint(best_path, map_location=device)
         model = _build_model(
             architecture=checkpoint["architecture"],
             num_classes=len(checkpoint["classes"]),
@@ -231,7 +232,7 @@ def train_from_config(config_path: str | Path) -> TrainArtifacts:
 
 
 def evaluate_checkpoint(checkpoint_path: str | Path, data_dir: str | Path) -> dict:
-    checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
+    checkpoint = load_checkpoint(checkpoint_path, map_location="cpu")
     image_size = int(checkpoint["image_size"])
     resize_mode = str(checkpoint.get("resize_mode", "crop"))
     dataset = datasets.ImageFolder(

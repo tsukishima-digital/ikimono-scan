@@ -53,7 +53,7 @@ def test_export_checkpoint_writes_model_and_manifest(tmp_path: Path, monkeypatch
         "model_state": {"weight": torch.tensor([1.0])},
     }
     model = FakeModel()
-    monkeypatch.setattr(torch, "load", lambda *args, **kwargs: checkpoint)
+    monkeypatch.setattr(web_export, "load_checkpoint", lambda *args, **kwargs: checkpoint)
     monkeypatch.setattr(web_export, "_build_model", lambda **kwargs: model)
 
     def fake_onnx_export(model_arg, example_input, output_path, **kwargs):

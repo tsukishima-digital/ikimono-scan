@@ -1,4 +1,4 @@
-FROM pytorch/pytorch:2.5.1-cuda12.4-cudnn9-runtime
+FROM pytorch/pytorch:2.13.0-cuda13.0-cudnn9-runtime
 COPY --from=ghcr.io/astral-sh/uv:0.5.31 /uv /uvx /usr/local/bin/
 
 ENV PYTHONDONTWRITEBYTECODE=1 \

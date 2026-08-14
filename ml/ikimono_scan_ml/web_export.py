@@ -8,6 +8,7 @@ from pathlib import Path
 
 import torch
 
+from ikimono_scan_ml.checkpoint import load_checkpoint
 from ikimono_scan_ml.training import _build_model
 
 # Business: Suppress low-confidence closed-set labels until negative-image evaluation
@@ -33,7 +34,7 @@ def export_checkpoint(
 ) -> WebExportArtifacts:
     checkpoint_path = Path(checkpoint_path)
     output_dir = Path(output_dir)
-    checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
+    checkpoint = load_checkpoint(checkpoint_path, map_location="cpu")
     classes = list(checkpoint["classes"])
     image_size = int(checkpoint["image_size"])
     model = _build_model(
