@@ -49,6 +49,7 @@ jobs:
             echo "公式発表を確認して台帳を更新し、レビュー後に次を実行してください。"
             echo
             echo '```console'
+            echo "task priority:specified:refresh"
             echo "task priority:sources:refresh"
             echo '```'
           } > priority-source-issue.md

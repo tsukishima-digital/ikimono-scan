@@ -8,6 +8,7 @@ from pathlib import Path
 
 PRIORITY_LEVELS = {"P0", "P1", "P2"}
 IMPACT_LEVELS = {"high", "medium", "low"}
+REGULATION_TYPES = {"conditional", "specified"}
 TRAINING_POLICY_KEYS = {
     "classWeight",
     "lossWeight",
@@ -35,6 +36,12 @@ def validate_priority_registry(registry: dict) -> None:
         raise ValueError("Priority registry jurisdiction must be JP")
 
     sources = _required_list(registry, "sources")
+    designations = _required_list(registry, "officialDesignations")
+    priority_defaults = registry.get("designationPriorityDefaults")
+    if priority_defaults != {"specified": "P1", "conditional": "P1"}:
+        raise ValueError(
+            "Priority registry designationPriorityDefaults must map specified and conditional to P1"
+        )
     taxa = _required_list(registry, "taxa")
     groups = _required_list(registry, "identificationGroups")
     _reject_training_policy(registry)
@@ -55,6 +62,33 @@ def validate_priority_registry(registry: dict) -> None:
         digest = monitor.get("sha256")
         if not isinstance(digest, str) or SHA256_PATTERN.fullmatch(digest) is None:
             raise ValueError(f"Source {source_id} has an invalid sha256")
+
+    designation_ids: set[str] = set()
+    for designation in designations:
+        designation_id = _nonempty_string(designation, "id", "official designation")
+        if designation_id in designation_ids:
+            raise ValueError(f"Duplicate official designation id: {designation_id}")
+        designation_ids.add(designation_id)
+        source_id = _nonempty_string(
+            designation,
+            "sourceId",
+            f"official designation {designation_id}",
+        )
+        if source_id not in source_ids:
+            raise ValueError(
+                f"Official designation {designation_id} references unknown sourceId: {source_id}"
+            )
+        _nonempty_string(designation, "organismGroup", f"official designation {designation_id}")
+        _nonempty_string(designation, "scopeText", f"official designation {designation_id}")
+        if designation.get("regulationType") not in REGULATION_TYPES:
+            raise ValueError(f"Official designation {designation_id} has an invalid regulationType")
+        conditional_members = designation.get("conditionalMembers")
+        if not isinstance(conditional_members, list) or any(
+            not isinstance(member, str) or not member.strip() for member in conditional_members
+        ):
+            raise ValueError(
+                f"Official designation {designation_id} conditionalMembers must be strings"
+            )
 
     group_ids: set[str] = set()
     for group in groups:
@@ -92,6 +126,15 @@ def validate_priority_registry(registry: dict) -> None:
             source_id = _nonempty_string(status, "sourceId", f"taxon {taxon_id} status")
             if source_id not in source_ids:
                 raise ValueError(f"Taxon {taxon_id} references unknown sourceId: {source_id}")
+            designation_id = _nonempty_string(
+                status,
+                "designationId",
+                f"taxon {taxon_id} status",
+            )
+            if designation_id not in designation_ids:
+                raise ValueError(
+                    f"Taxon {taxon_id} references unknown designationId: {designation_id}"
+                )
             _nonempty_string(status, "type", f"taxon {taxon_id} status")
             _nonempty_string(status, "verifiedOn", f"taxon {taxon_id} status")
 

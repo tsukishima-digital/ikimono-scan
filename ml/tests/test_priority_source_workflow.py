@@ -13,3 +13,4 @@ def test_priority_source_workflow_runs_weekly_and_opens_one_review_issue() -> No
     assert "gh issue list" in source
     assert "gh issue create" in source
     assert "gh issue comment" in source
+    assert "task priority:specified:refresh" in source

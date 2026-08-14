@@ -43,6 +43,1310 @@
       }
     }
   ],
+  "officialDesignations": [
+    {
+      "id": "moe-ias-7db508fa598534cf",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "mammals",
+      "scopeText": "フクロギツネ（T. vulpecula）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-5b564e7fea3d071c",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "mammals",
+      "scopeText": "ハリネズミ属の全種",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-4671dba64961282b",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "mammals",
+      "scopeText": "タイワンザル（M. cyclopis）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-1a451515ec9e95c8",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "mammals",
+      "scopeText": "カニクイザル（M. fascicularis）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-09a235e1d537689a",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "mammals",
+      "scopeText": "アカゲザル（M. mulatta）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-7adef507ca7e8b84",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "mammals",
+      "scopeText": "タイワンザル×ニホンザル（M. cyclopis×M. fuscata）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-72b8f80b113db36c",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "mammals",
+      "scopeText": "アカゲザル×ニホンザル（M. mulatta×M. fuscata）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-a409919c1d1eeb36",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "mammals",
+      "scopeText": "ヌートリア（M. coypus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-fb900bba278d15d6",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "mammals",
+      "scopeText": "クリハラリス（タイワンリス）（C. erythraeus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-c895944480fab105",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "mammals",
+      "scopeText": "フィンレイソンリス（C. finlaysonii）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-b97f4d41f14d0c5a",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "mammals",
+      "scopeText": "タイリクモモンガ（P. volans） ただし、次のものを除く。 ・エゾモモンガ（P. volans orii）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-61e0bb312dc9bd50",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "mammals",
+      "scopeText": "トウブハイイロリス（S. carolinensis）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-a699d4bc2b6f4fd7",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "mammals",
+      "scopeText": "キタリス（S. vulgaris） ただし、次のものを除く。 ・エゾリス（S. vulgaris orientis）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-adc88306e7a645aa",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "mammals",
+      "scopeText": "マスクラット（O. zibethicus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-29e24d78cc98c260",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "mammals",
+      "scopeText": "カニクイアライグマ（P. cancrivorus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-d05c0aa009056a3e",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "mammals",
+      "scopeText": "アライグマ（P. lotor）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-0548ffe5a931e001",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "mammals",
+      "scopeText": "アメリカミンク（M. vison）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-2987d413855e5dd9",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "mammals",
+      "scopeText": "フイリマングース（H. auropunctatus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-3fc7ccc9c045e553",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "mammals",
+      "scopeText": "ジャワマングース（H. javanicus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-a0542597699cffbf",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "mammals",
+      "scopeText": "シママングース（M. mungo）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-035e75f59f409e46",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "mammals",
+      "scopeText": "アキシスジカ属の全種",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-32a8c58308230f6b",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "mammals",
+      "scopeText": "シカ属の全種 ただし、次のものを除く。 ・ホンシュウジカ （C. nippon centralis） ・ケラマジカ （C. nippon keramae） ・マゲシカ （C. nippon mageshimae） ・キュウシュウジカ （C. nippon nippon） ・ツシマジカ （C. nippon pulchellus） ・ヤクシカ （C. nippon yakushimae） ・エゾシカ （C. nippon yesoensis）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-6efbde01f046a80e",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "mammals",
+      "scopeText": "ダマシカ属の全種",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-ce1bb14954079ffa",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "mammals",
+      "scopeText": "シフゾウ（E. davidianus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-5be1ccad707cb073",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "mammals",
+      "scopeText": "キョン（M. reevesi）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-3b54e32b034bc447",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "birds",
+      "scopeText": "カナダガン（B. canadensis）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-3adbac424c328fb3",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "birds",
+      "scopeText": "シリアカヒヨドリ（P. cafer）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-7d926efc846a7c5e",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "birds",
+      "scopeText": "ガビチョウ（G. canorus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-50a6b9b17edc9389",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "birds",
+      "scopeText": "ヒゲガビチョウ（G. cineraceus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-125fcf95e8bbf17d",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "birds",
+      "scopeText": "カオグロガビチョウ（G. perspicillatus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-a1d8f59ff6e1fc16",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "birds",
+      "scopeText": "カオジロガビチョウ（G. sannio）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-08d05bc201393a50",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "birds",
+      "scopeText": "ソウシチョウ（L. lutea）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-ee51e99c0facbb26",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "reptiles",
+      "scopeText": "カミツキガメ（C. serpentina）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-7a0724a19fadac7b",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "reptiles",
+      "scopeText": "アカミミガメ（T. scripta）",
+      "regulationType": "conditional",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-cb04aefe03da9e82",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "reptiles",
+      "scopeText": "ハナガメ（タイワンハナガメ）（M. sinensis）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-a524d018bb532e7f",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "reptiles",
+      "scopeText": "ハナガメ×ニホンイシガメ（M. sinensis×M. japonica）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-a5e48c6316e02074",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "reptiles",
+      "scopeText": "ハナガメ×ミナミイシガメ（M. sinensis×M. mutica）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-7c79d0a2dbdad1b7",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "reptiles",
+      "scopeText": "ハナガメ×クサガメ（M. sinensis×M. reevesii）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-b37c548bd5404ead",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "reptiles",
+      "scopeText": "スウィンホーキノボリトカゲ（J. swinhonis）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-008972d13a6ec5c0",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "reptiles",
+      "scopeText": "アノリス・アルログス（A allogus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-d3c2925e023ef08b",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "reptiles",
+      "scopeText": "アノリス・アルタケウス（A. alutaceus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-1835d94bb51aecbd",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "reptiles",
+      "scopeText": "アノリス・アングスティケプス（A. angusticeps）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-8f2dba1039697115",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "reptiles",
+      "scopeText": "グリーンアノール（A. carolinensis）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-3c03df971b388c43",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "reptiles",
+      "scopeText": "ナイトアノール（A. equestris）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-26f199ca55ada8c0",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "reptiles",
+      "scopeText": "ガーマンアノール（A. garmanni）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-6c2d57c00f0809b4",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "reptiles",
+      "scopeText": "アノリス・ホモレキス（A. homolechis）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-60334f1897dfdeb4",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "reptiles",
+      "scopeText": "ブラウンアノール（A. sagrei）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-03a70c1f149dedf0",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "reptiles",
+      "scopeText": "ミドリオオガシラ（B. cyanea）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-796ec7b0e5d950e2",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "reptiles",
+      "scopeText": "イヌバオオガシラ（B. cynodon）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-bc104df9ee115dc3",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "reptiles",
+      "scopeText": "マングローブヘビ（B. dendrophila）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-8ee1dd097e01f41e",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "reptiles",
+      "scopeText": "ミナミオオガシラ（B. irregularis）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-6ddb6909608e299f",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "reptiles",
+      "scopeText": "ボウシオオガシラ（B. nigriceps）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-3ff19e0454f2449e",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "reptiles",
+      "scopeText": "タイワンスジオ（E. taeniura friesi）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-9465fd45e4664a2a",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "reptiles",
+      "scopeText": "タイワンハブ（P. mucrosquamatus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-b597fba4e80abfa9",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "amphibians",
+      "scopeText": "プレーンズヒキガエル（B. cognatus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-1d84a747e16a0c3c",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "amphibians",
+      "scopeText": "キンイロヒキガエル（B. guttatus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-696cd75c4641c08a",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "amphibians",
+      "scopeText": "オオヒキガエル（B. marinus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-b3380c0782cdcc32",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "amphibians",
+      "scopeText": "ヘリグロヒキガエル（B. melanostictus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-3dc058628d6318c3",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "amphibians",
+      "scopeText": "アカボシヒキガエル（B. punctatus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-8a7b67bee430d3c2",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "amphibians",
+      "scopeText": "オークヒキガエル（B. quercicus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-8b087bbb9482e91a",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "amphibians",
+      "scopeText": "アフリカヒキガエル（B. regularis）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-aef28dcb208bd779",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "amphibians",
+      "scopeText": "テキサスヒキガエル（B. speciosus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-16ae0ce894ac1e81",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "amphibians",
+      "scopeText": "コノハヒキガエル（B. typhonius）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-cb135a17137e12bf",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "amphibians",
+      "scopeText": "キューバズツキガエル（キューバアマガエル）（O. septentrionalis）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-4a1f88c1037c92b3",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "amphibians",
+      "scopeText": "コキーコヤスガエル（E. coqui）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-f3d5022e614cce51",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "amphibians",
+      "scopeText": "ジョンストンコヤスガエル（E. johnstonei）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-3652e2424d7c3980",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "amphibians",
+      "scopeText": "オンシツガエル（E. planirostris）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-d5f53e3ca9a938b3",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "amphibians",
+      "scopeText": "アジアジムグリガエル（K. pulchra）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-423e4145921165b1",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "amphibians",
+      "scopeText": "ウシガエル（R. catesbeiana）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-d7123e2d72c92a04",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "amphibians",
+      "scopeText": "シロアゴガエル（P. leucomystax）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-716a498026fb2bd0",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "amphibians",
+      "scopeText": "オオサンショウウオ属の全種 ただし、次のものを除く。 ・オオサンショウウオ（A. japonicus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-09f960a124f251bb",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "amphibians",
+      "scopeText": "オオサンショウウオ属に属する種間の交雑により生じた生物",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-7cbe61227ac2e570",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "fish",
+      "scopeText": "ガー科の全種（Lepisosteidae spp.）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-6cdfb74c888d317e",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "fish",
+      "scopeText": "ガー科に属する種間の交雑により生じた生物",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-334ef7065a6ea548",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "fish",
+      "scopeText": "オオタナゴ（Acheilognathus macropterus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-114434b9ee2be418",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "fish",
+      "scopeText": "コウライギギ（T. fulvidraco）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-88bda8ce3052106f",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "fish",
+      "scopeText": "ブラウンブルヘッド（A. nebulosus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-8d9b5259cbc5b13e",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "fish",
+      "scopeText": "チャネルキャットフィッシュ（I. punctatus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-d211a7abd94d088a",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "fish",
+      "scopeText": "フラットヘッドキャットフィッシュ（P. olivaris）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-dac0512312fe5197",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "fish",
+      "scopeText": "ヨーロッパナマズ（ヨーロッパオオナマズ）（S. glanis）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-3bbf5bb87ddec83e",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "fish",
+      "scopeText": "カワカマス科の全種（Esocidae spp.）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-4ce5414ded3807a1",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "fish",
+      "scopeText": "カワカマス科に属する種間の交雑により生じた生物",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-7abb2623c5986ebd",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "fish",
+      "scopeText": "カダヤシ（G. affinis）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-16d7b3e616ec9d7d",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "fish",
+      "scopeText": "ガンブスィア・ホルブロオキ（G. holbrooki）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-51a6f3a8ecdc0eb4",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "fish",
+      "scopeText": "ブルーギル（L. macrochirus） 関連情報はこちら",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-b099150019e74131",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "fish",
+      "scopeText": "コクチバス（M. dolomieu） 関連情報はこちら",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-6a2787cdd11c1a17",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "fish",
+      "scopeText": "オオクチバス（M. salmoides） 関連情報はこちら",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-ac7d55d594b61534",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "fish",
+      "scopeText": "ラウンドゴビー（N. melanostomus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-57620abbd8b07df4",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "fish",
+      "scopeText": "ナイルパーチ（L. niloticus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-f32ea0013662c8ef",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "fish",
+      "scopeText": "ホワイトパーチ（M. americana）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-d93524da9693e381",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "fish",
+      "scopeText": "ホワイトバス（M. chrysops）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-cc17c784c68f5deb",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "fish",
+      "scopeText": "ストライプトバス（M. saxatilis）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-99b4db208014354c",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "fish",
+      "scopeText": "ホワイトバス×ストライプトバス（M. saxatilis×M. chrysops）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-e7d29dcf2ef85bab",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "fish",
+      "scopeText": "ラッフ（G. cernua）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-e0c1ee652df75911",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "fish",
+      "scopeText": "ヨーロピアンパーチ（P. fluviatilis）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-7a39044c6435c31c",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "fish",
+      "scopeText": "パイクパーチ（S. lucioperca）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-929e8c76e41e55cb",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "fish",
+      "scopeText": "ケツギョ（S. chuatsi）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-f7253273fbc00831",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "fish",
+      "scopeText": "コウライケツギョ（S. scherzeri）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-ebe61b12d02c1dd4",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "insects",
+      "scopeText": "アカボシゴマダラ（Hestina assimillis） ただし、次のものを除く。 ・アカボシゴマダラ奄美亜種（Hestina assimillis shirakii）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-3f95114016e113ac",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "insects",
+      "scopeText": "ツヤハダゴマダラカミキリ（A. glabripennis）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-d2b4a6d63d1c1b4e",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "insects",
+      "scopeText": "サビイロクワカミキリ（A. swainsoni）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-ad1ad8108aa66e44",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "insects",
+      "scopeText": "クビアカツヤカミキリ（Aromia bungii）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-77ef50e3bb23ca81",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "insects",
+      "scopeText": "アングラートゥスマルバネクワガタ（Neolucanus angulatus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-162fd730b4473e28",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "insects",
+      "scopeText": "バラデバマルバネクワガタ（Neolucanus baladeva）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-7f29c9c49d419482",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "insects",
+      "scopeText": "ギガンテウスマルバネクワガタ（Neolucanus giganteus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-63cab0b9aed420d5",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "insects",
+      "scopeText": "カツラマルバネクワガタ（Neolucanus katsuraorum）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-b6457d0e1de8b198",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "insects",
+      "scopeText": "マエダマルバネクワガタ（Neolucanus maedai）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-76016caf4946edcb",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "insects",
+      "scopeText": "マキシムスマルバネクワガタ（Neolucanus maximus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-03467c528c138eac",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "insects",
+      "scopeText": "ペラルマトゥスマルバネクワガタ（Neolucanus perarmatus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-d4ea9317e12cdb16",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "insects",
+      "scopeText": "サンダースマルバネクワガタ（Neolucanus saundersii）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-eb0ac20aff58a20c",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "insects",
+      "scopeText": "タナカマルバネクワガタ（Neolucanus tanakai）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-4615e9dddf0ceae2",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "insects",
+      "scopeText": "ウォーターハウスマルバネクワガタ（Neolucanus waterhousei）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-021f9b9a747ba872",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "insects",
+      "scopeText": "テナガコガネ属の全種 ただし、次のものを除く。 ・ヤンバルテナガコガネ（C. jambar）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-dbe0fc0685cbad1a",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "insects",
+      "scopeText": "クモテナガコガネ属の全種",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-6cd5235cbe4ec61b",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "insects",
+      "scopeText": "ヒメテナガコガネ属の全種",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-01dc3834f71daf85",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "insects",
+      "scopeText": "セイヨウオオマルハナバチ（B. terrestris）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-efd0ff48b1a053ab",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "insects",
+      "scopeText": "ハヤトゲフシアリ（Lepisiota frauenfeldi）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-934db62af3c6fe24",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "insects",
+      "scopeText": "アルゼンチンアリ（L. humile）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-610096af5aaf87d7",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "insects",
+      "scopeText": "ソレノプスィス・ゲミナタ種群の全種",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-00f220cbcc3491a4",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "insects",
+      "scopeText": "ソレノプスィス・サエヴィスィマ種群の全種 （ヒアリ（アカヒアリ）等）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-244410f8faba6db2",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "insects",
+      "scopeText": "ソレノプスィス・トゥリデンス種群の全種",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-6c932fcad98f4c19",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "insects",
+      "scopeText": "ソレノプスィス・ヴィルレンス種群の全種",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-e34452d2e55a4ee5",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "insects",
+      "scopeText": "上記4種群に属する種間の交雑により生じた生物",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-844daca31a93e581",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "insects",
+      "scopeText": "コカミアリ（W. auropunctata）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-81a612298b470d0a",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "insects",
+      "scopeText": "ツマアカスズメバチ（V.velutina）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-2b8065e0cf6bf5c1",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "crustaceans",
+      "scopeText": "ディケロガンマルス・ヴィルロスス（Dikerogammarus villosus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-f215d61b74907497",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "crustaceans",
+      "scopeText": "ザリガニ科の全種",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-db9d8e370cb6a131",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "crustaceans",
+      "scopeText": "アメリカザリガニ科の全種",
+      "regulationType": "specified",
+      "conditionalMembers": [
+        "アメリカザリガニ（Procambarus clarkii）"
+      ]
+    },
+    {
+      "id": "moe-ias-232011739b762e83",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "crustaceans",
+      "scopeText": "アジアザリガニ科の全種 ただし、次のものを除く。 ・ニホンザリガニ（Cambaroides japonicus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-b723b0eb27d9de1e",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "crustaceans",
+      "scopeText": "ミナミザリガニ科の全種",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-8098aa21275e0b03",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "crustaceans",
+      "scopeText": "モクズガニ属の全種 ただし、次のものを除く。 ・モクズガニ（Eriocheir japonica） ・オガサワラモクズガニ(Eriocheir ogasawaraensis)",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-26bec3433c5f933d",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "arachnids",
+      "scopeText": "キョクトウサソリ科の全種",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-3c4667fce3b60fc5",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "arachnids",
+      "scopeText": "アトラクス属の全種",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-83564c0aed7fbb99",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "arachnids",
+      "scopeText": "ハドロニュケ属の全種",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-5450289cc49c4876",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "arachnids",
+      "scopeText": "ロクソスケレス・ガウコ（L. gaucho）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-c293a257a6484e2a",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "arachnids",
+      "scopeText": "ロクソスケレス・ラエタ（L. laeta）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-6b19dca9fa514017",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "arachnids",
+      "scopeText": "ロクソスケレス・レクルサ（L. reclusa）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-f159b252703f80b0",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "arachnids",
+      "scopeText": "ゴケグモ属の全種 ただし、次のものを除く。 ・アカオビゴケグモ（L. elegans）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-f52ff4705105435d",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "mollusks",
+      "scopeText": "カワヒバリガイ属の全種",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-456921d8a670f9ca",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "mollusks",
+      "scopeText": "クワッガガイ（D. bugensis）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-6697aced33f2326b",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "mollusks",
+      "scopeText": "カワホトトギスガイ（D. polymorpha）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-81468eb073990927",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "mollusks",
+      "scopeText": "ヤマヒタチオビ（オカヒタチオビ）（E. rosea）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-045d003d67eb4005",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "mollusks",
+      "scopeText": "ニューギニアヤリガタリクウズムシ（P. manokwari）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-cfa59680708ccf0b",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "plants",
+      "scopeText": "ナガエツルノゲイトウ (A. philoxeroides) （茎・根を含む）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-6a79d6a33974d3b2",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "plants",
+      "scopeText": "ブラジルチドメグサ（H. ranunculoides） （茎・根を含む）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-c30709b415266012",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "plants",
+      "scopeText": "ボタンウキクサ（P. stratiotes） （茎・根を含む）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-097ec9234cdfa99d",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "plants",
+      "scopeText": "アゾラ・クリスタータ（A. cristata） （茎を含む）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-d64915efafc8bc9d",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "plants",
+      "scopeText": "オオキンケイギク（C. lanceolata） （根を含む）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-e0ce48ce1428c989",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "plants",
+      "scopeText": "ミズヒマワリ（G. spilanthoides） （茎・根を含む）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-4ae4f097ecf0a1e2",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "plants",
+      "scopeText": "ツルヒヨドリ（M. micrantha） （根を含む）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-6df3dd246a115f2d",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "plants",
+      "scopeText": "オオハンゴンソウ（通称：ルドベキア、ハナガサギク、ヤエザキハンゴンソウ等） （R. laciniata） （根を含む）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-54dd2fb373a86c88",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "plants",
+      "scopeText": "ナルトサワギク（S. madagascariensis） （茎・根を含む）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-4ae49c356e8f8243",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "plants",
+      "scopeText": "アレチウリ（S. angulatus）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-f49a21f15a10db67",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "plants",
+      "scopeText": "ナガエモウセンゴケ（D. intermedia） （茎・根を含む）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-d8e30dce9f241a0c",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "plants",
+      "scopeText": "オオフサモ（M. aquaticum） （茎・根を含む）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-5c9bbaa61da0f4ee",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "plants",
+      "scopeText": "エフクレタヌキモ（Utricularia cf. platensis） （茎を含む）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-e05bd67797098e5a",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "plants",
+      "scopeText": "ウトゥリクラリア・インフラタ（Utricularia inflata） （茎を含む）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-adaddc419a6dffbe",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "plants",
+      "scopeText": "ウトゥリクラリア・プラテンスィス（Utricularia platensis） （茎を含む）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-67e84b784745ef3f",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "plants",
+      "scopeText": "ルドウィギア・グランディフロラ（オオバナミズキンバイ等）（L. grandiflora） （茎・根を含む）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-e9d6f5e3b5c9733e",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "plants",
+      "scopeText": "ビーチグラス（A. arenaria） （根を含む）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-cd7122185d4cea6e",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "plants",
+      "scopeText": "スパルティナ属全種 （茎・根を含む）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    },
+    {
+      "id": "moe-ias-c49d0fd4b512818b",
+      "sourceId": "moe-specified-invasive-alien-species",
+      "organismGroup": "plants",
+      "scopeText": "オオカワヂシャ（V. anagallis-aquatica） （根を含む）",
+      "regulationType": "specified",
+      "conditionalMembers": []
+    }
+  ],
+  "designationPriorityDefaults": {
+    "specified": "P1",
+    "conditional": "P1"
+  },
   "taxa": [
     {
       "taxonId": 494519,
@@ -52,6 +1356,7 @@
         {
           "type": "specified_invasive_alien_species",
           "sourceId": "moe-specified-invasive-alien-species",
+          "designationId": "moe-ias-ad1ad8108aa66e44",
           "verifiedOn": "2026-08-14"
         }
       ],
@@ -67,6 +1372,81 @@
       "identificationGroupIds": [
         "aromia-bungii-confusers"
       ]
+    },
+    {
+      "taxonId": 51221,
+      "scientificName": "Procambarus clarkii",
+      "commonName": "アメリカザリガニ",
+      "officialStatuses": [
+        {
+          "type": "conditionally_specified_invasive_alien_species",
+          "sourceId": "moe-specified-invasive-alien-species",
+          "designationId": "moe-ias-db9d8e370cb6a131",
+          "verifiedOn": "2026-08-14"
+        }
+      ],
+      "priority": {
+        "level": "P1",
+        "reasons": [
+          "legal_handling",
+          "action_consequence"
+        ],
+        "falsePositiveImpact": "medium",
+        "falseNegativeImpact": "high"
+      },
+      "identificationGroupIds": [
+        "procambarus-clarkii-confusers"
+      ]
+    },
+    {
+      "taxonId": 39782,
+      "scientificName": "Trachemys scripta",
+      "commonName": "アカミミガメ",
+      "officialStatuses": [
+        {
+          "type": "conditionally_specified_invasive_alien_species",
+          "sourceId": "moe-specified-invasive-alien-species",
+          "designationId": "moe-ias-7a0724a19fadac7b",
+          "verifiedOn": "2026-08-14"
+        }
+      ],
+      "priority": {
+        "level": "P1",
+        "reasons": [
+          "legal_handling",
+          "action_consequence"
+        ],
+        "falsePositiveImpact": "medium",
+        "falseNegativeImpact": "high"
+      },
+      "identificationGroupIds": [
+        "trachemys-scripta-confusers"
+      ]
+    },
+    {
+      "taxonId": 51271,
+      "scientificName": "Trachemys scripta elegans",
+      "commonName": "ミシシッピアカミミガメ",
+      "officialStatuses": [
+        {
+          "type": "conditionally_specified_invasive_alien_species",
+          "sourceId": "moe-specified-invasive-alien-species",
+          "designationId": "moe-ias-7a0724a19fadac7b",
+          "verifiedOn": "2026-08-14"
+        }
+      ],
+      "priority": {
+        "level": "P1",
+        "reasons": [
+          "legal_handling",
+          "action_consequence"
+        ],
+        "falsePositiveImpact": "medium",
+        "falseNegativeImpact": "high"
+      },
+      "identificationGroupIds": [
+        "trachemys-scripta-confusers"
+      ]
     }
   ],
   "identificationGroups": [
@@ -79,6 +1459,46 @@
         {
           "type": "same_family_observed_in_japan",
           "scientificName": "Cerambycidae"
+        },
+        {
+          "type": "empirical_model_confusion"
+        },
+        {
+          "type": "opposing_action_consequence"
+        }
+      ]
+    },
+    {
+      "id": "procambarus-clarkii-confusers",
+      "anchorTaxonIds": [
+        51221
+      ],
+      "selectionRules": [
+        {
+          "type": "same_family_observed_in_japan",
+          "scientificName": "Cambaridae"
+        },
+        {
+          "type": "empirical_model_confusion"
+        },
+        {
+          "type": "opposing_action_consequence"
+        }
+      ]
+    },
+    {
+      "id": "trachemys-scripta-confusers",
+      "anchorTaxonIds": [
+        39782,
+        51271
+      ],
+      "selectionRules": [
+        {
+          "type": "native_freshwater_turtles_observed_in_japan"
+        },
+        {
+          "type": "same_family_observed_in_japan",
+          "scientificName": "Emydidae"
         },
         {
           "type": "empirical_model_confusion"

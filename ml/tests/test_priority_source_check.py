@@ -63,6 +63,11 @@ def _registry(fingerprints: dict[str, str]) -> dict:
             }
             for source_id, sha256 in fingerprints.items()
         ],
+        "officialDesignations": [],
+        "designationPriorityDefaults": {
+            "specified": "P1",
+            "conditional": "P1",
+        },
         "taxa": [],
         "identificationGroups": [],
     }

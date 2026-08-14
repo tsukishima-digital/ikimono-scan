@@ -60,8 +60,14 @@ tasks:
   priority:check:
     desc: Validate the priority species registry and its official source snapshots
     cmds:
-      - uv run pytest -q ml/tests/test_priority_registry.py ml/tests/test_priority_source_check.py ml/tests/test_priority_source_workflow.py
+      - uv run pytest -q ml/tests/test_priority_registry.py ml/tests/test_specified_invasive.py ml/tests/test_priority_source_check.py ml/tests/test_priority_source_workflow.py
+      - uv run python scripts/sync_specified_invasive.py ml/taxonomy/priority-registry.json
       - uv run python scripts/check_priority_sources.py ml/taxonomy/priority-registry.json
+
+  priority:specified:refresh:
+    desc: Refresh all specified-invasive designation scopes after official review
+    cmds:
+      - uv run python scripts/sync_specified_invasive.py ml/taxonomy/priority-registry.json --refresh
 
   priority:sources:refresh:
     desc: Refresh official source fingerprints after reviewing registry changes
