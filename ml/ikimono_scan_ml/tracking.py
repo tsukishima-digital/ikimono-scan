@@ -297,14 +297,14 @@ def _slug(value: str) -> str:
 
 def collect_git_metadata(root: Path | None = None) -> dict[str, Any]:
     root = root or Path.cwd()
-    env_commit = os.getenv("HUNTLOG_GIT_COMMIT")
+    env_commit = os.getenv("IKIMONO_SCAN_GIT_COMMIT")
     if env_commit:
-        env_status = os.getenv("HUNTLOG_GIT_STATUS", "")
+        env_status = os.getenv("IKIMONO_SCAN_GIT_STATUS", "")
         return {
             "commit": env_commit,
-            "branch": os.getenv("HUNTLOG_GIT_BRANCH", ""),
+            "branch": os.getenv("IKIMONO_SCAN_GIT_BRANCH", ""),
             "status": env_status,
-            "dirty": os.getenv("HUNTLOG_GIT_DIRTY", str(bool(env_status))).lower()
+            "dirty": os.getenv("IKIMONO_SCAN_GIT_DIRTY", str(bool(env_status))).lower()
             in {"1", "true", "yes"},
         }
     return {
