@@ -108,7 +108,7 @@ def test_failed_state_reconciliation_remains_a_failure(tmp_path: Path):
 def test_cloudflare_provider_updates_require_a_workaround_audit(tmp_path: Path):
     lockfile = tmp_path / ".terraform.lock.hcl"
     lockfile.write_text(
-        'provider "registry.terraform.io/cloudflare/cloudflare" {\n  version = "5.23.0"\n}\n'
+        'provider "registry.terraform.io/cloudflare/cloudflare" {\n  version = "5.27.0"\n}\n'
     )
 
     assert cloudflare_provider_version(lockfile) == AUDITED_CLOUDFLARE_PROVIDER_VERSION
@@ -122,3 +122,10 @@ def test_tracked_cloudflare_provider_has_been_audited_for_the_workaround():
         "Remove it after two Worker-changing production deploys succeed without the workaround; "
         "otherwise update AUDITED_CLOUDFLARE_PROVIDER_VERSION."
     )
+
+
+def test_production_provider_excludes_registrar_data_source_removal():
+    production_root = Path(__file__).parents[2] / "infra" / "production"
+
+    assert 'version = "~> 5.20, < 5.28"' in (production_root / "versions.tf").read_text()
+    assert 'data "cloudflare_registrar_domain"' in (production_root / "main.tf").read_text()

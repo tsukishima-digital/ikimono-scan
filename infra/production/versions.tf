@@ -3,8 +3,9 @@ terraform {
 
   required_providers {
     cloudflare = {
-      source  = "cloudflare/cloudflare"
-      version = "~> 5.20"
+      source = "cloudflare/cloudflare"
+      # Provider 5.28 removes the registrar_domain data source used by this root.
+      version = "~> 5.20, < 5.28"
     }
   }
 }
