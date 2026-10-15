@@ -310,9 +310,9 @@ def test_training_runtime_uses_the_security_patched_pytorch_stack():
     dependencies = set(project["project"]["dependencies"])
     dockerfile = ML_DOCKERFILE.read_text()
 
-    assert "torch>=2.13,<2.14" in dependencies
-    assert "torchvision>=0.28,<0.29" in dependencies
-    assert dockerfile.startswith("FROM pytorch/pytorch:2.13.0-cuda13.0-cudnn9-runtime\n")
+    assert "torch>=2.13,<2.15" in dependencies
+    assert "torchvision>=0.28,<0.30" in dependencies
+    assert dockerfile.startswith("FROM pytorch/pytorch:2.14.1-cuda13.0-cudnn9-runtime\n")
     assert 'PATH="/opt/venv/bin:$PATH"' in dockerfile
     assert "uv venv --system-site-packages /opt/venv" in dockerfile
     assert "uv pip install --python /opt/venv/bin/python" in dockerfile
