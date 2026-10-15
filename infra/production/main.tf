@@ -6,13 +6,6 @@ data "cloudflare_zones" "app" {
   max_items = 1
 }
 
-data "cloudflare_registrar_domain" "app" {
-  # Implementation: The provider cannot import existing registrations, so the
-  # pre-existing purchase stays read-only until import support is available.
-  account_id  = var.cloudflare_account_id
-  domain_name = var.domain_name
-}
-
 resource "cloudflare_dns_record" "search_console_verification" {
   zone_id = one(data.cloudflare_zones.app.result).id
   name    = var.domain_name

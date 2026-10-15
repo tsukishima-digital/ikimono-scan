@@ -12,9 +12,9 @@ from pathlib import Path
 REPOSITORY_ROOT = Path(__file__).parents[1]
 PRODUCTION_ROOT = REPOSITORY_ROOT / "infra" / "production"
 # Implementation: Provider 5.23.0 regressed cloudflare/terraform-provider-cloudflare#5704.
-# Version 5.27.0 still keeps this narrow recovery while it is verified by two Worker-changing
+# Version 5.28.0 still keeps this narrow recovery while it is verified by two Worker-changing
 # production deploys without the startup_time_ms error.
-AUDITED_CLOUDFLARE_PROVIDER_VERSION = "5.27.0"
+AUDITED_CLOUDFLARE_PROVIDER_VERSION = "5.28.0"
 
 TerraformRun = Callable[[list[str]], subprocess.CompletedProcess[str]]
 
