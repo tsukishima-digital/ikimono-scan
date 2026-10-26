@@ -37,7 +37,7 @@ jobs:
       AWS_REGION: auto
       AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
       CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets[inputs.root == 'preview' && 'CLOUDFLARE_PREVIEW_API_TOKEN' || 'CLOUDFLARE_API_TOKEN'] }}
       TF_IN_AUTOMATION: "true"
       TF_VAR_cloudflare_account_id: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
     steps:
@@ -58,11 +58,7 @@ jobs:
         if: inputs.root == 'production'
         working-directory: web
         run: npm ci && npm run build
-      - name: Plan initial backend bucket
-        if: inputs.root == 'bootstrap'
-        run: python scripts/terraform_backend.py bootstrap-plan
       - name: Plan remote root
-        if: inputs.root != 'bootstrap'
         run: |
           terraform -chdir=infra/${{ inputs.root }} init -input=false
           terraform -chdir=infra/${{ inputs.root }} plan -input=false -lock-timeout=5m

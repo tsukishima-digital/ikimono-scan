@@ -14,6 +14,8 @@ task infra:bootstrap:plan
 task infra:plan
 ```
 
+GitHub Actionsの`Terraform plan`は、指定refのlock fileを固定し、`bootstrap`を含む各rootの既存R2 stateに対してplanします。`preview`には専用API tokenを使用します。state bucket作成前の初期構成確認には`task infra:bootstrap:plan`を使います。
+
 `task deploy`はmain上の公開workflowを、`task unpublish`はCustom Domainを外す公開停止workflowを起動します。ローカルから本番applyは実行せず、workflowだけが保存済みplanを使います。通常のdeployはCustom Domainを再作成するため、公開再開にも使えます。
 
 `ikimono-scan.app`のドメイン登録はTerraform導入前から存在し、引き続きCloudflare Registrarで管理します。Cloudflare provider 5.28ではRegistrar用resource/data sourceが代替なしで削除されたため、`production` rootは登録自体を宣言しません。以前の読取専用data sourceは他の設定から参照されておらず、Terraform 1.14は設定から外れたdata sourceをproviderで再読込せずにstateから整理します。次回の通常のplan/applyでキャッシュされた読取結果だけが外れるため、登録の移管・削除や`terraform state rm`・import・moved blockは不要です。

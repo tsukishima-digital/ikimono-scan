@@ -73,6 +73,8 @@ resource "cloudflare_zero_trust_access_policy" "owner" {
   account_id = var.cloudflare_account_id
   name       = "Allow the ikimono-scan owner"
   decision   = "allow"
+  # provider の既定値削除で既存のアクセス有効期間が変わらないよう明示する。
+  session_duration = "24h"
   include = [
     {
       cloudflare_account_member = {

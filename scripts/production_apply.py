@@ -11,10 +11,10 @@ from pathlib import Path
 
 REPOSITORY_ROOT = Path(__file__).parents[1]
 PRODUCTION_ROOT = REPOSITORY_ROOT / "infra" / "production"
-# Implementation: Provider 5.23.0 regressed cloudflare/terraform-provider-cloudflare#5704.
-# Version 5.28.0 still keeps this narrow recovery while it is verified by two Worker-changing
-# production deploys without the startup_time_ms error.
-AUDITED_CLOUDFLARE_PROVIDER_VERSION = "5.28.0"
+# cloudflare/terraform-provider-cloudflare#5704 の再発に対する限定的な復旧。
+# 5.28.1 でも Worker の ModifyPlan は startup_time_ms を unknown に戻さない。
+# Worker を変更する本番 deploy が復旧なしで2回成功するまで維持する。
+AUDITED_CLOUDFLARE_PROVIDER_VERSION = "5.28.1"
 
 TerraformRun = Callable[[list[str]], subprocess.CompletedProcess[str]]
 

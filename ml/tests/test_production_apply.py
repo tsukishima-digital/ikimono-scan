@@ -105,13 +105,13 @@ def test_failed_state_reconciliation_remains_a_failure(tmp_path: Path):
         apply_production_plan(tmp_path / "production.tfplan", run=terraform)
 
 
-def test_cloudflare_provider_updates_require_a_workaround_audit(tmp_path: Path):
+def test_cloudflare_provider_version_reads_the_lockfile(tmp_path: Path):
     lockfile = tmp_path / ".terraform.lock.hcl"
     lockfile.write_text(
         'provider "registry.terraform.io/cloudflare/cloudflare" {\n  version = "5.28.0"\n}\n'
     )
 
-    assert cloudflare_provider_version(lockfile) == AUDITED_CLOUDFLARE_PROVIDER_VERSION
+    assert cloudflare_provider_version(lockfile) == "5.28.0"
 
 
 def test_tracked_cloudflare_provider_has_been_audited_for_the_workaround():
