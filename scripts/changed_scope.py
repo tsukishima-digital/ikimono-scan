@@ -16,6 +16,7 @@ def scopes_for_paths(paths: Iterable[str]) -> set[str]:
             scopes.add("infra")
         if path.startswith(("ml/", "scripts/")) or path in {
             ".pre-commit-config.yaml",
+            "infra/production/.terraform.lock.hcl",
             "pyproject.toml",
             "uv.lock",
         }:

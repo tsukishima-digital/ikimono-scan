@@ -47,7 +47,7 @@ repos:
         name: python tests, lint, and formatting
         entry: task python
         language: system
-        files: ^(?:ml/|scripts/|pyproject\.toml$|uv\.lock$|\.pre-commit-config\.yaml$)
+        files: ^(?:ml/|scripts/|infra/production/\.terraform\.lock\.hcl$|pyproject\.toml$|uv\.lock$|\.pre-commit-config\.yaml$)
         pass_filenames: false
         stages: [pre-push]
       - id: web-checks

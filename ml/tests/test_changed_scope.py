@@ -17,6 +17,10 @@ def test_terraform_changes_select_infra_checks():
     assert scopes_for_paths(["infra/production/main.tf"]) == {"infra"}
 
 
+def test_production_provider_update_also_selects_the_python_workaround_audit():
+    assert scopes_for_paths(["infra/production/.terraform.lock.hcl"]) == {"infra", "python"}
+
+
 def test_deployment_workflow_selects_infra_and_web_checks():
     assert scopes_for_paths([".github/workflows/deploy.yml"]) == {"infra", "web"}
 
