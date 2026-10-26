@@ -60,5 +60,5 @@ jobs:
         run: npm ci && npm run build
       - name: Plan remote root
         run: |
-          terraform -chdir=infra/${{ inputs.root }} init -input=false -lockfile=readonly
+          terraform -chdir=infra/${{ inputs.root }} init -input=false
           terraform -chdir=infra/${{ inputs.root }} plan -input=false -lock-timeout=5m
